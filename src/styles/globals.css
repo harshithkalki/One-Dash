@@ -1,3 +1,99 @@
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Plus+Jakarta+Sans:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,200;1,500&display=swap");
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.image {
+  object-fit: contain;
+  width: 100% !important;
+  position: relative !important;
+  height: unset !important;
+  background: red;
+}
+
+.text--font--sidebar {
+  font-family: "Plus Jakarta Sans", sans-serif;
+  font-weight: 600;
+  line-height: 20px;
+}
+.text--font {
+  font-family: "Plus Jakarta Sans", sans-serif;
+}
+
+@media (max-height: 741px) {
+  .EditProfile--gap {
+    padding-top: 4px !important;
+    padding-bottom: 4px !important;
+  }
+}
+@media (max-height: 779px) {
+  .EditProfile {
+    padding-top: 10px !important;
+    padding-bottom: 0 !important;
+  }
+  .EditProfile--img {
+    width: 50px;
+  }
+}
+
+.SmoothAnimation {
+  -webkit-transition: all 0.2s ease-in-out;
+  -o-transition: all 0.2s ease-in-out;
+  -moz-transition: all 0.2s ease-in-out;
+  transition: all 0.2s ease-in-out;
+}
+
+@media (max-width: 786px) {
+  * {
+    cursor: none;
+  }
+}
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #ebebeb;
+  border-radius: 24px;
+}
+
+.centered {
+  position: absolute;
+  top: 50%;
+  transform: translate(-70%, -50%);
+}
+
+.sidebar {
+  width: 256px;
+  overflow: hidden !important;
+  transition: transform 0.5s linear;
+}
+
+@media (max-width: 786px) {
+  .sidebar {
+    transform: translateX(-100%);
+    transition: transform 0.3s linear;
+  }
+  .sidebar.visible {
+    transform: translateX(0);
+  }
+}
+
+.custome--border::after {
+  content: "";
+  position: absolute;
+  border: 3px dashed #ebebeb;
+  z-index: 9;
+  top: -2px;
+  bottom: -2px;
+  left: -2px;
+  right: -2px;
+}
+
+.shadowbox {
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+}
