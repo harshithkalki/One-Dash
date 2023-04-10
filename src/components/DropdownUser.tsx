@@ -250,7 +250,7 @@ const DropdownUser = () => {
               <BsChevronDown size={18} className="hidden md:block" />
             </div>
           }
-          position="center top"
+          position="top center"
           on="hover"
           closeOnDocumentClick
           mouseLeaveDelay={300}
