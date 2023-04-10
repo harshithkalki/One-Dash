@@ -3,7 +3,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { customers } from "../../../components/data/dataContents";
 import { AiOutlinePlus, AiOutlineClose } from "react-icons/ai";
-import { picImg } from "../../../public/img/user/Avatar_team.png";
 import { BsSearch } from "react-icons/bs";
 import { MdEdit } from "react-icons/md";
 const Customer = () => {
@@ -14,9 +13,13 @@ const Customer = () => {
           <div className="font-play overflow-x-auto">
             <p className="text-sm text-gray-400 md:text-base">Overview</p>
             <div className="inline-block min-w-full py-2 md:flex md:items-center md:justify-between">
-              <a className="py-4 text-xl font-semibold md:text-3xl">
-                <Link href="/customers">Customers</Link>
-              </a>
+              <Link
+                href="/customers"
+                className="py-4 text-xl font-semibold md:text-3xl"
+              >
+                Customers
+              </Link>
+
               <div className="flex items-center space-x-3">
                 <div className="relative mt-2 w-full border md:w-[100%]">
                   <span className="absolute inset-y-0 left-0 flex items-center pl-2">
@@ -50,12 +53,14 @@ const Customer = () => {
                         height={40}
                       />
                       <div>
-                        <a>
-                          <Link href={"customers/" + member.id} key={member.id}>
-                            {" "}
-                            {member.name}
-                          </Link>
-                        </a>
+                        <Link
+                          // href={"customers/" + member.id}
+                          href={`/customers/${member.id}`}
+                          key={member.id}
+                        >
+                          {" "}
+                          {member.name}
+                        </Link>
 
                         <p className="text-sm text-gray-400">
                           {member.order_id}
@@ -174,7 +179,8 @@ const Customer = () => {
                             </td>
                             <td className="mb-6  flex justify-center px-4 py-1 font-light font-medium text-gray-500">
                               <Link
-                                href={"customers/" + member.id}
+                                // href={"customers/" + member.id}
+                                href={`customers/${member.id}`}
                                 key={member.id}
                               >
                                 <MdEdit color="#9FA5B4" size={18} />

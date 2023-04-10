@@ -8,7 +8,7 @@ import { GrAttachment } from "react-icons/gr";
 import Popup from "reactjs-popup";
 // import ReactStars from "react-rating-stars-component"
 import Image from "next/image";
-import Closeicon from "../public/img/icon/Close Icon.svg";
+// import Closeicon from "@/";
 const WorkDelivery = () => {
   const [open, setOpen] = useState(false);
   const [openOffer, setOpenOffer] = useState(false);
@@ -43,7 +43,7 @@ const WorkDelivery = () => {
             {/* <AiOutlineClose size={24} onClick={closeModal} /> */}
             <Image
               className="cursor-pointer"
-              src={Closeicon}
+              src={"img/icon/Close Icon.svg"}
               onClick={closeModal}
               alt="close"
             />

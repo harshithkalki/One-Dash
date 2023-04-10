@@ -16,7 +16,7 @@ export const getStaticPaths = async () => {
 };
 
 export const getStaticProps = async (context) => {
-  const id = context.params.id;
+  const id = context?.params?.id as string;
   // const allData = JSON.stringify(customers)
   const data = customers.filter((p) => p.id.toString() === id);
   return {
@@ -33,9 +33,12 @@ const DetailCustomer = ({ itemData }) => {
       <div className="font-play mt-20 p-4 pt-0">
         <div className="w-full py-4">
           <p className="flex  items-center space-x-2 py-1 text-gray-400">
-            <a className="text-[16px] font-[600] lg:text-[14px] 2xl:text-[16px]">
-              <Link href="/admin/customers">Customers</Link>
-            </a>{" "}
+            <Link
+              href="/admin/customers"
+              className="text-[16px] font-[600] lg:text-[14px] 2xl:text-[16px]"
+            >
+              Customers
+            </Link>{" "}
             <BsChevronRight />{" "}
             <span className="text-[16px] font-[600] lg:text-[14px] 2xl:text-[16px]">
               Customers Detail

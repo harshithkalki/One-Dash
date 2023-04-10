@@ -1,26 +1,28 @@
-import React from "react"
-import Link from "next/link"
-import Image from "next/image"
-import { ordersdata } from "../../../components/data/dataContents"
-import { AiOutlinePlus, AiOutlineClose } from "react-icons/ai"
-import { picImg } from "../../../public/img/user/Avatar_team.png"
-import { BsSearch } from "react-icons/bs"
-import { MdEdit } from "react-icons/md"
+import React from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { ordersdata } from "../../../components/data/dataContents";
+import { AiOutlinePlus, AiOutlineClose } from "react-icons/ai";
+// import { picImg } from "../../../public/img/user/Avatar_team.png";
+import { BsSearch } from "react-icons/bs";
+import { MdEdit } from "react-icons/md";
 const Order = () => {
   return (
     <React.Fragment>
-      <div className="p-4 pt-4 mt-20">
-        <div className="flex flex-col w-full h-full">
-          <p className="text-gray-400 md:text-base text-sm">Orders</p>
-          <div className="py-2 inline-block min-w-full md:flex md:justify-between md:items-center">
-            <a className="md:text-3xl text-xl py-4">
-              <Link href="/customers">All Type</Link>
-            </a>
-            <div className="w-full md:w-44 border relative mt-2">
+      <div className="mt-20 p-4 pt-4">
+        <div className="flex h-full w-full flex-col">
+          <p className="text-sm text-gray-400 md:text-base">Orders</p>
+          <div className="inline-block min-w-full py-2 md:flex md:items-center md:justify-between">
+            {/* <a className="py-4 text-xl md:text-3xl"> */}
+            <Link href="/customers" className="py-4 text-xl md:text-3xl">
+              All Type
+            </Link>
+            {/* </a> */}
+            <div className="relative mt-2 w-full border md:w-44">
               <span className="absolute inset-y-0 left-0 flex items-center pl-2">
                 <button
                   type="submit"
-                  className="p-1 focus:outline-none focus:shadow-outline"
+                  className="focus:shadow-outline p-1 focus:outline-none"
                 >
                   <BsSearch />
                 </button>
@@ -28,16 +30,16 @@ const Order = () => {
               <input
                 type="text"
                 placeholder="search"
-                className="pl-10 py-2.5 w-full"
+                className="w-full py-2.5 pl-10"
               />
             </div>
           </div>
 
-          <div className="w-full lg:hidden block">
+          <div className="block w-full lg:hidden">
             {ordersdata.map((order, index) => {
               return (
-                <div className="bg-white border mb-2 p-4">
-                  <div className="flex gap-2 justify-between items-center mt-1 mb-1">
+                <div className="mb-2 border bg-white p-4" key={index}>
+                  <div className="mb-1 mt-1 flex items-center justify-between gap-2">
                     <div className="flex space-x-2">
                       <Image
                         src="/img/user/Avatar_4.png"
@@ -47,7 +49,7 @@ const Order = () => {
                       />
                       <div>
                         Angeline Lee
-                        <p className="text-gray-400 text-sm">
+                        <p className="text-sm text-gray-400">
                           {" "}
                           {order.order_id}
                         </p>
@@ -55,73 +57,73 @@ const Order = () => {
                     </div>
 
                     <div
-                      className={`h-6 flex justify-center items-center rounded-lg px-2 text-[12px] ${
+                      className={`flex h-6 items-center justify-center rounded-lg px-2 text-[12px] ${
                         order.status === "Completed"
-                          ? "text-green-500 bg-green-50"
+                          ? "bg-green-50 text-green-500"
                           : order.status === "Pending Payment"
-                          ? "text-orange-400 bg-orange-100"
+                          ? "bg-orange-100 text-orange-400"
                           : order.status === "In Repair"
-                          ? "text-red-400 bg-red-100"
-                          : "text-gray-400 bg-gray-200"
+                          ? "bg-red-100 text-red-400"
+                          : "bg-gray-200 text-gray-400"
                       }`}
                     >
-                      <Link href={"/admin/" + order.id} key={order.id}>
+                      <Link href={`/admin/${order.id}`} key={order.id}>
                         {" "}
                         {order.status}
                       </Link>
                     </div>
                   </div>
                   <div>
-                    <p className="text-lg font-[600] pt-2"> {order.title}</p>
-                    <p className="text-base pt-2 text-gray-400">
+                    <p className="pt-2 text-lg font-[600]"> {order.title}</p>
+                    <p className="pt-2 text-base text-gray-400">
                       {" "}
                       {order.delivery_date}
                     </p>
                   </div>
                 </div>
-              )
+              );
             })}
           </div>
 
-          <div className="h-full overflow-x-auto overflow-y-auto p-2 border bg-white lg:block hidden">
-            <div className="py-2 inline-block min-w-full sm:px-6 lg:px-8">
+          <div className="hidden h-full overflow-x-auto overflow-y-auto border bg-white p-2 lg:block">
+            <div className="inline-block min-w-full py-2 sm:px-6 lg:px-8">
               <div className="overflow-hidden">
                 <table className="min-w-full">
                   <thead>
-                    <tr className="md:text-xl text-sm">
+                    <tr className="text-sm md:text-xl">
                       <th
                         scope="col"
-                        className="font-medium text-back xl:text-[18px] text-[19px] font-bold px-6 py-4 text-left whitespace-nowrap"
+                        className="text-back whitespace-nowrap px-6 py-4 text-left text-[19px] font-bold font-medium xl:text-[18px]"
                       >
                         Customer Name
                       </th>
                       <th
                         scope="col"
-                        className="font-medium xl:text-[18px] text-[19px] text-gray-900 px-6 py-4 text-left whitespace-nowrap"
+                        className="whitespace-nowrap px-6 py-4 text-left text-[19px] font-medium text-gray-900 xl:text-[18px]"
                       >
                         Order Id
                       </th>
                       <th
                         scope="col"
-                        className="font-medium xl:text-[18px] text-[19px] text-gray-900 px-6 py-4 text-left whitespace-nowrap"
+                        className="whitespace-nowrap px-6 py-4 text-left text-[19px] font-medium text-gray-900 xl:text-[18px]"
                       >
                         Project Name
                       </th>
                       <th
                         scope="col"
-                        className="font-medium xl:text-[18px] text-[19px] text-gray-900 px-6 py-4 text-left whitespace-nowrap"
+                        className="whitespace-nowrap px-6 py-4 text-left text-[19px] font-medium text-gray-900 xl:text-[18px]"
                       >
                         Delivery Date
                       </th>
                       <th
                         scope="col"
-                        className="font-medium xl:text-[18px] text-[19px] text-gray-900 px-6 py-4 text-left whitespace-nowrap"
+                        className="whitespace-nowrap px-6 py-4 text-left text-[19px] font-medium text-gray-900 xl:text-[18px]"
                       >
                         Amount
                       </th>
                       <th
                         scope="col"
-                        className="font-medium xl:text-[18px] text-[19px] text-gray-900 px-6 py-4 text-left flex justify-center items-center"
+                        className="flex items-center justify-center px-6 py-4 text-left text-[19px] font-medium text-gray-900 xl:text-[18px]"
                       >
                         Status
                       </th>
@@ -132,7 +134,7 @@ const Order = () => {
                       //console.log(order, index)
                       return (
                         <>
-                          <tr className="md:text-base text-sm">
+                          <tr className="text-sm md:text-base">
                             <td className="flex items-center space-x-2 px-6 py-4">
                               <Image
                                 src="/img/user/Avatar_4.png"
@@ -140,20 +142,20 @@ const Order = () => {
                                 width={40}
                                 height={40}
                               />
-                              <span className="font-semibold text-black font-semibold">
+                              <span className="font-semibold font-semibold text-black">
                                 Angeline Lee
                               </span>
                             </td>
-                            <td className="text-gray-500 text-sm font-medium font-light py-2 px-6">
+                            <td className="px-6 py-2 text-sm font-light font-medium text-gray-500">
                               {order.order_id}
                             </td>
-                            <td className="text-gray-500 text-sm font-medium font-light py-2 px-6 ">
+                            <td className="px-6 py-2 text-sm font-light font-medium text-gray-500 ">
                               {order.title}
                             </td>
-                            <td className="text-gray-500  text-sm font-medium font-light py-2 px-6">
+                            <td className="px-6  py-2 text-sm font-light font-medium text-gray-500">
                               {order.delivery_date}
                             </td>
-                            <td className="text-gray-500 text-sm font-medium font-light py-2 px-6">
+                            <td className="px-6 py-2 text-sm font-light font-medium text-gray-500">
                               $ {order.amount}
                             </td>
                             {/* <td className="text-gray-500 text-sm font-medium font-light py-2 flex justify-center items-center">
@@ -178,20 +180,20 @@ const Order = () => {
                               </div>
                               $ {order.amount}
                             </td> */}
-                            <td className="text-gray-500 text-sm font-medium font-light py-2 px-6">
+                            <td className="px-6 py-2 text-sm font-light font-medium text-gray-500">
                               <div
-                                className={`py-1 text-center font-normal rounded-2xl text-[12px] ${
+                                className={`rounded-2xl py-1 text-center text-[12px] font-normal ${
                                   order.status === "Completed"
-                                    ? "text-green-500 bg-green-50"
+                                    ? "bg-green-50 text-green-500"
                                     : order.status === "Pending Payment"
-                                    ? "text-orange-400 bg-orange-100"
+                                    ? "bg-orange-100 text-orange-400"
                                     : order.status === "In Repair"
-                                    ? "text-red-400 bg-red-100"
-                                    : "text-gray-400 bg-gray-200"
+                                    ? "bg-red-100 text-red-400"
+                                    : "bg-gray-200 text-gray-400"
                                 }`}
                               >
                                 <Link
-                                  href={"/admin/" + order.id}
+                                  href={`/admin/${order.id}`}
                                   key={order.id}
                                 >
                                   {" "}
@@ -201,7 +203,7 @@ const Order = () => {
                             </td>
                           </tr>
                         </>
-                      )
+                      );
                     })}
                   </tbody>
                 </table>
@@ -211,6 +213,6 @@ const Order = () => {
         </div>
       </div>
     </React.Fragment>
-  )
-}
-export default Order
+  );
+};
+export default Order;
