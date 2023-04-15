@@ -10,6 +10,7 @@ import {
   SocketContextProvider,
   SocketReducer,
 } from "./SocketContext";
+import { client } from "~/utils/api";
 
 export type ISocketContextComponentProps = PropsWithChildren;
 
@@ -23,7 +24,6 @@ const SocketContextComponent: React.FunctionComponent<
     reconnectionDelay: 1000,
     autoConnect: false,
   });
-
   const [SocketState, SocketDispatch] = useReducer(
     SocketReducer,
     defaultSocketContextState
@@ -31,10 +31,19 @@ const SocketContextComponent: React.FunctionComponent<
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    socket.auth = { token: "123456" };
-    socket.connect();
+    void client.user.getSocketToken.query().then((token) => {
+      socket.auth = {
+        token: token,
+      };
+      socket.connect();
+    });
+
     socket.on("connect", () => {
       console.info("Connected to socket");
+      setLoading(false);
+    });
+    socket.on("connect_error", (error) => {
+      console.info("Connection error: ", error);
       setLoading(false);
     });
     SocketDispatch({ type: "update_socket", payload: socket });
