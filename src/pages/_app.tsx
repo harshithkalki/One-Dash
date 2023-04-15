@@ -6,6 +6,7 @@ import Layout from "~/components/Layout";
 import dynamic from "next/dynamic";
 import { SessionProvider } from "next-auth/react";
 import { type Session } from "next-auth";
+import SocketContextComponent from "~/context/Socketio/SocketContextConponent";
 
 function MyApp({
   Component,
@@ -26,9 +27,11 @@ function MyApp({
 
   return (
     <SessionProvider session={pageProps.session}>
-      <Layout>
-        <Component {...pageProps} />
-      </Layout>
+      <SocketContextComponent>
+        <Layout>
+          <Component {...pageProps} />
+        </Layout>
+      </SocketContextComponent>
     </SessionProvider>
   );
 }
