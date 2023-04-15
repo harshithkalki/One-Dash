@@ -1,7 +1,7 @@
 import { z } from "zod";
-// import { config } from "dotenv";
-// process.env.NODE_ENV !== "production" &&
-//   config({ path: process.cwd() + "/.env" });
+import { config } from "dotenv";
+process.env.NODE_ENV !== "production" &&
+  config({ path: process.cwd() + "/.env" });
 /**
  * Specify your server-side environment variables schema here. This way you can ensure the app isn't
  * built with invalid env vars.

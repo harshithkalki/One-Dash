@@ -14,6 +14,7 @@ const io = new Server(parseInt(env.WS_PORT), {
 
 
 io.use((socket, next) => {
+    console.log(socket.handshake.auth);
     const token = socket.handshake.auth.token as string;
     if (!token) {
         return next(new Error("Authentication error"));
