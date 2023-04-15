@@ -11,7 +11,7 @@ const NewProject = () => {
     if (status === "unauthenticated") {
       void router.push("/login");
     }
-  }, [status]);
+  }, [router, status]);
 
   return (
     <React.Fragment>
@@ -29,7 +29,7 @@ const NewProject = () => {
                 </span>
               </p>
             </div>
-            <div className="inline-block flex min-w-full items-center justify-between py-2">
+            <div className="flex min-w-full items-center justify-between py-2">
               <h3 className="text-[27px] font-[600] lg:text-[24px] 2xl:text-[27px]">
                 Order Detail
               </h3>
@@ -38,7 +38,7 @@ const NewProject = () => {
           </div>
         </div>
         <div className="flex w-full flex-col pt-1">
-          <ProjectInput userin={false} />
+          <ProjectInput />
         </div>
       </div>
     </React.Fragment>

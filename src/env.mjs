@@ -13,6 +13,7 @@ const server = z.object({
   GOOGLE_CLIENT_SECRET: z.string(),
   NEXTAUTH_SECRET: z.string(),
   WS_PORT: z.string(),
+  WS_JWT_SECRET: z.string(),
 });
 
 /**
@@ -36,6 +37,7 @@ const processEnv = {
   GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
   NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
   WS_PORT: process.env.WS_PORT,
+  WS_JWT_SECRET: process.env.WS_JWT_SECRET,
   // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
 };
 

@@ -2,9 +2,27 @@ import React, { useState } from "react";
 import { useRouter } from "next/router";
 import { GrDocumentUpload } from "react-icons/gr";
 import Image from "next/image";
-
 import uploadicon from "../../public/img/icon/u_file-upload-alt.svg";
-const ProjectInput = ({ userin }) => {
+import { type SubmitHandler, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import axios from "axios";
+
+const api = axios.create({
+  baseURL: "/api",
+});
+
+const ZForm = z.object({
+  projectName: z.string().nonempty("Project Name is required"),
+  notes: z.string().nonempty("Notes is required"),
+  referenceLinks: z.string().nonempty("Reference Links is required"),
+  files:
+    typeof window === "undefined" ? z.any() : z.instanceof(File).optional(),
+});
+
+type FormValues = z.infer<typeof ZForm>;
+
+const ProjectInput = () => {
   const router = useRouter();
   const [weekvisibility, setWeekVisibility] = useState(false);
   const [visibility, setVisibility] = useState(false);
@@ -17,12 +35,40 @@ const ProjectInput = ({ userin }) => {
     { option: "AR / VR", value: "AR / VR" },
     { option: "Custom", value: "Custom" },
   ];
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+    setError,
+    setValue,
+  } = useForm<FormValues>({
+    resolver: zodResolver(ZForm),
+  });
+
+  const onSubmit: SubmitHandler<FormValues> = (data) => {
+    const form = new FormData();
+
+    form.append("id", "testId");
+    form.append("collection", "project");
+    form.append("files", data.files as File);
+
+    void api.post("/upload-file", form);
+  };
+
   return (
-    <React.Fragment>
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        console.log(errors);
+        void handleSubmit(onSubmit)();
+      }}
+    >
       <div className="font-play border bg-white py-2 shadow-sm">
         <div className="px-4 pt-[2px]">
           <div className="py-2">
-            {userin && (
+            {true && (
               <div
                 className="select focus:shadow-outline relative block h-[45px] w-full cursor-pointer appearance-none rounded border bg-white px-4 py-3 pr-8 leading-tight text-black   text-gray-400  focus:outline-none"
                 onClick={(e) => {
@@ -85,6 +131,7 @@ const ProjectInput = ({ userin }) => {
               id="address"
               type="text"
               placeholder="Project Name"
+              {...register("projectName")}
             />
           </div>
           <div className="py-2">
@@ -161,11 +208,13 @@ const ProjectInput = ({ userin }) => {
               className="mb-2 w-full border px-3 py-2 text-[16px] text-gray-700 focus:outline-none lg:text-[15px] 2xl:text-[16px]"
               rows={4}
               placeholder="Notes (Brief description of your project)"
+              {...register("notes")}
             />
             <textarea
               className="mt-2 w-full border px-3 py-2 text-[16px] text-gray-700 focus:outline-none lg:text-[15px] 2xl:text-[16px]"
               rows={4}
               placeholder="Reference Links"
+              {...register("referenceLinks")}
             />
           </div>
 
@@ -185,16 +234,29 @@ const ProjectInput = ({ userin }) => {
                   Max File Size 2GB )
                 </p>
               </div>
-              <input type="file" className="opacity-0" />
+              <input
+                type="file"
+                className="opacity-0"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    setValue("files", file);
+                  }
+                }}
+              />
             </label>
           </div>
         </div>
         <div className="flex flex-wrap items-center justify-between gap-4 px-4 md:justify-end">
-          <button className="w-36 border bg-white px-3 py-2 md:w-44">
+          <button
+            className="w-36 border bg-white px-3 py-2 md:w-44"
+            type="submit"
+          >
             Save
           </button>
           <button
             className="w-36 border bg-white px-3 py-2 md:w-44"
+            type="submit"
             onClick={() => void router.push("/client")}
           >
             Save and Close
@@ -204,7 +266,7 @@ const ProjectInput = ({ userin }) => {
           </button>
         </div>
       </div>
-    </React.Fragment>
+    </form>
   );
 };
 export default ProjectInput;

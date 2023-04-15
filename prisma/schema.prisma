@@ -30,7 +30,7 @@ model User {
   heads            User[]       @relation("UserTeam")
   teamMembers      User[]       @relation("UserTeam")
   credentials      Credentials?
-  orders           Orders[]
+  orders           Order[]
   sentMessages     Message[]    @relation("SenderMessage")
   receivedMessages Message[]    @relation("ReceiverMessage")
 }
@@ -42,12 +42,12 @@ model Credentials {
   user     User   @relation(fields: [userID], references: [id])
 }
 
-model Orders {
-  orderID       String  @id @unique @default(cuid())
-  description   String
-  attachments   String?
-  PaymentStatus String
-
+model Order {
+  id             String      @id @unique @default(cuid())
+  name           String
+  description    String
+  attachments    String?
+  PaymentStatus  String
   logo           String?
   orderStatus    orderStatus @default(DRAFT)
   referenceLinks String?
