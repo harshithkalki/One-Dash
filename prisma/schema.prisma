@@ -31,6 +31,8 @@ model User {
   teamMembers      User[]       @relation("UserTeam")
   credentials      Credentials?
   orders           Orders[]
+  sentMessages     Message[]    @relation("SenderMessage")
+  receivedMessages Message[]    @relation("ReceiverMessage")
 }
 
 model Credentials {
@@ -63,4 +65,19 @@ enum orderStatus {
   inRepair
   deliverd
   completed
+}
+
+model Message {
+  id         String   @id @unique @default(cuid())
+  message    String
+  attachment String?
+  senderId   String
+  sender     User     @relation("SenderMessage", fields: [senderId], references: [id])
+  receiverId String
+  receiver   User     @relation("ReceiverMessage", fields: [receiverId], references: [id])
+  isRead     Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  @@index([receiverId])
+  @@index([senderId])
 }
