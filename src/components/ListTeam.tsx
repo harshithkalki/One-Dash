@@ -20,6 +20,12 @@ const ListTeam = ({ team }: ListTeamProps) => {
               </>
             );
           })}
+          <Image
+            src={"/img/user/add_now.png"}
+            alt="pic"
+            width={40}
+            height={40}
+          />
         </div>
       </div>
     </React.Fragment>

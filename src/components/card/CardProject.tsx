@@ -3,20 +3,16 @@ import { GrNotification } from "react-icons/gr";
 import productimg from "../../public/img/product/product_1.png";
 import ProgressBar from "../ProgressBar";
 import Link from "next/link";
+import dayjs from "dayjs";
 
 type ProductType = {
-  id: number;
-  img: string;
-  title: string;
-  amount: number;
-  users: {
-    id: number;
-    name: string;
-    img: string;
-  };
+  id: string;
+  logo: string;
+  name: string;
+
   status: string;
-  dateTime: string;
-  progress: number;
+  createdAt: string;
+  // progress: number;
 };
 
 const CardProject = ({ product }: { product: ProductType }) => {
@@ -35,17 +31,17 @@ const CardProject = ({ product }: { product: ProductType }) => {
       </div>
       <div className="flex items-center justify-between py-2">
         <div>
-          <h4 className="text-[16px] font-[600] text-black">{product.title}</h4>
+          <h4 className="text-[16px] font-[600] text-black">{product.name}</h4>
           <p className="py-2 text-[14px] text-[#13131380]">
-            {product.dateTime}
+            {dayjs(product.createdAt).format("DD MMM YYYY")}
           </p>
         </div>
-        <Image src={product.img} width={66} height={66} alt="product" />
+        <Image src={product.logo} width={66} height={66} alt="product" />
       </div>
 
       <div className="flex items-center justify-between space-x-4 py-2">
         <div className="w-2/3">
-          <ProgressBar progressPercentage={product.progress} />
+          <ProgressBar progressPercentage={0} />
         </div>
 
         {/*<Link href={'/'+ product.id} key={product.id}>*/}

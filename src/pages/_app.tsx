@@ -4,9 +4,10 @@ import "~/styles/globals.css";
 import { useRouter } from "next/router";
 import Layout from "~/components/Layout";
 import dynamic from "next/dynamic";
-import { SessionProvider } from "next-auth/react";
+import { SessionProvider, useSession } from "next-auth/react";
 import { type Session } from "next-auth";
 import SocketContextComponent from "~/context/Socketio/SocketContextConponent";
+import { useEffect } from "react";
 
 function MyApp({
   Component,
@@ -27,11 +28,11 @@ function MyApp({
 
   return (
     <SessionProvider session={pageProps.session}>
-      <SocketContextComponent>
+      <Wrap>
         <Layout>
           <Component {...pageProps} />
         </Layout>
-      </SocketContextComponent>
+      </Wrap>
     </SessionProvider>
   );
 }
@@ -39,3 +40,26 @@ function MyApp({
 // export default dynamic(() => Promise.resolve(MyApp), { ssr: false })
 
 export default api.withTRPC(MyApp);
+
+function Wrap({ children }: { children: React.ReactNode }) {
+  const router = useRouter();
+  const { status } = useSession();
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      void router.push("/login");
+    }
+  }, [status]);
+
+  if (status === "loading")
+    return (
+      <>
+        <div>
+          <h1>loading</h1>
+        </div>
+      </>
+    );
+  if (status === "authenticated") {
+    return <SocketContextComponent>{children}</SocketContextComponent>;
+  }
+  return null;
+}

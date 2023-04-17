@@ -15,29 +15,35 @@ import { useSession } from "next-auth/react";
 
 import React, { useEffect } from "react";
 import { useRouter } from "next/router";
-export const getStaticPaths = async () => {
-  const paths = products.map((itemData) => ({
-    params: { id: itemData.id.toString() },
-  }));
-  return {
-    paths,
-    fallback: false,
-  };
-};
+import { api } from "~/utils/api";
+// export const getStaticPaths = async () => {
+//   const paths = products.map((itemData) => ({
+//     params: { id: itemData.id.toString() },
+//   }));
+//   return {
+//     paths,
+//     fallback: false,
+//   };
+// };
 
-export const getStaticProps = async (context) => {
-  const id = context.params.id;
-  const data = products.filter((p) => p.id.toString() === id);
-  return {
-    props: {
-      itemData: data[0],
-    },
-  };
-};
+// export const getStaticProps = async (context) => {
+//   const id = context.params.id;
+//   const data = products.filter((p) => p.id.toString() === id);
+//   return {
+//     props: {
+//       itemData: data[0],
+//     },
+//   };
+// };
 
-const ProjectDetail = ({ itemData }) => {
+const ProjectDetail = () => {
   const router = useRouter();
-  const { data: session, status } = useSession();
+  const id = router.query.id;
+  console.log(id);
+  const { status } = useSession();
+  const itemData = api.order.order.useQuery({
+    id: id as string,
+  });
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -51,10 +57,10 @@ const ProjectDetail = ({ itemData }) => {
         <div className="w-full py-4">
           <p className="flex items-center space-x-2 py-1 text-gray-400">
             <span>Order</span> <BsChevronRight />{" "}
-            <span>#{itemData.order_id}</span>
+            <span>#{itemData.data?.id}</span>
           </p>
           <h3 className="text-font text-3xl font-[600] leading-[110%] text-[#131313] xl:text-2xl">
-            Project Name 1
+            {itemData.data?.name}
           </h3>
         </div>
         <div className="flex  w-full flex-wrap space-x-0 lg:flex-nowrap">
@@ -65,16 +71,33 @@ const ProjectDetail = ({ itemData }) => {
               </div>
             ) : null} */}
             <div className="py-2">
-              <ListTeam team={itemData.team} />
+              <ListTeam
+                team={
+                  itemData.data?.team.map((mem) => {
+                    return { img: mem.profile ?? "/img/user/Avatar.png" };
+                  }) || []
+                }
+              />
             </div>
 
             <div className="py-2">
-              <DetailProject itemData={itemData} />
+              <DetailProject
+                itemData={{
+                  dateTime: itemData.data?.createdAt.toString() as string,
+                  status: itemData.data?.orderStatus as string,
+                  amount: 100,
+                  id: itemData.data?.id as string,
+                  logo: itemData.data?.logo ?? "/img/product/product_1.png",
+                  name: itemData.data?.name as string,
+                  progress: 0,
+                  userName: itemData.data?.User.firstName as string,
+                }}
+              />
             </div>
             <div className="py-2">
               <div className="font-play border bg-white p-4 font-medium shadow-sm">
                 <p className="py-2">Your order is on progress.</p>
-                <ProgressBar progressPercentage={itemData.progress} />
+                <ProgressBar progressPercentage={0} />
               </div>
             </div>
           </div>
@@ -104,18 +127,35 @@ const ProjectDetail = ({ itemData }) => {
             ) : null} */}
 
             <div className="py-2">
-              <DetailProject itemData={itemData} />
+              <DetailProject
+                itemData={{
+                  dateTime: itemData.data?.createdAt.toString() as string,
+                  status: itemData.data?.orderStatus as string,
+                  amount: 100,
+                  id: itemData.data?.id as string,
+                  logo: itemData.data?.logo ?? "/img/product/product_1.png",
+                  name: itemData.data?.name as string,
+                  progress: 0,
+                  userName: itemData.data?.User.firstName as string,
+                }}
+              />
             </div>
             <div className="py-2">
               <div className="font-play border bg-white p-4 font-medium shadow-sm">
                 <p className="py-0 text-[12px] font-[600]">
                   Your order is on progress.
                 </p>
-                <ProgressBar progressPercentage={itemData.progress} />
+                <ProgressBar progressPercentage={0} />
               </div>
             </div>
             <div className="py-2">
-              <ListTeam team={itemData.team} />
+              <ListTeam
+                team={
+                  itemData.data?.team.map((mem) => {
+                    return { img: mem.profile ?? "/img/user/Avatar.png" };
+                  }) || []
+                }
+              />
             </div>
           </div>
         </div>

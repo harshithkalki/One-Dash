@@ -1,7 +1,12 @@
 import Image from "next/image";
 import { members } from "../../../components/data/dataContents";
 import { AddMemberData } from "../../../components/data/dataContents";
-import { AiOutlinePlus, AiOutlineClose, AiOutlineMore } from "react-icons/ai";
+import {
+  AiOutlinePlus,
+  AiOutlineClose,
+  AiOutlineMore,
+  AiOutlineLoading3Quarters,
+} from "react-icons/ai";
 // import { picImg } from "../../../public/img/user/Avatar_team.png";
 import Popup from "reactjs-popup";
 import React, { useEffect, useState } from "react";
@@ -32,6 +37,8 @@ const Team = () => {
   const NotTeam = api.user.notTeamMembers.useQuery(undefined, {
     refetchOnWindowFocus: false,
   });
+
+  const RemoveTeamMem = api.user.removeTeamMember.useMutation();
   const [addMemLoading, setAddMemLoading] = useState<number>(-1);
 
   const [removeopen1, setremoveOpen1] = useState(false);
@@ -137,8 +144,27 @@ const Team = () => {
                                 <div
                                   key={index}
                                   className="absolute top-12 z-50 cursor-pointer rounded-[5px] border bg-white px-4 py-2"
+                                  onClick={() => {
+                                    RemoveTeamMem.mutateAsync({ id: member.id })
+                                      .then(() => {
+                                        setremoveOpen(-1);
+                                        void TeamMem.refetch();
+                                      })
+                                      .catch((e) => {
+                                        console.log(e);
+                                      });
+                                  }}
                                 >
-                                  Remove
+                                  {RemoveTeamMem.isLoading ? (
+                                    <div className="flex items-center justify-center">
+                                      <AiOutlineLoading3Quarters
+                                        className="animate-spin"
+                                        size={24}
+                                      />
+                                    </div>
+                                  ) : (
+                                    "Remove"
+                                  )}
                                 </div>
                               )}
                             </td>

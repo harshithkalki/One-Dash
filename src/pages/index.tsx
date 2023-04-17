@@ -4,10 +4,18 @@ import { useRouter } from "next/router";
 import Link from "next/link";
 import { SiGooglechat } from "react-icons/si";
 import NavBar from "../components/NavBar";
-import React, { Fragment } from "react";
+import React, { Fragment, useEffect } from "react";
+import { useSession } from "next-auth/react";
 
 const Home = (): JSX.Element => {
   const router = useRouter();
+  const { status } = useSession();
+
+  useEffect(() => {
+    if (status === "unauthenticated" || status === "loading") {
+      void router.push("/login");
+    }
+  }, [status]);
   return (
     <Fragment>
       <nav className="flex flex-wrap items-center justify-between bg-teal-500 p-6">

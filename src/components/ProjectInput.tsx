@@ -7,27 +7,61 @@ import { type SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import axios from "axios";
+import { useFormik } from "formik";
+import { api } from "~/utils/api";
 
-const api = axios.create({
+const axiosApi = axios.create({
   baseURL: "/api",
 });
 
 const ZForm = z.object({
-  projectName: z.string().nonempty("Project Name is required"),
-  notes: z.string().nonempty("Notes is required"),
-  referenceLinks: z.string().nonempty("Reference Links is required"),
-  files:
+  name: z.string().nonempty("Project Name is required"),
+  type: z.string().nonempty("Project Type is required"),
+  notes: z.string().optional(),
+  referenceLinks: z.string().optional(),
+  attachments:
     typeof window === "undefined" ? z.any() : z.instanceof(File).optional(),
 });
 
 type FormValues = z.infer<typeof ZForm>;
 
-const ProjectInput = () => {
+const ProjectInput = ({ userin }: { userin: boolean }) => {
   const router = useRouter();
   const [weekvisibility, setWeekVisibility] = useState(false);
   const [visibility, setVisibility] = useState(false);
-  const [weekselectedOption, weeksetSelectedOption] = useState("");
+  const [ProjectType, projectTypeOption] = useState("");
   const [selectedOption, setSelectedOption] = useState("");
+  const createOrder = api.order.createOrder.useMutation();
+
+  const formik = useFormik({
+    initialValues: {
+      name: "",
+      type: "",
+      notes: "",
+      referenceLinks: "",
+      attachments: [],
+    },
+    onSubmit: async (data) => {
+      data.type = ProjectType;
+      const order = await createOrder.mutateAsync(data);
+      console.log(order);
+      console.log(data);
+
+      const form = new FormData();
+      form.append("id", order.id);
+      form.append("collection", "project");
+      console.log(data.attachments);
+
+      for (let i = 0; i < data.attachments.length; i++) {
+        form.append("files", data.attachments[i]! as File);
+      }
+      console.log(form);
+      void axiosApi.post("/upload-file", form).catch((err) => {
+        console.log(err);
+      });
+    },
+  });
+
   const options1 = [
     { option: "3D Animation", value: "3D Animation" },
     { option: "3D Hologram Content", value: "3D Hologram Content" },
@@ -36,39 +70,32 @@ const ProjectInput = () => {
     { option: "Custom", value: "Custom" },
   ];
 
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors },
-    setError,
-    setValue,
-  } = useForm<FormValues>({
-    resolver: zodResolver(ZForm),
-  });
+  // const {
+  //   register,
+  //   handleSubmit,
+  //   reset,
+  //   formState: { errors },
+  //   setError,
+  //   setValue,
+  // } = useForm<FormValues>({
+  //   // resolver: zodResolver(ZForm),
+  // });
 
-  const onSubmit: SubmitHandler<FormValues> = (data) => {
-    const form = new FormData();
-
-    form.append("id", "testId");
-    form.append("collection", "project");
-    form.append("files", data.files as File);
-
-    void api.post("/upload-file", form);
-  };
+  // const onSubmit: SubmitHandler<FormValues> = (data) => {
+  //   console.log(data);
+  //   const form = new FormData();
+  //   form.append("id", "testId");
+  //   form.append("collection", "project");
+  //   form.append("files", data.attachments as File);
+  //   void api.post("/upload-file", form);
+  // };
 
   return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        console.log(errors);
-        void handleSubmit(onSubmit)();
-      }}
-    >
+    <form onSubmit={formik.handleSubmit}>
       <div className="font-play border bg-white py-2 shadow-sm">
         <div className="px-4 pt-[2px]">
           <div className="py-2">
-            {true && (
+            {userin && (
               <div
                 className="select focus:shadow-outline relative block h-[45px] w-full cursor-pointer appearance-none rounded border bg-white px-4 py-3 pr-8 leading-tight text-black   text-gray-400  focus:outline-none"
                 onClick={(e) => {
@@ -114,6 +141,7 @@ const ProjectInput = () => {
                           }
                           onClick={() => {
                             setSelectedOption(option);
+                            // void formik.setFieldValue("type", option);
                           }}
                         >
                           {option}
@@ -129,9 +157,11 @@ const ProjectInput = () => {
             <input
               className="focus:shadow-outline w-full appearance-none rounded border px-3 py-3 text-[13px] leading-tight text-gray-700 placeholder-gray-400 focus:outline-none"
               id="address"
+              value={formik.values.name}
+              name="name"
+              onChange={formik.handleChange}
               type="text"
               placeholder="Project Name"
-              {...register("projectName")}
             />
           </div>
           <div className="py-2">
@@ -145,17 +175,13 @@ const ProjectInput = () => {
                 <div className="selected-option relative flex h-full items-center justify-between  ">
                   <span
                     className="flex items-center gap-4 !text-[13px]"
-                    title={
-                      weekselectedOption === ""
-                        ? "This Week"
-                        : weekselectedOption
-                    }
+                    title={ProjectType === "" ? "Project Type" : ProjectType}
                   >
-                    {weekselectedOption === ""
-                      ? "This Week"
-                      : weekselectedOption.length <= 20
-                      ? weekselectedOption
-                      : `${weekselectedOption.slice(0, 20)}...`}
+                    {ProjectType === ""
+                      ? "Project Type"
+                      : ProjectType.length <= 20
+                      ? ProjectType
+                      : `${ProjectType.slice(0, 20)}...`}
                   </span>
                   <Image
                     className={`${
@@ -176,12 +202,12 @@ const ProjectInput = () => {
                         <li
                           key={index}
                           className={
-                            weekselectedOption === option
+                            ProjectType === option
                               ? "font-play mt-[10px] flex h-[37px] w-[100%] items-start justify-start border-b-[1px] border-[#EBEBEB] py-2 text-[12px] font-[400] leading-[17px] text-[#131313]"
                               : "font-play mt-[10px] flex h-[37px] w-[100%] items-start justify-start border-b-[1px] border-[#EBEBEB] py-2 text-[12px] font-[400] leading-[17px] text-[#131313]"
                           }
                           onClick={() => {
-                            weeksetSelectedOption(option);
+                            projectTypeOption(option);
                           }}
                         >
                           {option}
@@ -207,14 +233,18 @@ const ProjectInput = () => {
             <textarea
               className="mb-2 w-full border px-3 py-2 text-[16px] text-gray-700 focus:outline-none lg:text-[15px] 2xl:text-[16px]"
               rows={4}
+              name="notes"
               placeholder="Notes (Brief description of your project)"
-              {...register("notes")}
+              value={formik.values.notes}
+              onChange={formik.handleChange}
             />
             <textarea
               className="mt-2 w-full border px-3 py-2 text-[16px] text-gray-700 focus:outline-none lg:text-[15px] 2xl:text-[16px]"
               rows={4}
+              name="referenceLinks"
               placeholder="Reference Links"
-              {...register("referenceLinks")}
+              value={formik.values.referenceLinks}
+              onChange={formik.handleChange}
             />
           </div>
 
@@ -236,13 +266,15 @@ const ProjectInput = () => {
               </div>
               <input
                 type="file"
+                name="attachments"
                 className="opacity-0"
                 onChange={(e) => {
-                  const file = e.target.files?.[0];
+                  const file = e.target.files;
                   if (file) {
-                    setValue("files", file);
+                    void formik.setFieldValue("attachments", file);
                   }
                 }}
+                multiple
               />
             </label>
           </div>
@@ -269,4 +301,5 @@ const ProjectInput = () => {
     </form>
   );
 };
+
 export default ProjectInput;

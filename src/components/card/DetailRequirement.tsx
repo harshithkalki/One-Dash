@@ -3,8 +3,15 @@ import { BsFillImageFill, BsCheckCircle } from "react-icons/bs";
 import { GrDocumentZip } from "react-icons/gr";
 import photoicon from "../../../public/img/icon/photoicon.svg";
 import zipicon from "../../../public/img/icon/zipicon.svg";
+import { api } from "~/utils/api";
+import { useRouter } from "next/router";
+import dayjs from "dayjs";
 //GrDocumentZip
 const DetailREquiretment = () => {
+  const router = useRouter();
+  const id = router.query.id;
+
+  const order = api.order.order.useQuery({ id: id as string });
   return (
     <div className="SmoothAnimation smooth-tras font-play p-2 text-gray-400 text-white">
       <div className="flex space-x-6 pt-3 sm:space-x-6 md:space-x-24">
@@ -13,7 +20,7 @@ const DetailREquiretment = () => {
             Created
           </p>
           <p className="py-1 text-sm text-[#131313] xl:text-[12px]  2xl:text-[14px]">
-            July 20, 2021
+            Project Type
           </p>
           <p className="py-1 text-sm text-[#131313] xl:text-[12px]  2xl:text-[14px]">
             Reference Links
@@ -24,26 +31,18 @@ const DetailREquiretment = () => {
         </div>
         <div className="block pt-2 text-base font-semibold">
           <p className="text--font py-1 text-[16px] font-[600] text-[#131313] xl:text-[14px] 2xl:text-[16px]">
-            July 20, 2021
+            {dayjs(order.data?.createdAt).format("DD MMMM YYYY")}
           </p>
           <p className="text--font py-1 text-[16px] font-[600] text-[#131313] xl:text-[14px] 2xl:text-[16px]">
-            3D Animation
+            {order.data?.type}
           </p>
           <p className="text--font py-1 text-[16px] font-[600] text-[#131313] xl:text-[14px] 2xl:text-[16px]">
-            samplelink.com/this-is-sample
+            {order.data?.referenceLinks}
           </p>
         </div>
       </div>
       <p className="text--font py-0 text-[16px] font-[400] text-black  xl:text-[14px] 2xl:text-[16px]">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-        tempor incididunt ut labore et dolore magna aliqua. Orci sagittis eu
-        volutpat odio facilisis mauris. Mauris pharetra et ultrices neque
-        ornare. Id nibh tortor id aliquet lectus proin. Nunc aliquet bibendum
-        enim facilisis gravida neque convallis a. Vitae sapien pellentesque
-        habitant morbi tristique. Nibh venenatis cras sed felis eget velit
-        aliquet sagittis id. Enim nulla aliquet porttitor lacus luctus accumsan
-        tortor. A diam maecenas sed enim ut sem. Mattis enim ut tellus elementum
-        sagittis.
+        {order.data?.notes}
       </p>
       <div className="flex items-center space-x-2 py-4">
         <div className="flex h-[50x] w-[120px] items-center space-x-2 bg-gray-100 py-1  md:w-[165px]">
@@ -51,7 +50,7 @@ const DetailREquiretment = () => {
             width={32}
             height={32}
             alt="loog"
-            src={photoicon}
+            src={"/img/icon/photoicon.svg"}
             className="ml-4 w-[25px] md:w-[32px]"
           />
           <div className="block">
@@ -64,7 +63,7 @@ const DetailREquiretment = () => {
             width={32}
             height={32}
             alt="loog"
-            src={zipicon}
+            src={"/img/icon/zipicon.svg"}
             className="ml-4 w-[25px] md:w-[32px]"
           />
           <div className="block">

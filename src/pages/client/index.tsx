@@ -1,7 +1,7 @@
 import {
   optionsData,
   optionsData2,
-  products,
+  // products,
 } from "../../components/data/dataContents";
 import CardProject from "../../components/card/CardProject";
 import { BsSearch, BsChevronDown } from "react-icons/bs";
@@ -10,6 +10,7 @@ import { useRouter } from "next/router";
 import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
+import { api } from "~/utils/api";
 //BsSearch
 
 const Client = () => {
@@ -44,6 +45,8 @@ const Client = () => {
       void router.push("/login");
     }
   }, [status]);
+
+  const Products = api.order.orders.useQuery();
 
   return (
     <React.Fragment>
@@ -217,9 +220,17 @@ const Client = () => {
           </div>
           <div className="h-full">
             <div className="mt-6 flex w-full flex-wrap items-center justify-center gap-2 lg:justify-start">
-              {products.map((product, index) => (
+              {Products?.data?.map((product, index) => (
                 <div key={index}>
-                  <CardProject product={product} />
+                  <CardProject
+                    product={{
+                      createdAt: product.createdAt.toISOString(),
+                      id: product.id,
+                      name: product.name,
+                      status: product.orderStatus as string,
+                      logo: product.logo ?? "/img/product/product_1.png",
+                    }}
+                  />
                 </div>
               ))}
             </div>

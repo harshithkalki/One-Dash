@@ -6,7 +6,7 @@ import {
   protectedProcedure,
 } from "~/server/api/trpc";
 import { TRPCError } from "@trpc/server";
-import jwt from "jsonwebtoken";
+import jwt, { Secret } from "jsonwebtoken";
 import { env } from "~/env.mjs";
 
 export const userRouter = createTRPCRouter({
@@ -102,8 +102,46 @@ export const userRouter = createTRPCRouter({
         code: "NOT_FOUND",
       });
     } else {
-      const token = jwt.sign(user.id, env.WS_JWT_SECRET)
+      const token = jwt.sign(user.id, env.WS_JWT_SECRET);
       return token;
     }
   }),
+  removeTeamMember: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const user = await ctx.prisma.user.findUnique({
+        where: {
+          id: ctx.session.user.id,
+        },
+        include: {
+          teamMembers: true,
+        },
+      });
+      const teamMember = await ctx.prisma.user.findUnique({
+        where: {
+          id: input.id,
+        },
+      });
+
+      if (!user || !teamMember) {
+        throw new TRPCError({
+          message: "User not found",
+          code: "NOT_FOUND",
+        });
+      } else {
+        const team = user?.teamMembers;
+        return await ctx.prisma.user.update({
+          where: {
+            id: ctx.session.user.id,
+          },
+          data: {
+            teamMembers: {
+              disconnect: {
+                id: input.id,
+              },
+            },
+          },
+        });
+      }
+    }),
 });
