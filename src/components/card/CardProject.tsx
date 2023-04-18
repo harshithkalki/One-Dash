@@ -4,6 +4,7 @@ import productimg from "../../public/img/product/product_1.png";
 import ProgressBar from "../ProgressBar";
 import Link from "next/link";
 import dayjs from "dayjs";
+import { useRouter } from "next/router";
 
 type ProductType = {
   id: string;
@@ -16,6 +17,7 @@ type ProductType = {
 };
 
 const CardProject = ({ product }: { product: ProductType }) => {
+  const router = useRouter();
   return (
     <div className="font-play w-[350px] rounded-[6px] bg-white px-3 py-3 md:w-[530px] xl:w-[290px] 2xl:w-[300px]">
       <div className="flex justify-between py-2">
@@ -45,11 +47,21 @@ const CardProject = ({ product }: { product: ProductType }) => {
         </div>
 
         {/*<Link href={'/'+ product.id} key={product.id}>*/}
-        <li className="mb-2 mt-4  block w-1/3 bg-blue-500 py-2 text-center font-semibold text-white">
+        <li
+          className="mb-2 mt-4  block w-1/3 cursor-pointer bg-blue-500 py-2 text-center font-semibold text-white "
+          onClick={() => {
+            if (product.status === "DRAFT") {
+              void router.push(`/client/create/${product.id}`);
+            } else {
+              void router.push(`/client/${product.id}`);
+            }
+          }}
+        >
           {/* <Link href={"client/" + product.id} key={product.id}> */}
-          <Link href={`client/${product.id}`} key={product.id}>
+          View
+          {/* <Link  key={product.id}>
             View
-          </Link>
+          </Link> */}
         </li>
         {/*</Link>*/}
       </div>

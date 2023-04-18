@@ -4,6 +4,7 @@ import ProjectInput from "../../../components/ProjectInput";
 import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
 import { api } from "~/utils/api";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
 const NewProject = () => {
   const router = useRouter();
   const { data: session, status } = useSession();
@@ -19,6 +20,13 @@ const NewProject = () => {
     id: id as string,
   });
   const data = order.data;
+  const updateOrder = api.order.update.useMutation();
+  if (order.isLoading)
+    return (
+      <div className="flex items-center justify-center">
+        <AiOutlineLoading3Quarters className="animate-spin" size={24} />
+      </div>
+    );
 
   return (
     <React.Fragment>
@@ -53,6 +61,10 @@ const NewProject = () => {
               notes: data?.notes as string,
               referenceLinks: data?.referenceLinks as string,
               attachments: [],
+            }}
+            // isupdate={true}
+            formSubmit={async (values) => {
+              return updateOrder.mutateAsync({ id: id as string, ...values });
             }}
           />
         </div>

@@ -52,4 +52,28 @@ export const orderRouter = createTRPCRouter({
       });
       return order;
     }),
+  update: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        name: z.string(),
+        type: z.string(),
+        notes: z.string().optional(),
+        referenceLinks: z.string().optional(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const order = await ctx.prisma.order.update({
+        where: {
+          id: input.id,
+        },
+        data: {
+          name: input.name,
+          type: input.type,
+          notes: input.notes,
+          referenceLinks: input.referenceLinks,
+        },
+      });
+      return order;
+    }),
 });

@@ -9,19 +9,20 @@ import { z } from "zod";
 import axios from "axios";
 import { useFormik } from "formik";
 import { api } from "~/utils/api";
+import { type Order } from "@prisma/client";
 
 const axiosApi = axios.create({
   baseURL: "/api",
 });
 
-const ZForm = z.object({
-  name: z.string().nonempty("Project Name is required"),
-  type: z.string().nonempty("Project Type is required"),
-  notes: z.string().optional(),
-  referenceLinks: z.string().optional(),
-  attachments:
-    typeof window === "undefined" ? z.any() : z.instanceof(File).optional(),
-});
+// const ZForm = z.object({
+//   name: z.string().nonempty("Project Name is required"),
+//   type: z.string().nonempty("Project Type is required"),
+//   notes: z.string().optional(),
+//   referenceLinks: z.string().optional(),
+//   attachments:
+//     typeof window === "undefined" ? z.any() : z.instanceof(File).optional(),
+// });
 
 type FormValues = {
   name: string;
@@ -34,22 +35,24 @@ type FormValues = {
 const ProjectInput = ({
   userin,
   values,
-}: {
+  formSubmit,
+}: // isupdate,
+{
   userin: boolean;
   values: FormValues;
+  // isupdate: boolean;
+  formSubmit: (data: FormValues) => Promise<void | Order>;
 }) => {
   const router = useRouter();
   const [weekvisibility, setWeekVisibility] = useState(false);
   const [visibility, setVisibility] = useState(false);
-  const [ProjectType, projectTypeOption] = useState("");
+  const [ProjectType, projectTypeOption] = useState(values.type);
   const [selectedOption, setSelectedOption] = useState("");
-  const createOrder = api.order.createOrder.useMutation();
-
   const formik = useFormik({
     initialValues: values,
     onSubmit: async (data) => {
       data.type = ProjectType;
-      const order = await createOrder.mutateAsync(data);
+      const order = (await formSubmit(data)) as Order;
       console.log(order);
       console.log(data);
 

@@ -3,9 +3,11 @@ import { BsChevronRight } from "react-icons/bs";
 import ProjectInput from "../../../components/ProjectInput";
 import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
+import { api } from "~/utils/api";
 const NewProject = () => {
   const router = useRouter();
   const { data: session, status } = useSession();
+  const createOrder = api.order.createOrder.useMutation();
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -46,6 +48,14 @@ const NewProject = () => {
               attachments: [],
               notes: "",
               referenceLinks: "",
+            }}
+            // isupdate={false}
+            formSubmit={async (values) => {
+              return createOrder
+                .mutateAsync(values)
+                .then((res: { id: string }) => {
+                  void router.push(`/client/create/${res.id}`);
+                });
             }}
           />
         </div>
