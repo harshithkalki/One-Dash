@@ -3,10 +3,8 @@ import { api } from "~/utils/api";
 import "~/styles/globals.css";
 import { useRouter } from "next/router";
 import Layout from "~/components/Layout";
-import dynamic from "next/dynamic";
 import { SessionProvider, useSession } from "next-auth/react";
 import { type Session } from "next-auth";
-import SocketContextComponent from "~/context/Socketio/SocketContextConponent";
 import { useEffect } from "react";
 
 function MyApp({
@@ -37,8 +35,6 @@ function MyApp({
   );
 }
 
-// export default dynamic(() => Promise.resolve(MyApp), { ssr: false })
-
 export default api.withTRPC(MyApp);
 
 function Wrap({ children }: { children: React.ReactNode }) {
@@ -59,7 +55,8 @@ function Wrap({ children }: { children: React.ReactNode }) {
       </>
     );
   if (status === "authenticated") {
-    return <SocketContextComponent>{children}</SocketContextComponent>;
+    return <>{children}</>;
   }
+
   return null;
 }
