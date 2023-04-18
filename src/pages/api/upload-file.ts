@@ -42,6 +42,15 @@ export default function handler(req: Request, res: Response) {
       if (!fs.existsSync(uploadDir)) {
         fs.mkdirSync(uploadDir, { recursive: true });
       }
+      if (Array.isArray(files.files)) {
+        for (const file of files.files) {
+          const filePath = path.join(uploadDir, file.originalFilename ?? "");
+
+          fs.copyFileSync(file.filepath, filePath);
+          fs.rmSync(file.filepath);
+        }
+        return res.status(200).json({ message: "Files uploaded" });
+      }
 
       const file = files.files as formidable.File;
 
@@ -57,4 +66,3 @@ export default function handler(req: Request, res: Response) {
     }
   });
 }
-  

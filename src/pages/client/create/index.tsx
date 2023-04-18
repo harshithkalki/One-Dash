@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { BsChevronRight } from "react-icons/bs";
-import ProjectInput from "../../components/ProjectInput";
+import ProjectInput from "../../../components/ProjectInput";
 import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
 const NewProject = () => {
@@ -38,7 +38,16 @@ const NewProject = () => {
           </div>
         </div>
         <div className="flex w-full flex-col pt-1">
-          <ProjectInput userin={false} />
+          <ProjectInput
+            userin={false}
+            values={{
+              name: "",
+              type: "",
+              attachments: [],
+              notes: "",
+              referenceLinks: "",
+            }}
+          />
         </div>
       </div>
     </React.Fragment>

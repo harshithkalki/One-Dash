@@ -23,9 +23,21 @@ const ZForm = z.object({
     typeof window === "undefined" ? z.any() : z.instanceof(File).optional(),
 });
 
-type FormValues = z.infer<typeof ZForm>;
+type FormValues = {
+  name: string;
+  type: string;
+  notes: string;
+  referenceLinks: string;
+  attachments: [];
+};
 
-const ProjectInput = ({ userin }: { userin: boolean }) => {
+const ProjectInput = ({
+  userin,
+  values,
+}: {
+  userin: boolean;
+  values: FormValues;
+}) => {
   const router = useRouter();
   const [weekvisibility, setWeekVisibility] = useState(false);
   const [visibility, setVisibility] = useState(false);
@@ -34,13 +46,7 @@ const ProjectInput = ({ userin }: { userin: boolean }) => {
   const createOrder = api.order.createOrder.useMutation();
 
   const formik = useFormik({
-    initialValues: {
-      name: "",
-      type: "",
-      notes: "",
-      referenceLinks: "",
-      attachments: [],
-    },
+    initialValues: values,
     onSubmit: async (data) => {
       data.type = ProjectType;
       const order = await createOrder.mutateAsync(data);

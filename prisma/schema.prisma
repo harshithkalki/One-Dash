@@ -12,10 +12,10 @@ generator client {
 }
 
 model User {
-  id               String       @id @unique @default(cuid())
+  id               String        @id @unique @default(cuid())
   firstName        String
   lastName         String?
-  email            String       @unique
+  email            String        @unique
   phone            String?
   country          String?
   emailVerified    Boolean
@@ -27,14 +27,16 @@ model User {
   city             String?
   state            String?
   zipcode          String?
-  heads            User[]       @relation("UserTeam")
-  teamMembers      User[]       @relation("UserTeam")
+  heads            User[]        @relation("UserTeam")
+  teamMembers      User[]        @relation("UserTeam")
   credentials      Credentials?
   orders           Order[]
-  teamOrders       Order[]      @relation("TeamOrder")
-  createdAt        DateTime     @default(now())
-  sentMessages     Message[]    @relation("SenderMessage")
-  receivedMessages Message[]    @relation("ReceiverMessage")
+  teamOrders       Order[]       @relation("TeamOrder")
+  createdAt        DateTime      @default(now())
+  sentMessages     Message[]     @relation("SenderMessage")
+  receivedMessages Message[]     @relation("ReceiverMessage")
+  invoices         Invoice[]
+  Discussions      Discussions[]
 }
 
 model Credentials {
@@ -45,21 +47,60 @@ model Credentials {
 }
 
 model Order {
-  id             String      @id @unique @default(cuid())
+  id             String        @id @unique @default(cuid())
   name           String
   type           String
-  notes          String?     @db.LongText
+  notes          String?       @db.LongText
   attachments    String?
   PaymentStatus  String
   logo           String?
-  orderStatus    orderStatus @default(DRAFT)
+  orderStatus    orderStatus   @default(DRAFT)
   referenceLinks String?
-  createdAt      DateTime    @default(now())
+  createdAt      DateTime      @default(now())
   userId         String
-  team           User[]      @relation("TeamOrder")
-  User           User        @relation(fields: [userId], references: [id])
+  team           User[]        @relation("TeamOrder")
+  invoices       Invoice[]
+  User           User          @relation(fields: [userId], references: [id])
+  discussions    Discussions[]
 
   @@index([userId])
+}
+
+model Invoice {
+  id            String        @id @unique @default(cuid())
+  orderId       String
+  userId        String
+  createdAt     DateTime      @default(now())
+  amount        Int
+  paymentId     String
+  paymentStatus paymentStatus @default(pending)
+  order         Order         @relation(fields: [orderId], references: [id])
+  user          User          @relation(fields: [userId], references: [id])
+  deliveryTime  Int
+
+  @@index([orderId])
+  @@index([userId])
+}
+
+model Discussions {
+  id          String   @id @unique @default(cuid())
+  message     String
+  orderId     String
+  userId      String
+  attachments String?
+  createdAt   DateTime @default(now())
+  order       Order    @relation(fields: [orderId], references: [id])
+  user        User     @relation(fields: [userId], references: [id])
+
+  @@index([orderId])
+  @@index([userId])
+}
+
+model Delivery {
+  id        String   @id @unique @default(cuid())
+  orderId   String
+  notes     String?
+  createdAt DateTime @default(now())
 }
 
 enum orderStatus {
@@ -71,6 +112,12 @@ enum orderStatus {
   inRepair
   deliverd
   completed
+}
+
+enum paymentStatus {
+  pending
+  paid
+  failed
 }
 
 model Message {
