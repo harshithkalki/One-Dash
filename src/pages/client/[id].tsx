@@ -66,11 +66,20 @@ const OrderInput = () => {
 
     const channel = pusher.subscribe(`order-${orderId}`);
 
-    channel.bind("new-message", function (dis: Discussions) {
-      if (dis.userId != user?.id) {
-        addDiscussion(dis);
+    channel.bind(
+      "new-message",
+      function (
+        dis: Discussions & {
+          user: {
+            name: string;
+          };
+        }
+      ) {
+        if (dis.userId != user?.id) {
+          addDiscussion(dis);
+        }
       }
-    });
+    );
 
     return () => {
       channel.unbind_all();
@@ -87,7 +96,12 @@ const OrderInput = () => {
             message: message,
             orderId: orderId,
           });
-          addDiscussion(discussion);
+          addDiscussion({
+            ...discussion,
+            user: {
+              name: "Me",
+            },
+          });
         }}
       />
     </div>

@@ -40,7 +40,12 @@ export const discussionRouter = createTRPCRouter({
                 }
             })
 
-            await pusher.trigger(`order-${orderId}`, "new-message", discusstion)
+            await pusher.trigger(`order-${orderId}`, "new-message", {
+                ...discusstion,
+                user: {
+                    name: user.firstName,
+                }
+            })
 
             return discusstion;
         }),

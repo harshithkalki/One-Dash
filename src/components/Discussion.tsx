@@ -4,7 +4,11 @@ import CardDisscussion from "./card/CardDiscussion";
 import { useSpring, animated } from "react-spring";
 import { Discussions } from "@prisma/client";
 
-const Discussion = ({ discussions }: { discussions: Discussions[] }) => {
+const Discussion = ({
+  discussions,
+}: {
+  discussions: (Discussions & { user: { name: string } })[];
+}) => {
   const [clicked, setClicked] = useState(true);
   const fade = useSpring({
     opacity: clicked ? 1 : 0,
