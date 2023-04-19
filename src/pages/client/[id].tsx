@@ -22,6 +22,8 @@ import {
 } from "@prisma/client";
 import useOrderStore, { type OrderState } from "~/store/orderStore";
 import { shallow } from "zustand/shallow";
+import Pusher from "pusher-js";
+import { env } from "~/env.mjs";
 
 // export const getStaticPaths = async () => {
 //   const paths = products.map((itemData) => ({
@@ -49,6 +51,28 @@ const OrderInput = () => {
     addDiscussion: state.addDiscussion,
   }));
   const { mutateAsync } = api.discussion.addMessage.useMutation();
+  const {} = useSession();
+
+  useEffect(() => {
+    if (!orderId) return;
+
+    Pusher.logToConsole = true;
+
+    const pusher = new Pusher("6628667fe199b2a488b4", {
+      cluster: "ap2",
+    });
+
+    const channel = pusher.subscribe(`order-${orderId}`);
+
+    channel.bind("new-message", function (data: string) {
+      alert(JSON.stringify(data));
+    });
+
+    return () => {
+      channel.unbind_all();
+      channel.unsubscribe();
+    };
+  }, [orderId]);
 
   return (
     <div className="py-2">
@@ -117,13 +141,13 @@ const ProjectDetail = () => {
               </div>
             ) : null} */}
             <div className="py-2">
-              <ListTeam
+              {/* <ListTeam
                 team={
                   itemData.data?.team.map((mem) => {
                     return { img: mem.profile ?? "/img/user/Avatar.png" };
                   }) || []
                 }
-              />
+              /> */}
             </div>
 
             <div className="py-2">
@@ -179,7 +203,7 @@ const ProjectDetail = () => {
             ) : null} */}
 
             <div className="py-2">
-              <DetailProject
+              {/* <DetailProject
                 itemData={{
                   dateTime: itemData.data?.createdAt.toString() as string,
                   status: itemData.data?.orderStatus as string,
@@ -190,7 +214,7 @@ const ProjectDetail = () => {
                   progress: 0,
                   userName: itemData.data?.User.firstName as string,
                 }}
-              />
+              /> */}
             </div>
             <div className="py-2">
               <div className="font-play border bg-white p-4 font-medium shadow-sm">
@@ -201,13 +225,13 @@ const ProjectDetail = () => {
               </div>
             </div>
             <div className="py-2">
-              <ListTeam
+              {/* <ListTeam
                 team={
                   itemData.data?.team.map((mem) => {
                     return { img: mem.profile ?? "/img/user/Avatar.png" };
                   }) || []
                 }
-              />
+              /> */}
             </div>
           </div>
         </div>
