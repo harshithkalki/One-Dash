@@ -228,7 +228,6 @@ const ProjectDetailAdmin = () => {
               }
             })}
             <OrderInput />
-
             <div className="py-2">
               <WorkDelivery />
             </div>

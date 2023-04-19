@@ -21,19 +21,12 @@ export const invoiceRouter = createTRPCRouter({
             }
         })
 
-        const invoice = await ctx.prisma.invoice.create({
-            data: {
-                orderId: input.orderId,
-                amount: input.amount,
-                deliveryTime: input.deliveryTime,
-                userId: order?.userId ?? "",
-                paymentStatus: "pending",
-            }
-        })
 
         const customer = await stripe.customers.list({
             email: ctx.session.user.email,
         })
+
+        let customerId: string = customer.data[0]?.id ?? ""
 
         if (customer.data.length === 0) {
             const customer = await stripe.customers.create({
@@ -48,27 +41,42 @@ export const invoiceRouter = createTRPCRouter({
                 email: ctx.session.user.email,
             })
 
-            const invoice = await stripe.invoices.create({
-                customer: customer.id,
-                collection_method: "send_invoice",
-                days_until_due: 7,
-                auto_advance: true,
+            customerId = customer.id
 
-            })
 
-            await stripe.invoiceItems.create({
-                customer: customer.id,
+
+        }
+
+        const invoice = await stripe.invoices.create({
+            customer: customerId,
+            collection_method: "send_invoice",
+            days_until_due: 7,
+            auto_advance: true,
+
+        })
+
+        await stripe.invoiceItems.create({
+            customer: customerId,
+            amount: input.amount,
+            invoice: invoice.id,
+        })
+
+
+        const invoiceSend = await stripe.invoices.sendInvoice(invoice.id)
+
+        const invoiceDB = await ctx.prisma.invoice.create({
+            data: {
+                orderId: input.orderId,
                 amount: input.amount,
-                invoice: invoice.id,
-            })
-
-
-            const invoiceSend = await stripe.invoices.sendInvoice(invoice.id)
-
-            return {
-                invoice: invoiceSend,
+                deliveryTime: input.deliveryTime,
+                userId: order?.userId ?? "",
+                paymentStatus: "pending",
+                paymentId: invoiceSend.hosted_invoice_url
             }
+        })
 
+        return {
+            invoice: invoiceDB
         }
     }),
 })
