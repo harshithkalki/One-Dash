@@ -10,6 +10,7 @@ import Popup from "reactjs-popup";
 import Image from "next/image";
 import { useFormik } from "formik";
 import { useRouter } from "next/router";
+import { api } from "~/utils/api";
 // import Closeicon from "@/";
 const WorkDelivery = () => {
   const [open, setOpen] = useState(false);
@@ -22,6 +23,7 @@ const WorkDelivery = () => {
   const [clicked, setClicked] = useState(false);
   const router = useRouter();
   const id = router.query.id;
+  const deliver = api.order.deliverOrder.useMutation();
   const formik = useFormik({
     initialValues: {
       orderId: id as string,
@@ -31,6 +33,24 @@ const WorkDelivery = () => {
     },
     onSubmit: (values) => {
       console.log(values);
+    },
+  });
+
+  const deliveryFormik = useFormik({
+    initialValues: {
+      orderId: id as string,
+      notes: "",
+    },
+    onSubmit: async (values) => {
+      const res = await deliver
+        .mutateAsync({
+          id: values.orderId,
+          notes: values.notes,
+        })
+        .then((res) => {
+          console.log(res);
+          router.reload();
+        });
     },
   });
 
@@ -104,6 +124,9 @@ const WorkDelivery = () => {
               <textarea
                 className="mt-2 w-full rounded-lg border p-2 px-3 text-gray-700 focus:outline-none"
                 placeholder="Describe your delivery in details"
+                name="notes"
+                onChange={deliveryFormik.handleChange}
+                value={deliveryFormik.values.notes}
                 rows={5}
               />
             </div>
@@ -118,7 +141,13 @@ const WorkDelivery = () => {
               </a>
             </div>
             <div className="flex justify-end">
-              <button className="bg-blue-500 p-2.5 px-6 text-white">
+              <button
+                className="bg-blue-500 p-2.5 px-6 text-white"
+                type="button"
+                onClick={() => {
+                  deliveryFormik.handleSubmit();
+                }}
+              >
                 Deliver Work
               </button>
             </div>
@@ -139,71 +168,7 @@ const WorkDelivery = () => {
               alt="Close"
             />
           </div>
-          {/* <div className="w-full">
-            <p className="text-xl text-black">
-              How many days do you want to add to original date?
-            </p>
-          </div> */}
-          {/* <div className="mb-4 mt-4 flex w-full">
-            <div className="relative inline-block w-[96px]">
-              <div
-                className="select relative block  h-[40px] w-[100%] cursor-pointer   border  bg-white   px-[16px] text-black"
-                onClick={(e) => {
-                  setVisibility(!visibility);
-                }}
-              >
-                <div className="selected-option relative flex h-full items-center justify-between">
-                  <span
-                    className="flex items-center gap-4 !text-[13px]"
-                    title={selectedOption === "" ? "1days" : selectedOption}
-                  >
-                    {selectedOption === ""
-                      ? "1days"
-                      : selectedOption.length <= 20
-                      ? selectedOption
-                      : `${selectedOption.slice(0, 20)}...`}
-                  </span>
-                  <Image
-                    className={`${
-                      visibility
-                        ? "rotate-[0deg] transition-all"
-                        : "rotate-[180deg] transition-all"
-                    }`}
-                    width={20}
-                    height={20}
-                    src="/img/icon/ArrowUp 2.svg"
-                    alt="icon"
-                  />
-                </div>
-                {visibility && (
-                  <div className="options absolute left-0 top-[50px] z-50 max-h-[209px] w-full overflow-y-scroll border-[1px] border-[#f3dcdc] bg-white px-3 ">
-                    <ul>
-                      {Days.map(({ option }, index) => (
-                        <li
-                          key={index}
-                          className={
-                            selectedOption === option
-                              ? "active-option font-play mt-[10px] flex h-[37px] w-[100%] items-start justify-start border-b-[1px] border-[#EBEBEB] py-2 text-[12px] font-[400] leading-[17px] text-[#131313]"
-                              : "font-play mt-[10px] flex h-[37px] w-[100%] items-start justify-start border-b-[1px] border-[#EBEBEB] py-2 text-[12px] font-[400] leading-[17px] text-[#131313]"
-                          }
-                          onClick={() => {
-                            setSelectedOption(option);
-                          }}
-                        >
-                          {option}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div> */}
-          {/* <div className="w-full border-t-[1px] border-[#DBDBDB]">
-            <p className="pb-2 pt-2 text-xl text-black">
-              Help the buyer understand
-            </p>
-          </div> */}
+
           <div className="w-full">
             <div className="relative w-full">
               <div className="absolute bottom-2 right-2 flex items-center space-x-2">
@@ -258,11 +223,15 @@ const WorkDelivery = () => {
             </div>
 
             <div className="mt-2 flex justify-end space-x-2">
-              <button className="border border-blue-500 bg-white p-2.5 px-6 text-blue-500">
+              <button
+                className="border border-blue-500 bg-white p-2.5 px-6 text-blue-500"
+                type="button"
+              >
                 Cancel
               </button>
               <button
                 className="bg-blue-500 p-2.5 px-6 text-white"
+                type="button"
                 onClick={() => formik.handleSubmit()}
               >
                 Send Request
