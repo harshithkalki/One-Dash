@@ -7,9 +7,10 @@ import { SlEnergy } from "react-icons/sl";
 import Image from "next/image";
 import sendfileicon from "../../public/img/icon/sendfileicon.svg";
 import { useSpring, animated } from "react-spring";
-const InputMessage = () => {
+
+const InputMessage = ({ onSend }: { onSend: (message: string) => void }) => {
   const [clicked, setClicked] = useState(true);
-  const [textvalue, setTextvalue] = useState("0");
+  const [textvalue, setTextvalue] = useState("");
   const fade = useSpring({
     opacity: clicked ? 1 : 0,
   });
@@ -36,14 +37,20 @@ const InputMessage = () => {
         <animated.div style={fade}>
           {clicked ? (
             <React.Fragment>
-              <form className="mt-4 pl-2">
+              <form
+                className="mt-4 pl-2"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  onSend(textvalue);
+                }}
+              >
                 <div className="mb-4  w-[98%] border border-gray-200 bg-gray-50 ">
                   <div className="rounded-t-lg  bg-white px-4 py-2">
                     <textarea
                       maxLength={2500}
-                      onChange={(e) => setTextvalue(`${e.target.value.length}`)}
+                      onChange={(e) => setTextvalue(e.target.value)}
                       id="comment"
-                      rows="6"
+                      rows={6}
                       className="w-full border-0 bg-white p-2 px-0 pl-2 text-[16px]  font-[400]  text-gray-900  outline-none focus:ring-0"
                       placeholder="Type your message here..."
                       required
@@ -74,7 +81,10 @@ const InputMessage = () => {
                   </div>
                 </div>
                 <div className="flex items-end justify-end">
-                  <button className="border border-blue-500 bg-white px-6 py-2.5 text-blue-500">
+                  <button
+                    type="submit"
+                    className="border border-blue-500 bg-white px-6 py-2.5 text-blue-500"
+                  >
                     Send
                   </button>
                 </div>

@@ -2,8 +2,9 @@ import React, { useState } from "react";
 import { BsChevronDown, BsChevronUp } from "react-icons/bs";
 import CardDisscussion from "./card/CardDiscussion";
 import { useSpring, animated } from "react-spring";
+import { Discussions } from "@prisma/client";
 
-const Discussion = () => {
+const Discussion = ({ discussions }: { discussions: Discussions[] }) => {
   const [clicked, setClicked] = useState(true);
   const fade = useSpring({
     opacity: clicked ? 1 : 0,
@@ -28,7 +29,7 @@ const Discussion = () => {
           </div>
         </div>
         <animated.div style={fade}>
-          {clicked ? <CardDisscussion /> : null}
+          {clicked ? <CardDisscussion discussions={discussions} /> : null}
         </animated.div>
       </div>
     </React.Fragment>

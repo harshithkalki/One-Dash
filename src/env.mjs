@@ -12,8 +12,8 @@ const server = z.object({
   GOOGLE_CLIENT_ID: z.string(),
   GOOGLE_CLIENT_SECRET: z.string(),
   NEXTAUTH_SECRET: z.string(),
-  WS_PORT: z.string(),
-  WS_JWT_SECRET: z.string(),
+  PUSHER_SECRET: z.string(),
+  PUSHER_APPID: z.string(),
 });
 
 /**
@@ -22,6 +22,8 @@ const server = z.object({
  */
 const client = z.object({
   // NEXT_PUBLIC_CLIENTVAR: z.string().min(1),
+  NEXT_PUBLIC_PUSHER_KEY: z.string(),
+  NEXT_PUBLIC_PUSHER_CLUSTER: z.string(),
 });
 
 /**
@@ -35,9 +37,11 @@ const processEnv = {
   NODE_ENV: process.env.NODE_ENV,
   GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
   GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
+  PUSHER_SECRET: process.env.PUSHER_SECRET,
+  PUSHER_APPID: process.env.PUSHER_APPID,
   NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
-  WS_PORT: process.env.WS_PORT,
-  WS_JWT_SECRET: process.env.WS_JWT_SECRET,
+  NEXT_PUBLIC_PUSHER_KEY: process.env.NEXT_PUBLIC_PUSHER_KEY,
+  NEXT_PUBLIC_PUSHER_CLUSTER: process.env.NEXT_PUBLIC_PUSHER_CLUSTER,
   // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
 };
 

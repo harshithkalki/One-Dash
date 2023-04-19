@@ -12,10 +12,17 @@ import InputMessage from "../../components/InputMessage";
 import { BsChevronRight } from "react-icons/bs";
 import CardExtendDeliver from "../../components/card/CardExtendDeliver";
 import { useSession } from "next-auth/react";
-
 import React, { useEffect } from "react";
 import { useRouter } from "next/router";
 import { api } from "~/utils/api";
+import {
+  type Delivery as DeliveryModel,
+  type Discussions,
+  type Invoice as InvoiceModel,
+} from "@prisma/client";
+import useOrderStore, { type OrderState } from "~/store/orderStore";
+import { shallow } from "zustand/shallow";
+
 // export const getStaticPaths = async () => {
 //   const paths = products.map((itemData) => ({
 //     params: { id: itemData.id.toString() },
@@ -36,20 +43,59 @@ import { api } from "~/utils/api";
 //   };
 // };
 
+const OrderInput = () => {
+  const { addDiscussion, orderId } = useOrderStore((state) => ({
+    orderId: state.orderId,
+    addDiscussion: state.addDiscussion,
+  }));
+  const { mutateAsync } = api.discussion.addMessage.useMutation();
+
+  return (
+    <div className="py-2">
+      <InputMessage
+        // eslint-disable-next-line @typescript-eslint/no-misused-promises
+        onSend={async (message) => {
+          const discussion = await mutateAsync({
+            message: message,
+            orderId: orderId,
+          });
+          addDiscussion(discussion);
+        }}
+      />
+    </div>
+  );
+};
+
+const selector = (state: OrderState): OrderState => ({
+  orderhistory: state.orderhistory,
+  addDelivery: state.addDelivery,
+  addInvoice: state.addInvoice,
+  addDiscussion: state.addDiscussion,
+  orderId: state.orderId,
+  setOrderId: state.setOrderId,
+});
+
 const ProjectDetail = () => {
   const router = useRouter();
   const id = router.query.id;
-  console.log(id);
   const { status } = useSession();
   const itemData = api.order.order.useQuery({
     id: id as string,
   });
+
+  const { orderhistory, setOrderId } = useOrderStore(selector, shallow);
 
   useEffect(() => {
     if (status === "unauthenticated") {
       void router.push("/login");
     }
   }, [status]);
+
+  useEffect(() => {
+    if (id) {
+      setOrderId(id as string);
+    }
+  }, [id]);
 
   return (
     <React.Fragment>
@@ -102,22 +148,28 @@ const ProjectDetail = () => {
             </div>
           </div>
           <div className="w-full pr-0 md:pr-9 lg:w-[75%]">
-            <div className="smooth-tras py-2">
-              <Requiretment />
-            </div>
-            <div className="py-2">
-              <Invoice />
-            </div>
-            <div className="py-2">
-              <Discussion />
-            </div>
-            <div className="py-2">
-              <Delivery />
-            </div>
-
-            <div className="py-2">
-              <InputMessage />
-            </div>
+            {orderhistory.map((item, index) => {
+              if (Array.isArray(item)) {
+                return (
+                  <div className="py-2" key={index}>
+                    <Discussion discussions={item} />
+                  </div>
+                );
+              } else if ("paymentId" in item) {
+                return (
+                  <div className="py-2" key={item.id}>
+                    <Invoice />
+                  </div>
+                );
+              } else {
+                return (
+                  <div className="py-2" key={item.id}>
+                    <Delivery />
+                  </div>
+                );
+              }
+            })}
+            <OrderInput />
           </div>
           <div className="hidden w-full flex-col pl-0 lg:flex lg:w-[30%] xl:pl-5 2xl:pl-10">
             {/* {itemData.status != "Completed" ? (

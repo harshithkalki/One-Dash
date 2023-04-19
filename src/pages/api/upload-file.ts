@@ -25,9 +25,7 @@ const Zbody = z.object({
 
 export default function handler(req: Request, res: Response) {
   form.parse(req, (err, fields, files) => {
-    console.log("files data");
 
-    console.log(files);
 
     if (err) {
       return res.status(500).json({ message: "Something went wrong." });
