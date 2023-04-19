@@ -2,6 +2,7 @@ import pusher from "~/server/common/pusher";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
+import { type Discussions } from "@prisma/client";
 
 
 export const discussionRouter = createTRPCRouter({
@@ -39,12 +40,7 @@ export const discussionRouter = createTRPCRouter({
                 }
             })
 
-            await pusher.trigger(`order-${orderId}`, "new-message", {
-                message: discusstion.message,
-                user: {
-                    id: user.id,
-                }
-            })
+            await pusher.trigger(`order-${orderId}`, "new-message", discusstion)
 
             return discusstion;
         }),
