@@ -29,6 +29,8 @@ import Popup from "reactjs-popup";
 import Link from "next/link";
 import WorkDelivery from "~/components/WorkDelivery";
 import Satisfied from "~/components/Satisfied";
+import { type User, type Order } from "prisma/prisma-client";
+
 // export const getStaticPaths = async () => {
 //   const paths = products.map((itemData) => ({
 //     params: { id: itemData.id.toString() },
@@ -216,7 +218,9 @@ const ProjectDetailAdmin = () => {
               } else if ("paymentId" in item) {
                 return (
                   <div className="py-2" key={item.id}>
-                    <Invoice />
+                    <Invoice
+                      invoice={item as Invoice & { user: User; order: Order }}
+                    />
                   </div>
                 );
               } else {

@@ -16,9 +16,11 @@ import React, { useEffect } from "react";
 import { useRouter } from "next/router";
 import { api } from "~/utils/api";
 import {
+  Order,
   type Delivery as DeliveryModel,
   type Discussions,
   type Invoice as InvoiceModel,
+  User,
 } from "@prisma/client";
 import useOrderStore, { type OrderState } from "~/store/orderStore";
 import { shallow } from "zustand/shallow";
@@ -214,7 +216,9 @@ const ProjectDetail = () => {
               } else if ("paymentId" in item) {
                 return (
                   <div className="py-2" key={item.id}>
-                    <Invoice />
+                    <Invoice
+                      invoice={item as Invoice & { user: User; order: Order }}
+                    />
                   </div>
                 );
               } else {

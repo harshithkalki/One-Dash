@@ -1,23 +1,29 @@
-import React, { useState } from "react"
-import { BsChevronDown, BsChevronUp } from "react-icons/bs"
-import DetailInvoice from "./card/DetailInvoice"
-import { useSpring, animated } from "react-spring"
-const Invoice = () => {
-  const [clicked, setClicked] = useState(true)
+import React, { useState } from "react";
+import { BsChevronDown, BsChevronUp } from "react-icons/bs";
+import DetailInvoice from "./card/DetailInvoice";
+import { useSpring, animated } from "react-spring";
+import { type Order, type User, Invoice } from "@prisma/client";
+
+const Invoice = ({
+  invoice,
+}: {
+  invoice: Invoice & { user: User; order: Order };
+}) => {
+  const [clicked, setClicked] = useState(true);
   const fade = useSpring({
     opacity: clicked ? 1 : 0,
-  })
+  });
   return (
     <React.Fragment>
-      <div className="bg-white border shadow-sm  xl:px-3 px-3 py-3  2xl:py-3 xl:py-1 font-play">
+      <div className="font-play border bg-white  px-3 py-3 shadow-sm  xl:px-3 xl:py-1 2xl:py-3">
         <div
-          className="bg-white flex flex-col w-full"
+          className="flex w-full flex-col bg-white"
           onClick={() => setClicked(!clicked)}
         >
           <div className="flex justify-between p-2">
-            <div className="flex space-x-2 items-center">
-              <div className="w-[2px] h-full bg-blue-500"></div>
-              <p className="text-black  2xl:text-[16px] xl:text-[13px] text-sm font-semibold">
+            <div className="flex items-center space-x-2">
+              <div className="h-full w-[2px] bg-blue-500"></div>
+              <p className="text-sm  font-semibold text-black xl:text-[13px] 2xl:text-[16px]">
                 Invoice
               </p>
             </div>
@@ -26,9 +32,11 @@ const Invoice = () => {
             </span>
           </div>
         </div>
-        <animated.div style={fade}>{clicked && <DetailInvoice />}</animated.div>
+        <animated.div style={fade}>
+          {clicked && <DetailInvoice invoice={invoice} />}
+        </animated.div>
       </div>
     </React.Fragment>
-  )
-}
-export default Invoice
+  );
+};
+export default Invoice;

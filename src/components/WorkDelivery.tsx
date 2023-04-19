@@ -32,6 +32,7 @@ const SendOffer = ({ onClose }: { onClose: () => void }) => {
     onSubmit: async (values) => {
       const { invoice } = await mutateAsync(values);
       addInvoice(invoice);
+      onClose();
     },
   });
 
