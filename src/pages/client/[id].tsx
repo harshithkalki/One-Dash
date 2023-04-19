@@ -53,7 +53,7 @@ const OrderInput = () => {
     addDiscussion: state.addDiscussion,
   }));
   const { mutateAsync } = api.discussion.addMessage.useMutation();
-  const {} = useSession();
+  const { user } = useSession().data ?? {};
 
   useEffect(() => {
     if (!orderId) return;
@@ -66,8 +66,10 @@ const OrderInput = () => {
 
     const channel = pusher.subscribe(`order-${orderId}`);
 
-    channel.bind("new-message", function (data: string) {
-      alert(JSON.stringify(data));
+    channel.bind("new-message", function (dis: Discussions) {
+      if (dis.userId != user?.id) {
+        addDiscussion(dis);
+      }
     });
 
     return () => {

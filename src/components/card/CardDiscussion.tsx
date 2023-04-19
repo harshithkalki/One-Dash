@@ -26,7 +26,7 @@ const CardDisscussion = ({ discussions }: { discussions: Discussions[] }) => {
                     {discuss.message}.
                   </p>
                   <p className="py-2 text-sm font-normal text-gray-400">
-                    {discuss.createdAt.toISOString()}
+                    {discuss.createdAt.toString()}
                   </p>
                 </div>
               </div>
