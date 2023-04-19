@@ -151,21 +151,12 @@ export const orderRouter = createTRPCRouter({
       });
       return order;
     }),
-  // orderTeam: protectedProcedure
-  //   .input(
-  //     z.object({
-  //       id: z.string(),
-  //     })
-  //   )
-  //   .query(async ({ ctx, input }) => {
-  //     const order = await ctx.prisma.order.findUnique({
-  //       where: {
-  //         id: input.id,
-  //       },
-  //       include: {
-  //         team: true,
-  //       },
-  //     });
-  //     return order?.team;
-  //   }),
+  ordersSelect: protectedProcedure.query(async ({ ctx, input }) => {
+    const orders = await ctx.prisma.order.findMany({
+      include: {
+        User: true,
+      },
+    });
+    return orders;
+  }),
 });

@@ -17,7 +17,13 @@ const ListTeam = ({ team, setOpen }: ListTeamProps) => {
           {team.map((t, index) => {
             return (
               <>
-                <Image src={t.img} alt="pic" width={40} height={40} />
+                <img
+                  src={t.img}
+                  alt="pic"
+                  width={40}
+                  height={40}
+                  className="rounded-full"
+                />
               </>
             );
           })}

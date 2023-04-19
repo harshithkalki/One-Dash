@@ -185,6 +185,9 @@ const ProjectDetail = () => {
             </div>
           </div>
           <div className="w-full pr-0 md:pr-9 lg:w-[75%]">
+            <div className="smooth-tras py-2">
+              <Requiretment />
+            </div>
             {orderhistory.map((item, index) => {
               if (Array.isArray(item)) {
                 return (
@@ -305,6 +308,7 @@ const ProjectDetail = () => {
                       .then((res) => {
                         setAddMemLoading(-1);
                         void teamMebers.refetch();
+                        void itemData.refetch();
                       })
                       .catch((err) => {
                         setAddMemLoading(-1);
@@ -314,7 +318,11 @@ const ProjectDetail = () => {
                   disabled={addTeamMember.isLoading && addMemLoading === index}
                 >
                   {addTeamMember.isLoading && addMemLoading === index
-                    ? "Loading"
+                    ? "Adding"
+                    : itemData.data?.team
+                        .map((mem) => mem.id)
+                        .includes(value.id)
+                    ? "Added"
                     : "Add"}
                 </button>
               </div>

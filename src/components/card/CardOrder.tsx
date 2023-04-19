@@ -7,12 +7,12 @@ import ProgressBar from "../ProgressBar";
 import Link from "next/link";
 
 type ProductType = {
-  id: number;
+  id: string;
   img: string;
   title: string;
-  amount: number;
+  amount: string;
   users: {
-    id: number;
+    id: string;
     name: string;
     img: string;
   };

@@ -9,6 +9,7 @@ import CardOrder from "../../components/card/CardOrder";
 import { useRouter } from "next/router";
 import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import { api } from "~/utils/api";
 const AdminDashboard = () => {
   const router = useRouter();
   const [visibility, setVisibility] = useState(false);
@@ -16,12 +17,14 @@ const AdminDashboard = () => {
   const [weekvisibility, setWeekVisibility] = useState(false);
   const [weekselectedOption, weeksetSelectedOption] = useState("");
 
+  const Orders = api.order.ordersSelect.useQuery();
+
   const wrapperRef = useRef(null);
   useOutsideAlerter(wrapperRef);
-  function useOutsideAlerter(ref) {
+  function useOutsideAlerter(ref: React.RefObject<HTMLDivElement>) {
     useEffect(() => {
-      function handleClickOutside(event) {
-        if (ref.current && !ref.current.contains(event.target)) {
+      function handleClickOutside(event: MouseEvent) {
+        if (ref.current && !ref.current.contains(event.target as Node)) {
           setVisibility(false);
           setWeekVisibility(false);
         }
@@ -185,11 +188,30 @@ const AdminDashboard = () => {
                 Active Order
               </h4>
               <div className="mt-0 flex w-full flex-wrap items-start justify-start gap-2 gap-y-4 lg:justify-start">
-                {ordersdata.map(
+                {Orders?.data?.map(
                   (product, index) =>
-                    product.status_order == "active" && (
+                    product.orderStatus !== "DRAFT" &&
+                    product.orderStatus !== "pendingQuote" && (
                       <div key={index}>
-                        <CardOrder product={product} />
+                        <CardOrder
+                          product={{
+                            id: product.id,
+                            // name: product.name,
+                            status: product.orderStatus as string,
+                            dateTime: product.createdAt.toISOString(),
+                            img: product.logo ?? "/img/product/product_1.png",
+                            progress: 0,
+                            title: product.name,
+                            users: {
+                              id: product.User.id,
+                              name: product.User.firstName,
+                              img:
+                                product.User.profile ??
+                                "/img/user/Avatar_team1.svg",
+                            },
+                            amount: "---",
+                          }}
+                        />
                       </div>
                     )
                 )}
@@ -200,11 +222,29 @@ const AdminDashboard = () => {
                 Awaiting
               </h4>
               <div className="mt-0 flex flex-wrap items-start justify-start gap-2 gap-y-4 lg:justify-start">
-                {ordersdata.map(
+                {Orders?.data?.map(
                   (product, index) =>
-                    product.status_order == "awaiting" && (
+                    product.orderStatus === "pendingQuote" && (
                       <div key={index}>
-                        <CardOrder product={product} />
+                        <CardOrder
+                          product={{
+                            id: product.id,
+                            // name: product.name,
+                            status: product.orderStatus as string,
+                            dateTime: product.createdAt.toISOString(),
+                            img: product.logo ?? "/img/product/product_1.png",
+                            progress: 0,
+                            title: product.name,
+                            users: {
+                              id: product.User.id,
+                              name: product.User.firstName,
+                              img:
+                                product.User.profile ??
+                                "/img/user/Avatar_team1.svg",
+                            },
+                            amount: "---",
+                          }}
+                        />
                       </div>
                     )
                 )}
