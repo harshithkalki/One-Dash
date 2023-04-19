@@ -8,6 +8,7 @@ const NewProject = () => {
   const router = useRouter();
   const { data: session, status } = useSession();
   const createOrder = api.order.createOrder.useMutation();
+  const getQuoteCreate = api.order.getQuoteCreate.useMutation();
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -42,6 +43,7 @@ const NewProject = () => {
         <div className="flex w-full flex-col pt-1">
           <ProjectInput
             userin={false}
+            isupdate={false}
             values={{
               name: "",
               type: "",
@@ -51,11 +53,16 @@ const NewProject = () => {
             }}
             // isupdate={false}
             formSubmit={async (values) => {
-              return createOrder
-                .mutateAsync(values)
-                .then((res: { id: string }) => {
-                  void router.push(`/client/create/${res.id}`);
-                });
+              return createOrder.mutateAsync(values).then((res) => {
+                void router.push(`/client/create/${res.id}`);
+                return res;
+              });
+            }}
+            getQuote={async (values) => {
+              return getQuoteCreate.mutateAsync(values).then((res) => {
+                void router.push(`/client`);
+                return res;
+              });
             }}
           />
         </div>

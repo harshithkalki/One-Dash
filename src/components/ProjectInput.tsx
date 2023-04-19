@@ -36,11 +36,13 @@ const ProjectInput = ({
   userin,
   values,
   formSubmit,
-}: // isupdate,
-{
+  isupdate,
+  getQuote,
+}: {
   userin: boolean;
   values: FormValues;
-  // isupdate: boolean;
+  isupdate: boolean;
+  getQuote: (data: FormValues) => Promise<void | Order>;
   formSubmit: (data: FormValues) => Promise<void | Order>;
 }) => {
   const router = useRouter();
@@ -56,6 +58,30 @@ const ProjectInput = ({
       console.log(order);
       console.log(data);
 
+      if (data.attachments.length > 0) {
+        const form = new FormData();
+        form.append("id", order.id);
+        form.append("collection", "project");
+        console.log(data.attachments);
+
+        for (let i = 0; i < data.attachments.length; i++) {
+          form.append("files", data.attachments[i]! as File);
+        }
+        console.log(form);
+        void axiosApi.post("/upload-file", form).catch((err) => {
+          console.log(err);
+        });
+      }
+    },
+  });
+  const QuoteFunc = async () => {
+    const data = formik.values;
+    data.type = ProjectType;
+    const order = (await getQuote(data)) as Order;
+    console.log(order);
+    console.log(data);
+
+    if (data.attachments.length > 0) {
       const form = new FormData();
       form.append("id", order.id);
       form.append("collection", "project");
@@ -68,8 +94,9 @@ const ProjectInput = ({
       void axiosApi.post("/upload-file", form).catch((err) => {
         console.log(err);
       });
-    },
-  });
+    }
+    void router.push("/client");
+  };
 
   const options1 = [
     { option: "3D Animation", value: "3D Animation" },
@@ -302,7 +329,16 @@ const ProjectInput = ({
           >
             Save and Close
           </button>
-          <button className="w-full border bg-blue-500 px-3 py-2 text-white md:w-44">
+          <button
+            className="w-full border bg-blue-500 px-3 py-2 text-white md:w-44"
+            type="button"
+            onClick={() => {
+              void QuoteFunc();
+            }}
+
+            // void router.push("/client");
+            // return void
+          >
             Get Quote
           </button>
         </div>

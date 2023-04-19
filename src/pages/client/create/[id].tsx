@@ -21,6 +21,7 @@ const NewProject = () => {
   });
   const data = order.data;
   const updateOrder = api.order.update.useMutation();
+  const getQuoteUpdate = api.order.getQuoteUpdate.useMutation();
   if (order.isLoading)
     return (
       <div className="flex items-center justify-center">
@@ -55,6 +56,7 @@ const NewProject = () => {
         <div className="flex w-full flex-col pt-1">
           <ProjectInput
             userin={false}
+            isupdate={true}
             values={{
               name: data?.name as string,
               type: data?.type as string,
@@ -64,7 +66,21 @@ const NewProject = () => {
             }}
             // isupdate={true}
             formSubmit={async (values) => {
-              return updateOrder.mutateAsync({ id: id as string, ...values });
+              return updateOrder
+                .mutateAsync({ id: id as string, ...values })
+                .then((res) => {
+                  return res;
+                });
+            }}
+            getQuote={async (values) => {
+              return getQuoteUpdate
+                .mutateAsync({
+                  id: id as string,
+                  ...values,
+                })
+                .then((res) => {
+                  return res;
+                });
             }}
           />
         </div>

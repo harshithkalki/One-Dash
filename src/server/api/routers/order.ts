@@ -13,6 +13,7 @@ export const orderRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
+      console.log("createOrderCalled");
       const order = await ctx.prisma.order.create({
         data: {
           name: input.name,
@@ -74,6 +75,58 @@ export const orderRouter = createTRPCRouter({
           referenceLinks: input.referenceLinks,
         },
       });
+      return order;
+    }),
+
+  getQuoteCreate: protectedProcedure
+    .input(
+      z.object({
+        name: z.string(),
+        type: z.string(),
+        notes: z.string().optional(),
+        referenceLinks: z.string().optional(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const order = await ctx.prisma.order.create({
+        data: {
+          name: input.name,
+          type: input.type,
+          notes: input.notes,
+          referenceLinks: input.referenceLinks,
+          orderStatus: "pendingQuote",
+          userId: ctx.session.user.id,
+          PaymentStatus: "PENDING",
+        },
+      });
+      console.log(order);
+      return order;
+    }),
+
+  getQuoteUpdate: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        name: z.string(),
+        type: z.string(),
+        notes: z.string().optional(),
+        referenceLinks: z.string().optional(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const order = await ctx.prisma.order.update({
+        where: {
+          id: input.id,
+        },
+        data: {
+          name: input.name,
+          type: input.type,
+          notes: input.notes,
+          referenceLinks: input.referenceLinks,
+          orderStatus: "pendingQuote",
+        },
+      });
+      console.log(order);
       return order;
     }),
 });
