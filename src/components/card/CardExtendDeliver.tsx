@@ -10,7 +10,7 @@ const CardExtendDeliver = () => {
   const closeModal = () => setOpen(false);
   const [visibility, setVisibility] = useState(false);
   const [selectedOption, setSelectedOption] = useState("");
-  const [textarea, setteatarea] = useState("");
+  const [textarea, setteatarea] = useState(0);
 
   return (
     <React.Fragment>
@@ -51,7 +51,7 @@ const CardExtendDeliver = () => {
             </p>
             <Image
               className="cursor-pointer"
-              src={CloseIcon}
+              src={"/img/icon/Close Icon.svg"}
               onClick={closeModal}
               alt="Close"
             />
@@ -124,7 +124,9 @@ const CardExtendDeliver = () => {
           <div className="w-full">
             <div className="relative w-full">
               <div className="absolute bottom-2 right-2 flex items-center space-x-2">
-                <span className="font-light text-gray-400">{textarea}/400</span>
+                <span className="font-light text-gray-400">
+                  {`${textarea}`}/400
+                </span>
                 <AiOutlineSmile size={24} />
               </div>
               <textarea
@@ -132,7 +134,7 @@ const CardExtendDeliver = () => {
                 onChange={(e) => setteatarea(e.target.value.length)}
                 className="mt-2 w-full rounded-lg border p-2 px-3 text-gray-700 focus:outline-none"
                 placeholder="Explain why you need more time"
-                rows="6"
+                rows={6}
               />
             </div>
 

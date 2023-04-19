@@ -235,7 +235,7 @@ const ProjectDetail = () => {
             ) : null} */}
 
             <div className="py-2">
-              {/* <DetailProject
+              <DetailProject
                 itemData={{
                   dateTime: itemData.data?.createdAt.toString() as string,
                   status: itemData.data?.orderStatus as string,
@@ -246,7 +246,7 @@ const ProjectDetail = () => {
                   progress: 0,
                   userName: itemData.data?.User.firstName as string,
                 }}
-              /> */}
+              />
             </div>
             <div className="py-2">
               <div className="font-play border bg-white p-4 font-medium shadow-sm">
