@@ -183,4 +183,17 @@ export const orderRouter = createTRPCRouter({
       });
       return delivery;
     }),
+  allUserOrders: protectedProcedure.query(async ({ ctx }) => {
+    const user = await ctx.prisma.user.findUnique({
+      where: {
+        id: ctx.session.user.id,
+      },
+      include: {
+        orders: true,
+        teamOrders: true,
+      },
+    });
+    if (!user) throw new Error("User not found");
+    return [...user.orders, ...user.teamOrders];
+  }),
 });

@@ -46,7 +46,7 @@ const Client = () => {
     }
   }, [status]);
 
-  const Products = api.order.orders.useQuery();
+  const Products = api.order.allUserOrders.useQuery();
 
   return (
     <React.Fragment>
