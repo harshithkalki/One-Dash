@@ -25,6 +25,8 @@ import { shallow } from "zustand/shallow";
 import Pusher from "pusher-js";
 import { env } from "~/env.mjs";
 
+import Popup from "reactjs-popup";
+import Link from "next/link";
 // export const getStaticPaths = async () => {
 //   const paths = products.map((itemData) => ({
 //     params: { id: itemData.id.toString() },
@@ -106,6 +108,16 @@ const ProjectDetail = () => {
   const itemData = api.order.order.useQuery({
     id: id as string,
   });
+  const [open, setOpen] = React.useState(false);
+  const [removeOpen, setremoveOpen] = React.useState(-1);
+  const [addMemLoading, setAddMemLoading] = React.useState(-1);
+  const teamMebers = api.user.teamMembers.useQuery();
+  const addTeamMember = api.order.addTeamMember.useMutation();
+
+  const closeModal = () => {
+    setOpen(false);
+    setremoveOpen(-1);
+  };
 
   const { orderhistory, setOrderId } = useOrderStore(selector, shallow);
 
@@ -123,7 +135,7 @@ const ProjectDetail = () => {
 
   return (
     <React.Fragment>
-      <div className="mt-20 overflow-y-auto p-4  pl-6 pt-1">
+      <div className="mt-20 overflow-y-auto p-4  pl-6 pt-1 ">
         <div className="w-full py-4">
           <p className="flex items-center space-x-2 py-1 text-gray-400">
             <span>Order</span> <BsChevronRight />{" "}
@@ -141,13 +153,14 @@ const ProjectDetail = () => {
               </div>
             ) : null} */}
             <div className="py-2">
-              {/* <ListTeam
+              <ListTeam
                 team={
                   itemData.data?.team.map((mem) => {
                     return { img: mem.profile ?? "/img/user/Avatar.png" };
                   }) || []
                 }
-              /> */}
+                setOpen={setOpen}
+              />
             </div>
 
             <div className="py-2">
@@ -225,17 +238,90 @@ const ProjectDetail = () => {
               </div>
             </div>
             <div className="py-2">
-              {/* <ListTeam
+              <ListTeam
                 team={
                   itemData.data?.team.map((mem) => {
                     return { img: mem.profile ?? "/img/user/Avatar.png" };
                   }) || []
                 }
-              /> */}
+                setOpen={setOpen}
+              />
             </div>
           </div>
         </div>
       </div>
+
+      <Popup open={open} closeOnDocumentClick onClose={closeModal}>
+        <div className="z-50 mx-auto flex w-[90%] flex-col items-center justify-center rounded-[8px] bg-white p-4 shadow-md md:w-[600px]">
+          <div className="flex w-full items-center justify-between">
+            <span className="font-play text-[18px] font-[500] text-black">
+              Add Members
+            </span>
+            <Link className="close" onClick={closeModal} href={"#"}>
+              <img src={"/img/icon/Close Icon.svg"} alt="close" />
+            </Link>
+          </div>
+          <div className="flex w-full items-center justify-between space-x-6 py-4">
+            <input
+              type="email"
+              placeholder="Email"
+              className="w-full border py-2 pl-3 outline-none"
+            />
+            <button className="w-36 rounded-[2px] bg-blue-500 px-6 py-2 text-white">
+              Search
+            </button>
+          </div>
+          {teamMebers?.data?.length === 0 ? (
+            <div className="flex w-full items-center justify-center py-4">
+              <span className="font-play text-[14px] font-[500] text-black">
+                No member found
+              </span>
+            </div>
+          ) : (
+            teamMebers?.data?.map((value, index) => (
+              <div
+                className="flex w-full items-center justify-between py-2"
+                key={index}
+              >
+                <div className="flex items-center space-x-2">
+                  <img
+                    src={value.profile ?? "/img/user/Avatar_team1.svg"}
+                    width={48}
+                    height={48}
+                    alt="pic"
+                    className="rounded-full"
+                  />
+                  <span className="text-sm font-medium">{value.firstName}</span>
+                </div>
+                <button
+                  className="w-20 rounded-[2px] border border-blue-500 px-2 py-1 text-sm text-blue-500"
+                  onClick={() => {
+                    setAddMemLoading(index);
+                    addTeamMember
+                      .mutateAsync({
+                        id: id as string,
+                        userId: value.id,
+                      })
+                      .then((res) => {
+                        setAddMemLoading(-1);
+                        void teamMebers.refetch();
+                      })
+                      .catch((err) => {
+                        setAddMemLoading(-1);
+                        console.log(err);
+                      });
+                  }}
+                  disabled={addTeamMember.isLoading && addMemLoading === index}
+                >
+                  {addTeamMember.isLoading && addMemLoading === index
+                    ? "Loading"
+                    : "Add"}
+                </button>
+              </div>
+            ))
+          )}
+        </div>
+      </Popup>
     </React.Fragment>
   );
 };

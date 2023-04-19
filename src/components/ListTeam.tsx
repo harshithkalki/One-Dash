@@ -5,9 +5,10 @@ type ListTeamProps = {
   team: {
     img: string;
   }[];
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-const ListTeam = ({ team }: ListTeamProps) => {
+const ListTeam = ({ team, setOpen }: ListTeamProps) => {
   // const { team } = props;
   return (
     <React.Fragment>
@@ -25,6 +26,9 @@ const ListTeam = ({ team }: ListTeamProps) => {
             alt="pic"
             width={40}
             height={40}
+            onClick={() => {
+              setOpen(true);
+            }}
           />
         </div>
       </div>

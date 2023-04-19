@@ -129,4 +129,43 @@ export const orderRouter = createTRPCRouter({
       console.log(order);
       return order;
     }),
+  addTeamMember: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        userId: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const order = await ctx.prisma.order.update({
+        where: {
+          id: input.id,
+        },
+        data: {
+          team: {
+            connect: {
+              id: input.userId,
+            },
+          },
+        },
+      });
+      return order;
+    }),
+  // orderTeam: protectedProcedure
+  //   .input(
+  //     z.object({
+  //       id: z.string(),
+  //     })
+  //   )
+  //   .query(async ({ ctx, input }) => {
+  //     const order = await ctx.prisma.order.findUnique({
+  //       where: {
+  //         id: input.id,
+  //       },
+  //       include: {
+  //         team: true,
+  //       },
+  //     });
+  //     return order?.team;
+  //   }),
 });
