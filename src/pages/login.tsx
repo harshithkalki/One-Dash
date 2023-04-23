@@ -60,8 +60,12 @@ const Login = () => {
           });
           // console.log(res.error);
         } else {
-          void router.push("/client");
-          console.log(res);
+          if (session?.user?.role === "client") {
+            void router.push("/client");
+          } else if (session?.user?.role === "admin") {
+            void router.push("/admin");
+          }
+          // console.log(res);
         }
       })
       .catch((err) => {
@@ -72,7 +76,11 @@ const Login = () => {
 
   useEffect(() => {
     if (status === "authenticated") {
-      void router.push("/client");
+      if (session?.user?.role === "client") {
+        void router.push("/client");
+      } else if (session?.user?.role === "admin") {
+        void router.push("/admin");
+      }
     }
   }, [status]);
 

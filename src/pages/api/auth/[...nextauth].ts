@@ -35,6 +35,7 @@ export const authOptions: NextAuthOptions = {
           firstName: user.firstName,
           email: user.email,
           image: user.profile,
+          role: user.role,
         };
       }
       return session;

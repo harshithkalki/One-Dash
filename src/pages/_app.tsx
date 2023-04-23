@@ -39,7 +39,7 @@ export default api.withTRPC(MyApp);
 
 function Wrap({ children }: { children: React.ReactNode }) {
   const router = useRouter();
-  const { status } = useSession();
+  const { data: session, status } = useSession();
   useEffect(() => {
     if (status === "unauthenticated") {
       void router.push("/login");

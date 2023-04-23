@@ -2,16 +2,19 @@ import { z } from "zod";
 import {
   createTRPCRouter,
   protectedProcedure,
-  publicProcedure
+  publicProcedure,
 } from "~/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 import { transporter } from "~/config/nodemailer";
 import * as bcrypt from "bcrypt";
 
-
 export const userRouter = createTRPCRouter({
   members: protectedProcedure.query(async ({ ctx }) => {
-    const mem = await ctx.prisma.user.findMany();
+    const mem = await ctx.prisma.user.findMany({
+      where: {
+        role: "client",
+      },
+    });
     return mem;
   }),
   teamMembers: protectedProcedure.query(async ({ ctx }) => {
@@ -36,6 +39,7 @@ export const userRouter = createTRPCRouter({
   notTeamMembers: protectedProcedure.query(async ({ ctx }) => {
     return await ctx.prisma.user.findMany({
       where: {
+        role: "client",
         NOT: {
           id: ctx.session.user.id,
         },

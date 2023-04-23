@@ -13,6 +13,8 @@ export const loginRouter = createTRPCRouter({
           email: input.email,
         },
       });
+      console.log(input.email, input.password);
+      console.log(user);
 
       if (!user)
         throw new TRPCError({
@@ -25,6 +27,7 @@ export const loginRouter = createTRPCRouter({
           userID: user.id,
         },
       });
+      console.log("cred", cred);
 
       if (!cred) {
         throw new TRPCError({
@@ -34,6 +37,7 @@ export const loginRouter = createTRPCRouter({
       }
 
       const valid = await bcrypt.compare(input.password, cred.password);
+      console.log("valid", valid);
       if (!valid) {
         throw new Error("Invalid password");
       }
