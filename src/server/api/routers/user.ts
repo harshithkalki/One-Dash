@@ -2,8 +2,12 @@ import { z } from "zod";
 import {
   createTRPCRouter,
   protectedProcedure,
+  publicProcedure
 } from "~/server/api/trpc";
 import { TRPCError } from "@trpc/server";
+import { transporter } from "~/config/nodemailer";
+import * as bcrypt from "bcrypt";
+
 
 export const userRouter = createTRPCRouter({
   members: protectedProcedure.query(async ({ ctx }) => {
