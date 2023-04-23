@@ -291,7 +291,7 @@ const DropdownUser = () => {
                 <h3 className="text-[18px] font-[600] text-[#131313]">
                   Edit Profile
                 </h3>
-                <Image
+                <img
                   onClick={closeModal}
                   className="cursor-pointer "
                   src={Closeicon}
@@ -306,7 +306,7 @@ const DropdownUser = () => {
                       className="EditProfile--subimg rounded-full   bg-blue-500 p-1 text-white"
                     />
                   </div>
-                  <Image
+                  <img
                     src={PicImg}
                     className="EditProfile--img"
                     width={76}
@@ -398,7 +398,7 @@ const DropdownUser = () => {
                       {flagOption === "" ? (
                         ""
                       ) : (
-                        <Image
+                        <img
                           width={35}
                           height={35}
                           src={flagOption}
@@ -411,7 +411,7 @@ const DropdownUser = () => {
                         ? selectedOption
                         : `${selectedOption.slice(0, 20)}...`}
                     </span>
-                    <Image
+                    <img
                       className={`${
                         visibility
                           ? "rotate-[0deg] transition-all"
@@ -527,7 +527,7 @@ const DropdownUser = () => {
                           ? stateselectedOption
                           : `${stateselectedOption.slice(0, 20)}...`}
                       </span>
-                      <Image
+                      <img
                         className={`${
                           statevisibility
                             ? "rotate-[0deg] transition-all"

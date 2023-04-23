@@ -1,4 +1,3 @@
-import { Prisma } from "@prisma/client";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 import { z } from "zod";
 
@@ -196,4 +195,59 @@ export const orderRouter = createTRPCRouter({
     if (!user) throw new Error("User not found");
     return [...user.orders, ...user.teamOrders];
   }),
+
+  orderHistory: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const orderHistory = ctx.prisma.order.findUnique({
+        where: { id: input.id }, include: {
+          discussions: {
+            orderBy: {
+              createdAt: "asc",
+            },
+            include: {
+              user: {
+                select: {
+                  firstName: true,
+                  lastName: true,
+                  id: true,
+                }
+              }
+            }
+          },
+          invoices: {
+            orderBy: {
+              createdAt: "asc",
+            },
+            include: {
+              user: {
+                select: {
+                  firstName: true,
+                  lastName: true,
+                  id: true,
+                },
+              },
+              order: {
+                select: {
+                  name: true,
+                  id: true,
+                }
+              }
+            }
+          },
+          deliveries: {
+            orderBy: {
+              createdAt: "asc",
+            }
+          },
+        }
+      })
+
+      return orderHistory;
+    }
+    ),
 });

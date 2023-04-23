@@ -1,35 +1,29 @@
-import { type Delivery, type Discussions, type Invoice } from "@prisma/client";
+import { type Order, type Delivery, type Discussions, type Invoice, type User } from "@prisma/client";
 import { create } from "zustand";
 
-
-
-type OrderHistory = (Invoice | (Discussions & { user: { name: string } })[] | Delivery)[];
+type OrderHistory = (Invoice | (Discussions & { user: { firstName: string } }) | Delivery)[];
 
 export type OrderState = {
-    orderId: string;
+    order: (Order & {
+        user: User;
+        team: User[];
+    }) | null;
     orderhistory: OrderHistory;
-    addDiscussion: (Discussion: Discussions & { user: { name: string } }) => void;
+    addDiscussion: (Discussion: Discussions & { user: { firstName: string } }) => void;
     addInvoice: (invoice: Invoice) => void;
     addDelivery: (delivery: Delivery) => void;
-    setOrderId: (orderId: string) => void;
+    setOrder: (order: OrderState['order']) => void;
+    setOrderHistory: (orderhistory: OrderHistory) => void;
 }
 
 const useOrderStore = create<OrderState>((set, get) => ({
     orderhistory: [],
-    orderId: "",
-    setOrderId: (orderId: string) => set({ orderId }),
-    addDiscussion: (Discussion: Discussions & { user: { name: string } }) => {
+    order: null,
+    team: [],
+    setOrder: (order: OrderState['order']) => { set({ order }) },
+    addDiscussion: (Discussion: Discussions & { user: { firstName: string } }) => {
         const orderhistory = get().orderhistory;
-        const discussion = orderhistory[orderhistory.length - 1] as Discussions[]; // get last discussion
-        if (Array.isArray(discussion)) {
-            discussion.push(Discussion);
-        } else {
-            orderhistory.push([Discussion]);
-        } set({
-            orderhistory: [
-                ...orderhistory
-            ]
-        });
+        set({ orderhistory: [...orderhistory, Discussion] });
     },
     addInvoice: (invoice: Invoice) => {
         const orderhistory = get().orderhistory;

@@ -62,6 +62,7 @@ model Order {
   invoices       Invoice[]
   User           User          @relation(fields: [userId], references: [id])
   discussions    Discussions[]
+  deliveries     Delivery[]
 
   @@index([userId])
 }
@@ -100,8 +101,11 @@ model Discussions {
 model Delivery {
   id        String   @id @unique @default(cuid())
   orderId   String
+  order     Order    @relation(fields: [orderId], references: [id])
   notes     String?
   createdAt DateTime @default(now())
+
+  @@index([orderId])
 }
 
 enum orderStatus {

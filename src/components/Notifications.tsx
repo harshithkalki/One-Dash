@@ -72,13 +72,13 @@ const Notifications = () => {
           <div className="sticky top-0 flex w-[100%]  items-center  justify-between space-x-2 bg-[white] px-5 py-4  ">
             <div className="flex   space-x-4">
               {/* <GrNotification size={28} /> */}
-              <Image className="w-5" src={notificationicon} alt="icon" />
+              <img className="w-5" src={notificationicon} alt="icon" />
               <span className="text-[ #131313] text-[18px] font-[500] leading-[25px]">
                 Notification
               </span>
             </div>
             {/* <AiOutlineClose size={28} className="text-gray-400" /> */}
-            <Image
+            <img
               onClick={handleDropdownClick}
               className="cursor-pointer"
               src={CloseIcon}
