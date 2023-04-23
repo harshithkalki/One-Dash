@@ -8,25 +8,50 @@ import { FcGoogle } from "react-icons/fc";
 import { useForm } from "react-hook-form";
 import Link from "next/link";
 import { z } from "zod";
+import { transporter } from "~/config/nodemailer";
+import { api } from "~/utils/api";
+import { useRouter } from "next/router";
 const Signup = () => {
   const [passwordShown, setPasswordShown] = useState(false);
   const tooglePssword = () => {
     setPasswordShown(!passwordShown);
   };
 
-  const validationSchema = z.object({
-    email: z.string().email(),
-    password: z.string(),
-  });
+  const router = useRouter();
 
+  const signup = api.user.signup.useMutation();
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
-  const onSubmit = (data) => {
-    console.log(data);
+  const onSubmit = async (data: {
+    firstName: string;
+    lastName: string;
+    email: string;
+  }) => {
+    const res = await signup
+      .mutateAsync({
+        email: data.email,
+        firstName: data.firstName,
+        lastName: data.lastName,
+      })
+      .then((res) => {
+        void router.push("/login");
+      });
+    console.log("hello");
   };
+
+  // const reg = async () => {
+  //   const res = await signup
+  //     .mutateAsync({
+  //       email: "harshithkalki@gmail.com",
+  //       firstName: "harshith",
+  //       lastName: "kalki",
+  //     })
+
+  //   console.log("hello");
+  // };
   return (
     <>
       <div className="flex h-screen md:flex">
@@ -39,7 +64,20 @@ const Signup = () => {
               className="mx-auto w-[50%] sm:w-[40%] xl:w-[55%]"
               alt="logo"
             />
-            <form className="bg-teal-white" onSubmit={handleSubmit(onSubmit)}>
+            <form
+              className="bg-teal-white"
+              onSubmit={(e) => {
+                e.preventDefault();
+                // console.log("form submitted");
+                handleSubmit(onSubmit)()
+                  .then((res) => {
+                    console.log(res);
+                  })
+                  .catch((err) => {
+                    console.log(err);
+                  });
+              }}
+            >
               <p className="mb-3 py-6 text-center text-2xl font-bold text-black">
                 Lets Get Started!
               </p>
@@ -116,11 +154,17 @@ const Signup = () => {
               </div>
 
               <div className="mt-0">
-                <button className="mb-2 mt-4 block w-full bg-[#007AFF] py-2 text-lg text-white xl:text-[14px] 2xl:text-lg">
+                <button
+                  type="submit"
+                  className="mb-2 mt-4 block w-full bg-[#007AFF] py-2 text-lg text-white xl:text-[14px] 2xl:text-lg"
+                  // onClick={() => {
+                  //   void reg();
+                  // }}
+                >
                   Sign Up
                 </button>
                 <button
-                  type="submit"
+                  type="button"
                   className="mb-2 mt-4 flex w-full items-center justify-center space-x-2 border bg-white py-2 text-lg text-black xl:text-[14px] 2xl:text-lg"
                 >
                   <FcGoogle size={24} />

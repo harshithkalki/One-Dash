@@ -8,6 +8,7 @@ import {
 import { TRPCError } from "@trpc/server";
 import jwt, { Secret } from "jsonwebtoken";
 import { env } from "~/env.mjs";
+import { transporter } from "~/config/nodemailer";
 
 export const userRouter = createTRPCRouter({
   members: protectedProcedure.query(async ({ ctx }) => {
@@ -143,5 +144,40 @@ export const userRouter = createTRPCRouter({
           },
         });
       }
+    }),
+
+  signup: publicProcedure
+    .input(
+      z.object({
+        firstName: z.string(),
+        lastName: z.string(),
+        email: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const user = await ctx.prisma.user.create({
+        data: {
+          firstName: input.firstName,
+          lastName: input.lastName,
+          email: input.email,
+          emailVerified: true,
+        },
+      });
+      const pass = bcrypt.hashSync("123456", 12);
+
+      const Credentials = await ctx.prisma.credentials.create({
+        data: {
+          userID: user.id,
+          password: pass,
+        },
+      });
+      const res = await transporter.sendMail({
+        from: "test-mail-dev@3dcontentstudio.com",
+        to: input.email,
+        subject: "thanks for siging up to 3dContentStudio",
+        html: "<h1>thanks for siging up</h1> <p>your password is 123456</p>",
+      });
+      console.log(res);
+      return user;
     }),
 });
