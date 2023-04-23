@@ -40,6 +40,9 @@ const Signup = () => {
       })
       .then((res) => {
         void router.push("/login");
+      })
+      .catch((err) => {
+        console.log(err);
       });
     console.log("hello");
   };
