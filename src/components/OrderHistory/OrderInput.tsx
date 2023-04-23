@@ -6,26 +6,27 @@ import useOrderStore from "~/store/orderStore";
 import { api } from "~/utils/api";
 import InputMessage from "../InputMessage";
 import { env } from "~/env.mjs";
-
-const PusherKey = env.NEXT_PUBLIC_PUSHER_KEY;
-const PusherCluster = env.NEXT_PUBLIC_PUSHER_CLUSTER;
+import { useRouter } from "next/router";
 
 const OrderInput = () => {
-  const { addDiscussion, order } = useOrderStore((state) => ({
+  const router = useRouter();
+  const id = router.query.id as string;
+  const { addDiscussion } = useOrderStore((state) => ({
     order: state.order,
     setOrder: state.setOrder,
     addDiscussion: state.addDiscussion,
   }));
   const { mutateAsync } = api.discussion.addMessage.useMutation();
   const { user } = useSession().data ?? {};
+  const { data: order } = api.order.order.useQuery({ id });
 
   useEffect(() => {
     if (!order) return;
 
     Pusher.logToConsole = true;
 
-    const pusher = new Pusher(PusherKey, {
-      cluster: PusherCluster,
+    const pusher = new Pusher(env.NEXT_PUBLIC_PUSHER_KEY, {
+      cluster: env.NEXT_PUBLIC_PUSHER_CLUSTER,
     });
 
     const channel = pusher.subscribe(`order-${order.id}`);
