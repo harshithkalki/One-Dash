@@ -1,14 +1,9 @@
 import { z } from "zod";
-import * as bcrypt from "bcrypt";
 import {
   createTRPCRouter,
-  publicProcedure,
   protectedProcedure,
 } from "~/server/api/trpc";
 import { TRPCError } from "@trpc/server";
-import jwt, { Secret } from "jsonwebtoken";
-import { env } from "~/env.mjs";
-import { transporter } from "~/config/nodemailer";
 
 export const userRouter = createTRPCRouter({
   members: protectedProcedure.query(async ({ ctx }) => {
@@ -91,22 +86,6 @@ export const userRouter = createTRPCRouter({
       }
     }),
 
-  getSocketToken: protectedProcedure.query(async ({ ctx }) => {
-    const user = await ctx.prisma.user.findUnique({
-      where: {
-        id: ctx.session.user.id,
-      },
-    });
-    if (!user) {
-      throw new TRPCError({
-        message: "User not found",
-        code: "NOT_FOUND",
-      });
-    } else {
-      const token = jwt.sign(user.id, env.WS_JWT_SECRET);
-      return token;
-    }
-  }),
   removeTeamMember: protectedProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
