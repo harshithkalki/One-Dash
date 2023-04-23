@@ -8,7 +8,7 @@ import { api, type RouterOutputs } from "~/utils/api";
 import { mergeSortedArrays } from "~/utils";
 import { useRouter } from "next/router";
 import { shallow } from "zustand/shallow";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 export const selector = (state: OrderState) => ({
   orderhistory: state.orderhistory,
@@ -32,6 +32,7 @@ const OrderHistory = () => {
   let discussions: (Discussions & { user: { name: string } })[] = [];
   const router = useRouter();
   const id = router.query.id as string;
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   const { data } = api.order.orderHistory.useQuery(
     { id: id },
@@ -47,6 +48,10 @@ const OrderHistory = () => {
     }
   }, [data]);
 
+  useEffect(() => {
+    scrollRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [orderhistory]);
+
   return (
     <>
       {orderhistory.map((item, index) => {
@@ -56,9 +61,9 @@ const OrderHistory = () => {
             ...item,
             user: {
               name:
-                user?.firstName ?? item.userId === me?.id
-                  ? "Me"
-                  : order?.user.firstName ?? "Unknown",
+                item.userId === me?.id
+                  ? "ME"
+                  : user?.firstName ?? order?.user.firstName ?? "Unknown",
             },
           });
 
@@ -93,6 +98,7 @@ const OrderHistory = () => {
           );
         }
       })}
+      <div style={{ float: "left", clear: "both" }} ref={scrollRef} />
     </>
   );
 };
