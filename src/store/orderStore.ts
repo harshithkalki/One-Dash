@@ -1,7 +1,7 @@
 import { type Order, type Delivery, type Discussions, type Invoice, type User } from "@prisma/client";
 import { create } from "zustand";
 
-type OrderHistory = (Invoice | (Discussions & { user: { firstName: string } }) | Delivery)[];
+type OrderHistory = (Invoice | (Discussions) | Delivery)[];
 
 export type OrderState = {
     order: (Order & {

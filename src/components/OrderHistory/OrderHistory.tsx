@@ -1,7 +1,7 @@
 import useOrderStore, { type OrderState } from "~/store/orderStore";
 import Invoice from "../Invoice";
 import Discussion from "../Discussion";
-import { type Discussions, type Order, type User } from "@prisma/client";
+import { type Discussions } from "@prisma/client";
 import Delivery from "../Delivery";
 import { useSession } from "next-auth/react";
 import { api, type RouterOutputs } from "~/utils/api";
@@ -77,7 +77,11 @@ const OrderHistory = () => {
           return (
             <div className="py-2" key={item.id}>
               <Invoice
-                invoice={item as Invoice & { user: User; order: Order }}
+                invoice={{
+                  ...item,
+                  order: order!,
+                  user: order!.user,
+                }}
               />
             </div>
           );

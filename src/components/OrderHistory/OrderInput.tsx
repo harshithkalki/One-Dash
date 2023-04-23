@@ -2,10 +2,13 @@ import { type Discussions } from "@prisma/client";
 import { useSession } from "next-auth/react";
 import Pusher from "pusher-js";
 import { useEffect } from "react";
-import useOrderStore, { type OrderState } from "~/store/orderStore";
-import { type RouterOutputs, api } from "~/utils/api";
+import useOrderStore from "~/store/orderStore";
+import { api } from "~/utils/api";
 import InputMessage from "../InputMessage";
-import { mergeSortedArrays } from "~/utils";
+import { env } from "~/env.mjs";
+
+const PusherKey = env.NEXT_PUBLIC_PUSHER_KEY;
+const PusherCluster = env.NEXT_PUBLIC_PUSHER_CLUSTER;
 
 const OrderInput = () => {
   const { addDiscussion, order } = useOrderStore((state) => ({
@@ -21,8 +24,8 @@ const OrderInput = () => {
 
     Pusher.logToConsole = true;
 
-    const pusher = new Pusher("6628667fe199b2a488b4", {
-      cluster: "ap2",
+    const pusher = new Pusher(PusherKey, {
+      cluster: PusherCluster,
     });
 
     const channel = pusher.subscribe(`order-${order.id}`);
@@ -56,7 +59,6 @@ const OrderInput = () => {
   return (
     <div className="py-2">
       <InputMessage
-        // eslint-disable-next-line @typescript-eslint/no-misused-promises
         onSend={async (message) => {
           if (!order) return;
           const discussion = await mutateAsync({

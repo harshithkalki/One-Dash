@@ -74,7 +74,9 @@ model Invoice {
   createdAt     DateTime      @default(now())
   notes         String?
   amount        Int
-  paymentId     String?
+  paymentId     String?       @unique
+  paymentLink   String?       @db.LongText
+  pdf           String?
   paymentStatus paymentStatus @default(pending)
   order         Order         @relation(fields: [orderId], references: [id])
   user          User          @relation(fields: [userId], references: [id])

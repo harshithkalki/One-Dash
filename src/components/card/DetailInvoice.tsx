@@ -1,18 +1,8 @@
-import { User, type Invoice, Order } from "@prisma/client";
+import { type User, type Invoice, type Order } from "@prisma/client";
 import dayjs from "dayjs";
 import { useRouter } from "next/router";
+import { useRef } from "react";
 import { BsDownload } from "react-icons/bs";
-
-const demoData = {
-  Orderid: "OD170720201002",
-  time: 15,
-  user: "John Doe",
-  address: "1234 State St New Delhi, India, 1234",
-  createdAt: "2021-07-17T10:02:00.000Z",
-  DueDate: "2021-07-27T10:02:00.000Z",
-  amount: 100,
-  itemName: "spiderMan 3D model",
-};
 
 const DetailInvoice = ({
   invoice,
@@ -20,6 +10,7 @@ const DetailInvoice = ({
   invoice: Invoice & { user: User; order: Order };
 }) => {
   const { push } = useRouter();
+  const downloadRef = useRef<HTMLAnchorElement>(null);
 
   return (
     <>
@@ -87,18 +78,30 @@ const DetailInvoice = ({
           <p className="py-2">Total Due</p>
           <p className="py-2">{`$${invoice.amount.toFixed(2)}`}</p>
         </div>
-        <button className="text-md flex w-full items-center justify-center space-x-2 border-2 border-blue-400 py-3 font-semibold text-[#007AFF]">
+        <button
+          className="text-md flex w-full items-center justify-center space-x-2 border-2 border-blue-400 py-3 font-semibold text-[#007AFF]"
+          onClick={() => {
+            downloadRef.current?.click();
+          }}
+        >
           <BsDownload />
           <span>Download Invoice</span>
         </button>
-        <button
-          className="text-md mt-2 flex w-full items-center justify-center space-x-2 bg-blue-500 py-3 font-semibold text-white"
-          onClick={() => {
-            void push(invoice.paymentId ?? "");
-          }}
+        <a
+          href={invoice.paymentLink!}
+          target="_blank"
+          className="text-md mt-2 flex w-full cursor-pointer items-center justify-center space-x-2 bg-blue-500 py-3 font-semibold text-white"
         >
           Pay Now
-        </button>
+        </a>
+        <a
+          ref={downloadRef}
+          style={{ display: "none" }}
+          href={invoice.pdf ?? ""}
+          download
+        >
+          Download
+        </a>
       </div>
     </>
   );

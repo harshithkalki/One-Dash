@@ -55,11 +55,11 @@ export const invoiceRouter = createTRPCRouter({
 
     await stripe.invoiceItems.create({
       customer: customerId,
-      amount: input.amount,
+      amount: input.amount * 100,
       invoice: invoice.id,
     });
 
-    const invoiceSend = await stripe.invoices.sendInvoice(invoice.id);
+    const invoiceSended = await stripe.invoices.sendInvoice(invoice.id);
 
     const invoiceDB = await ctx.prisma.invoice.create({
       data: {
@@ -68,7 +68,9 @@ export const invoiceRouter = createTRPCRouter({
         deliveryTime: input.deliveryTime,
         userId: order?.userId ?? "",
         paymentStatus: "pending",
-        paymentId: invoiceSend.hosted_invoice_url as string,
+        paymentId: invoice.id,
+        paymentLink: invoiceSended.hosted_invoice_url,
+        pdf: invoiceSended.invoice_pdf,
       },
       include: {
         user: true,

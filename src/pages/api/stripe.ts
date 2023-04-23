@@ -1,8 +1,8 @@
 import { env } from '~/env.mjs';
 import { buffer } from 'micro';
 import type { NextApiHandler } from 'next';
-import { prisma } from '~/server/db'
 import Stripe from 'stripe';
+import { prisma } from '~/server/db';
 
 
 const stripe = new Stripe(env.STRIPE_SECRET_KEY, {
@@ -32,19 +32,15 @@ const handler: NextApiHandler = async (req, res) => {
       return;
     }
 
-    if ('charge.succeeded' === stripeEvent.type) {
-      const session = stripeEvent.data.object as {
-        metadata: any;
-      };
+    if (stripeEvent.type === 'invoice.payment_succeeded') {
+      const invoice = stripeEvent.data.object as Stripe.Invoice;
+      await prisma.invoice.update({
+        where: { paymentId: invoice.id }, data: {
+          paymentStatus: "paid",
+        }
+      })
 
-      try {
-        // const result = await updateOrder('CONFORMED', session.metadata.orderId);
-
-      } catch (error) {
-        console.log(error);
-      }
     }
-
     res.json({ received: true });
   } else {
     res.setHeader('Allow', 'POST');

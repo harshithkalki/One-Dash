@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { type Discussions } from "@prisma/client";
+import dayjs from "dayjs";
 
 const CardDisscussion = ({
   discussions,
@@ -34,7 +35,7 @@ const CardDisscussion = ({
                     {discuss.message}.
                   </p>
                   <p className="py-2 text-sm font-normal text-gray-400">
-                    {discuss.createdAt.toString()}
+                    {dayjs(discuss.createdAt).format("H:m MMMM D, YYYY")}
                   </p>
                 </div>
               </div>

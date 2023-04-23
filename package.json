@@ -7,8 +7,7 @@
     "dev": "next dev",
     "postinstall": "prisma generate",
     "lint": "next lint",
-    "start": "next start",
-    "dev:ws": "cross-env NODE_ENV=development tsx --watch --tsconfig tsconfig.server.json ./src/server/ws-server.ts"
+    "start": "next start"
   },
   "dependencies": {
     "@hookform/resolvers": "^2.9.11",
@@ -25,7 +24,6 @@
     "clsx": "^1.2.1",
     "country-flag-icons": "^1.5.5",
     "dayjs": "^1.11.7",
-    "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "formidable": "^2.1.1",
     "formik": "^2.2.9",
@@ -46,8 +44,6 @@
     "react-rating-stars-component": "^2.2.0",
     "react-spring": "^9.6.1",
     "reactjs-popup": "^2.0.5",
-    "socket.io": "^4.6.1",
-    "socket.io-client": "^4.6.1",
     "stripe": "^12.1.1",
     "styled-components": "^5.3.6",
     "superjson": "1.12.2",
@@ -70,7 +66,6 @@
     "@typescript-eslint/eslint-plugin": "^5.56.0",
     "@typescript-eslint/parser": "^5.56.0",
     "autoprefixer": "^10.4.14",
-    "cross-env": "^7.0.3",
     "eslint": "^8.36.0",
     "eslint-config-next": "^13.2.4",
     "postcss": "^8.4.21",
@@ -78,7 +73,6 @@
     "prettier-plugin-tailwindcss": "^0.2.6",
     "prisma": "^4.11.0",
     "tailwindcss": "^3.3.0",
-    "tsx": "^3.12.6",
     "typescript": "^5.0.2"
   },
   "ct3aMetadata": {

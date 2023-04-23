@@ -1,7 +1,4 @@
 import { z } from "zod";
-import { config } from "dotenv";
-process.env.NODE_ENV !== "production" &&
-  config({ path: process.cwd() + "/.env" });
 /**
  * Specify your server-side environment variables schema here. This way you can ensure the app isn't
  * built with invalid env vars.
@@ -42,10 +39,10 @@ const processEnv = {
   PUSHER_SECRET: process.env.PUSHER_SECRET,
   PUSHER_APPID: process.env.PUSHER_APPID,
   NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
-  NEXT_PUBLIC_PUSHER_KEY: process.env.NEXT_PUBLIC_PUSHER_KEY,
-  NEXT_PUBLIC_PUSHER_CLUSTER: process.env.NEXT_PUBLIC_PUSHER_CLUSTER,
   STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
   STRIPE_WEBHOOK_ENDPOINT_SECRET: process.env.STRIPE_WEBHOOK_ENDPOINT_SECRET,
+  NEXT_PUBLIC_PUSHER_KEY: process.env.NEXT_PUBLIC_PUSHER_KEY,
+  NEXT_PUBLIC_PUSHER_CLUSTER: process.env.NEXT_PUBLIC_PUSHER_CLUSTER,
   // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
 };
 
