@@ -32,7 +32,7 @@ const Asside = () => {
   const menuItem =
     pageUrl.substr(1, 4) == "admi" ? menuItemsAdmin : menuItemClients;
   const activeMenu = useMemo(
-    () => menuItem.find((menu) => menu.link === router.pathname),
+    () => menuItem.find((menu) => menu.href === router.pathname),
     [router.pathname]
   );
 
@@ -51,7 +51,13 @@ const Asside = () => {
     }
   );
 
-  const getNavItemClasses = (menu) => {
+  const getNavItemClasses = (menu: {
+    href?: string;
+    title?: string;
+    icon?: JSX.Element;
+    subNav?: { title: string; path: string }[] | undefined;
+    id?: any;
+  }) => {
     return classNames(
       "flex items-center cursor-pointer hover:bg-light-lighter rounded w-full overflow-hidden whitespace-nowrap",
       {
@@ -83,7 +89,7 @@ const Asside = () => {
                 hidden: toggleCollapse,
               })}
             >
-              <Image width={158} height={60} alt="loog" src={LogoIcon} />
+              <Image width={158} height={60} alt="loog" src={"/img/Logo.svg"} />
             </span>
           </div>
           {/*

@@ -37,6 +37,7 @@ model User {
   receivedMessages Message[]     @relation("ReceiverMessage")
   invoices         Invoice[]
   Discussions      Discussions[]
+  role             role          @default(client)
 }
 
 model Credentials {
@@ -125,6 +126,11 @@ enum paymentStatus {
   pending
   paid
   failed
+}
+
+enum role {
+  admin
+  client
 }
 
 model Message {

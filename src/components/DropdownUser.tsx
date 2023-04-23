@@ -294,7 +294,7 @@ const DropdownUser = () => {
                 <img
                   onClick={closeModal}
                   className="cursor-pointer "
-                  src={Closeicon}
+                  src={"/img/icon/Close Icon.svg"}
                   alt="close"
                 />
               </div>
@@ -307,7 +307,7 @@ const DropdownUser = () => {
                     />
                   </div>
                   <img
-                    src={PicImg}
+                    src={"/img/user/Avatar_3.png"}
                     className="EditProfile--img"
                     width={76}
                     height={76}
