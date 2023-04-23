@@ -5,7 +5,7 @@ import poster from "../../public/img/poster.svg";
 import logoimg from "../../public/img/Logo.svg";
 import { BiShow } from "react-icons/bi";
 import { FcGoogle } from "react-icons/fc";
-import { useForm } from "react-hook-form";
+import { SubmitHandler, useForm } from "react-hook-form";
 import Link from "next/link";
 import { z } from "zod";
 import { transporter } from "~/config/nodemailer";
@@ -19,17 +19,19 @@ const Signup = () => {
 
   const router = useRouter();
 
+  type data = {
+    firstName: string;
+    lastName: string;
+    email: string;
+  };
+
   const signup = api.user.signup.useMutation();
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm();
-  const onSubmit = async (data: {
-    firstName: string;
-    lastName: string;
-    email: string;
-  }) => {
+  } = useForm<data>();
+  const onSubmit: SubmitHandler<data> = async (data) => {
     const res = await signup
       .mutateAsync({
         email: data.email,
