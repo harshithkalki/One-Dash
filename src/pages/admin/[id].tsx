@@ -13,6 +13,8 @@ import WorkDelivery from "~/components/WorkDelivery";
 import Satisfied from "~/components/Satisfied";
 import OrderHistory from "~/components/OrderHistory/OrderHistory";
 import OrderInput from "~/components/OrderHistory/OrderInput";
+import { GetServerSideProps } from "next";
+import { adminServerSideProps } from "~/utils/serverSideProps";
 
 const ProjectDetailAdmin = () => {
   const router = useRouter();
@@ -150,3 +152,5 @@ const ProjectDetailAdmin = () => {
 };
 
 export default ProjectDetailAdmin;
+
+export const getServerSideProps: GetServerSideProps = adminServerSideProps;

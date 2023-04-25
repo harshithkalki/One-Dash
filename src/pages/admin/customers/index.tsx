@@ -5,6 +5,8 @@ import { customers } from "../../../components/data/dataContents";
 import { AiOutlinePlus, AiOutlineClose } from "react-icons/ai";
 import { BsSearch } from "react-icons/bs";
 import { MdEdit } from "react-icons/md";
+import { GetServerSideProps } from "next";
+import { adminServerSideProps } from "~/utils/serverSideProps";
 const Customer = () => {
   return (
     <React.Fragment>
@@ -201,3 +203,5 @@ const Customer = () => {
   );
 };
 export default Customer;
+
+export const getServerSideProps: GetServerSideProps = adminServerSideProps;

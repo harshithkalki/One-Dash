@@ -10,6 +10,9 @@ import { useRouter } from "next/router";
 import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { api } from "~/utils/api";
+import { type GetServerSideProps } from "next";
+import { getSession } from "next-auth/react";
+import { adminServerSideProps } from "~/utils/serverSideProps";
 const AdminDashboard = () => {
   const router = useRouter();
   const [visibility, setVisibility] = useState(false);
@@ -257,3 +260,22 @@ const AdminDashboard = () => {
   );
 };
 export default AdminDashboard;
+
+// export const getServerSideProps: GetServerSideProps = async (context) => {
+//   const session = await getSession({ req: context.req });
+
+//   if (session?.user.role !== "admin") {
+//     // redirect to login page
+//     return {
+//       redirect: {
+//         destination: "/client",
+//         permanent: false, // set to true if the redirect is permanent
+//       },
+//     };
+//   }
+//   return {
+//     props: {},
+//   };
+// };
+
+export const getServerSideProps: GetServerSideProps = adminServerSideProps;

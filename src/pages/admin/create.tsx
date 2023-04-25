@@ -1,36 +1,40 @@
-import React from "react"
-import { BsChevronRight } from "react-icons/bs"
-import ProjectInput from "../../components/ProjectInput"
+import React from "react";
+import { BsChevronRight } from "react-icons/bs";
+import ProjectInput from "../../components/ProjectInput";
+import { type GetServerSideProps } from "next";
+import { adminServerSideProps } from "~/utils/serverSideProps";
 const NewProject = () => {
   return (
     <React.Fragment>
-      <div className="p-4 pt-4 h-[calc(100vh-80px)] mt-20 overflow-y-auto">
-        <div className="flex flex-col w-full">
-          <div className="overflow-x-auto font-play">
+      <div className="mt-20 h-[calc(100vh-80px)] overflow-y-auto p-4 pt-4">
+        <div className="flex w-full flex-col">
+          <div className="font-play overflow-x-auto">
             <div className="flex space-x-2">
-              <p className="text-gray-400 flex items-center space-x-2 py-1">
-                <span className="lg:text-[14px] 2xl:text-[16px] text-[16px] text-[500] text--font ">
+              <p className="flex items-center space-x-2 py-1 text-gray-400">
+                <span className="text--font text-[16px] text-[500] lg:text-[14px] 2xl:text-[16px] ">
                   My Projects
                 </span>{" "}
                 <BsChevronRight size={13} />{" "}
-                <span className="lg:text-[14px] 2xl:text-[16px] text-[16px] text-[500] text--font">
+                <span className="text--font text-[16px] text-[500] lg:text-[14px] 2xl:text-[16px]">
                   New Project
                 </span>
               </p>
             </div>
-            <div className="py-2 inline-block min-w-full flex justify-between items-center">
-              <h3 className="lg:text-[24px] font-[600] 2xl:text-[27px] text-[27px]">
+            <div className="inline-block flex min-w-full items-center justify-between py-2">
+              <h3 className="text-[27px] font-[600] lg:text-[24px] 2xl:text-[27px]">
                 Order Detail
               </h3>
-              <h4 className="text-[13px] pr-2 md:pr-9">Status: Draft</h4>
+              <h4 className="pr-2 text-[13px] md:pr-9">Status: Draft</h4>
             </div>
           </div>
         </div>
-        <div className="flex flex-col w-full pt-1">
+        <div className="flex w-full flex-col pt-1">
           <ProjectInput userin={true} />
         </div>
       </div>
     </React.Fragment>
-  )
-}
-export default NewProject
+  );
+};
+export default NewProject;
+
+export const getServerSideProps: GetServerSideProps = adminServerSideProps;

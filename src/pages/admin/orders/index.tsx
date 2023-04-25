@@ -6,6 +6,8 @@ import { AiOutlinePlus, AiOutlineClose } from "react-icons/ai";
 // import { picImg } from "../../../public/img/user/Avatar_team.png";
 import { BsSearch } from "react-icons/bs";
 import { MdEdit } from "react-icons/md";
+import { GetServerSideProps } from "next";
+import { adminServerSideProps } from "~/utils/serverSideProps";
 const Order = () => {
   return (
     <React.Fragment>
@@ -216,3 +218,5 @@ const Order = () => {
   );
 };
 export default Order;
+
+export const getServerSideProps: GetServerSideProps = adminServerSideProps;

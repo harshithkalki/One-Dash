@@ -2,6 +2,8 @@ import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import TabComponent from "../../../components/TabComponent";
+import { GetServerSideProps } from "next";
+import { adminServerSideProps } from "~/utils/serverSideProps";
 const Settings = () => {
   return (
     <React.Fragment>
@@ -20,3 +22,5 @@ const Settings = () => {
   );
 };
 export default Settings;
+
+export const getServerSideProps: GetServerSideProps = adminServerSideProps;

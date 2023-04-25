@@ -5,6 +5,8 @@ import React, { useState } from "react";
 import Link from "next/link";
 
 import { US, IN, DE, ID, PH, AU, GB } from "country-flag-icons/react/3x2";
+import { GetServerSideProps } from "next";
+import { adminServerSideProps } from "~/utils/serverSideProps";
 export const getStaticPaths = async () => {
   const paths = customers.map((itemData) => ({
     params: { id: itemData.id.toString() },
@@ -186,3 +188,5 @@ const DetailCustomer = ({ itemData }) => {
 };
 
 export default DetailCustomer;
+
+export const getServerSideProps: GetServerSideProps = adminServerSideProps;
