@@ -226,4 +226,32 @@ export const orderRouter = createTRPCRouter({
       return orderHistory;
     }
     ),
+
+  orderPaginate: protectedProcedure
+    .input(
+      z.object({
+        limit: z.number().default(10),
+        cursor: z.string().nullish()
+      })
+    ).query(async ({ ctx, input }) => {
+
+      const orders = await ctx.prisma.order.findMany({
+        skip: input.cursor ? 1 : 0,
+        take: input.limit,
+        cursor: input.cursor ? { id: input.cursor } : undefined,
+        orderBy: {
+          createdAt: "desc",
+        },
+        include: {
+          User: true,
+        },
+      });
+
+
+      return {
+        orders,
+        cursor: orders[orders.length - 1]?.id
+      }
+    })
+
 });

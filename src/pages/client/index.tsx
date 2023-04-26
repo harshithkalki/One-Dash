@@ -1,17 +1,11 @@
-import {
-  optionsData,
-  optionsData2,
-  // products,
-} from "../../components/data/dataContents";
+import { optionsData, optionsData2 } from "../../components/data/dataContents";
 import CardProject from "../../components/card/CardProject";
 import { BsSearch, BsChevronDown } from "react-icons/bs";
 import { useRouter } from "next/router";
-// import { SiGooglechat } from "react-icons/si";
 import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
 import { api } from "~/utils/api";
-//BsSearch
 
 const Client = () => {
   const router = useRouter();
@@ -19,9 +13,7 @@ const Client = () => {
   const [selectedOption, setSelectedOption] = useState("");
   const [weekvisibility, setWeekVisibility] = useState(false);
   const [weekselectedOption, weeksetSelectedOption] = useState("");
-  const { data: session, status } = useSession();
-  console.log(session);
-  console.log(status);
+  const { status } = useSession();
 
   const wrapperRef = useRef<HTMLDivElement>(null);
   useOutsideAlerter(wrapperRef);
@@ -46,7 +38,26 @@ const Client = () => {
     }
   }, [status]);
 
-  const Products = api.order.allUserOrders.useQuery();
+  const { data, fetchNextPage } = api.order.orderPaginate.useInfiniteQuery(
+    { limit: 10 },
+    {
+      getNextPageParam: (lastPage) => lastPage.cursor,
+    }
+  );
+
+  const handleScroll = () => {
+    const { scrollTop, clientHeight, scrollHeight } = document.documentElement;
+    if (scrollTop + clientHeight >= scrollHeight) {
+      if (data?.pages[data?.pages.length - 1]?.cursor !== null) {
+        void fetchNextPage();
+      }
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
     <React.Fragment>
@@ -220,19 +231,21 @@ const Client = () => {
           </div>
           <div className="h-full">
             <div className="mt-6 flex w-full flex-wrap items-center justify-center gap-2 lg:justify-start">
-              {Products?.data?.map((product, index) => (
-                <div key={index}>
-                  <CardProject
-                    product={{
-                      createdAt: product.createdAt.toISOString(),
-                      id: product.id,
-                      name: product.name,
-                      status: product.orderStatus as string,
-                      logo: product.logo ?? "/img/product/product_1.png",
-                    }}
-                  />
-                </div>
-              ))}
+              {data?.pages?.map(({ cursor, orders }) =>
+                orders.map((product, index) => (
+                  <div key={product.id}>
+                    <CardProject
+                      product={{
+                        createdAt: product.createdAt.toISOString(),
+                        id: product.id,
+                        name: product.name,
+                        status: product.orderStatus as string,
+                        logo: product.logo ?? "/img/product/product_1.png",
+                      }}
+                    />
+                  </div>
+                ))
+              )}
             </div>
           </div>
         </div>
@@ -242,6 +255,35 @@ const Client = () => {
 };
 export default Client;
 
-import { clientServerSideProps } from "~/utils/serverSideProps";
+import { type GetServerSideProps } from "next";
+import { createSSG } from "~/utils/ssg";
 
-export const getServerSideProps = clientServerSideProps;
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const { ssg, session } = await createSSG(context);
+
+  if (!session) {
+    return {
+      redirect: {
+        destination: "/login",
+        permanent: false,
+      },
+    };
+  }
+
+  if (session.user.role !== "client") {
+    return {
+      redirect: {
+        destination: "/admin",
+        permanent: false,
+      },
+    };
+  }
+
+  await ssg.order.orderPaginate.prefetchInfinite({ limit: 10 });
+
+  return {
+    props: {
+      trpcState: ssg.dehydrate(),
+    },
+  };
+};
