@@ -182,4 +182,50 @@ export const userRouter = createTRPCRouter({
       return user;
     }
   }),
+  updateMe: protectedProcedure
+    .input(
+      z.object({
+        firstName: z.string(),
+        lastName: z.string(),
+        email: z.string(),
+        phone: z.string(),
+        address: z.string(),
+        city: z.string(),
+        state: z.string(),
+        zipcode: z.string(),
+        country: z.string(),
+        companyName: z.string(),
+        addressFirstname: z.string(),
+        addressLastname: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const user = await ctx.prisma.user.update({
+        where: {
+          id: ctx.session.user.id,
+        },
+        data: {
+          firstName: input.firstName,
+          lastName: input.lastName,
+          email: input.email,
+          phone: input.phone,
+          address: input.address,
+          city: input.city,
+          state: input.state,
+          zipcode: input.zipcode,
+          country: input.country,
+          companyName: input.companyName,
+          addressFirstname: input.addressFirstname,
+          addressLastname: input.addressLastname,
+        },
+      });
+      if (!user) {
+        throw new TRPCError({
+          message: "User not found",
+          code: "NOT_FOUND",
+        });
+      } else {
+        return user;
+      }
+    }),
 });

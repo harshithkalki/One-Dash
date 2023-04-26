@@ -13,6 +13,9 @@ import { AiOutlineCamera } from "react-icons/ai";
 import { useRouter } from "next/router";
 import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
+import { useFormik } from "formik";
+import { User } from "@prisma/client";
+import { api } from "~/utils/api";
 // import Link from "next/link";
 const DropdownUser = () => {
   const [open, setOpen] = useState(false);
@@ -58,9 +61,9 @@ const DropdownUser = () => {
   }
   const [visibility, setVisibility] = useState(false);
   const [statevisibility, setStateVisibility] = useState(false);
-  const [selectedOption, setSelectedOption] = useState("");
-  const [stateselectedOption, setStateSelectedOption] = useState("");
+
   const [flagOption, setflagedOption] = useState("");
+
   const [search, setSearch] = useState("");
   const options = [
     {
@@ -226,6 +229,46 @@ const DropdownUser = () => {
   ];
   console.log(session);
 
+  const Userinfo = api.user.me.useQuery();
+  const updateMe = api.user.updateMe.useMutation();
+
+  const formik = useFormik({
+    initialValues: {
+      firstName: Userinfo.data?.firstName as unknown as string,
+      lastName: Userinfo.data?.lastName ?? "",
+      email: Userinfo.data?.email ?? "",
+      phone: Userinfo.data?.phone ?? "",
+      country: Userinfo.data?.country ?? "",
+      city: Userinfo.data?.city ?? "",
+      profile: Userinfo.data?.profile ?? "",
+      companyName: Userinfo.data?.companyName ?? "",
+      addressFirstname: Userinfo.data?.addressFirstname ?? "",
+      addressLastname: Userinfo.data?.addressLastname ?? "",
+      address: Userinfo.data?.address ?? "",
+      state: Userinfo.data?.state ?? "",
+      zipcode: Userinfo.data?.zipcode ?? "",
+    },
+    onSubmit: async (values) => {
+      console.log(values);
+      await updateMe
+        .mutateAsync(values)
+        .then(() => {
+          setOpen(false);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+  });
+
+  const [stateselectedOption, setStateSelectedOption] = useState(
+    formik.values.state ?? ""
+  );
+
+  const [selectedOption, setSelectedOption] = useState(
+    formik.values.country ?? ""
+  );
+
   return (
     <React.Fragment>
       <div className="menu cursor-pointer">
@@ -283,6 +326,8 @@ const DropdownUser = () => {
           </div>
         </Popup>
       </div>
+
+      {/* user form  */}
       <Popup open={open} closeOnDocumentClick onClose={closeModal}>
         <div className="font-play  mx-auto max-w-[90%] cursor-pointer rounded-[8px] border-[1px] border-[#EBEBEB] bg-white shadow-2xl sm:max-w-[550px]">
           <form onSubmit={handleSubmit}>
@@ -324,6 +369,9 @@ const DropdownUser = () => {
                     <input
                       className="focus:shadow-outline mb-0 h-8 w-full appearance-none rounded border px-3 text-[14px] leading-tight text-gray-700 placeholder-gray-300 focus:outline-none"
                       id="firstname"
+                      name="firstname"
+                      value={formik.values.firstName}
+                      onChange={formik.handleChange}
                       type="text"
                       placeholder="First Name"
                       required
@@ -340,6 +388,9 @@ const DropdownUser = () => {
                       id="lastname"
                       type="text"
                       placeholder="Last Name"
+                      name="lastName"
+                      value={formik.values.lastName}
+                      onChange={formik.handleChange}
                       required
                     />
                   </div>
@@ -357,7 +408,11 @@ const DropdownUser = () => {
                   className="focus:shadow-outline h-8 w-full appearance-none rounded border px-3 text-[14px] leading-tight text-gray-700 placeholder-gray-300 focus:outline-none"
                   id="email"
                   type="email"
+                  name="email"
+                  value={formik.values.email}
+                  onChange={formik.handleChange}
                   placeholder="Email"
+                  readOnly
                 />
               </div>
               <div className="EditProfile EditProfile--gap py-1 md:py-2">
@@ -372,6 +427,9 @@ const DropdownUser = () => {
                   className="focus:shadow-outline h-8 w-full appearance-none rounded border px-3 text-[14px] leading-tight text-gray-700 placeholder-gray-300 focus:outline-none"
                   id="phone"
                   type="text"
+                  name="phone"
+                  value={formik.values.phone}
+                  onChange={formik.handleChange}
                   placeholder="Phone Number"
                 />
               </div>
@@ -435,6 +493,7 @@ const DropdownUser = () => {
                                 : "font-play mt-[10px] flex h-[37px] w-[100%] items-start justify-start border-b-[1px] border-[#EBEBEB] py-2 text-[12px] font-[400] leading-[17px] text-[#131313]"
                             }
                             onClick={() => {
+                              void formik.setFieldValue("country", countryName);
                               setSelectedOption(countryName);
                               setflagedOption(flagImgUrl);
                             }}
@@ -459,6 +518,9 @@ const DropdownUser = () => {
                       id="firstnameaddress"
                       type="text"
                       required
+                      name="addressFirstname"
+                      value={formik.values.addressFirstname ?? ""}
+                      onChange={formik.handleChange}
                       placeholder="First Name"
                     />
                   </div>
@@ -470,6 +532,9 @@ const DropdownUser = () => {
                       id="lastnameaddress"
                       type="text"
                       required
+                      name="addressLastname"
+                      value={formik.values.addressLastname ?? ""}
+                      onChange={formik.handleChange}
                       placeholder="Last Name"
                     />
                   </div>
@@ -480,7 +545,9 @@ const DropdownUser = () => {
                   className="focus:shadow-outline h-8 w-full appearance-none rounded border px-3 text-[14px] leading-tight text-gray-700 placeholder-gray-300 focus:outline-none"
                   id="company"
                   type="text"
-                  required
+                  name="companyName"
+                  value={formik.values.companyName ?? ""}
+                  onChange={formik.handleChange}
                   placeholder="Company Name Optional"
                 />
               </div>
@@ -489,6 +556,9 @@ const DropdownUser = () => {
                   className="focus:shadow-outline h-8 w-full appearance-none rounded border px-3 text-[14px] leading-tight text-gray-700 placeholder-gray-300 focus:outline-none"
                   id="address"
                   required
+                  name="address"
+                  value={formik.values.address ?? ""}
+                  onChange={formik.handleChange}
                   type="text"
                   placeholder="Address"
                 />
@@ -500,6 +570,9 @@ const DropdownUser = () => {
                       className="focus:shadow-outline mb-3 h-8 w-full appearance-none rounded border px-3 text-[14px] leading-tight text-gray-700 placeholder-gray-300 focus:outline-none"
                       id="ciry"
                       required
+                      name="city"
+                      value={formik.values.city ?? ""}
+                      onChange={formik.handleChange}
                       type="text"
                       placeholder="City"
                     />
@@ -552,6 +625,10 @@ const DropdownUser = () => {
                                     : "font-play mt-[10px] flex h-[37px] w-[100%] items-start justify-start border-b-[1px] border-[#EBEBEB] py-2 text-[12px] font-[400] leading-[17px] text-[#131313]"
                                 }
                                 onClick={() => {
+                                  void formik.setFieldValue(
+                                    "state",
+                                    countryName
+                                  );
                                   setStateSelectedOption(countryName);
                                 }}
                               >
@@ -571,13 +648,22 @@ const DropdownUser = () => {
                       id="zipcode"
                       required
                       type="text"
+                      name="zipcode"
+                      value={formik.values.zipcode ?? ""}
+                      onChange={formik.handleChange}
                       placeholder="Zip Code"
                     />
                   </div>
                 </div>
               </div>
               <div className="EditProfile mb-2 py-1 md:py-2">
-                <button className="w-full bg-blue-500 px-2 py-2 text-white md:py-3">
+                <button
+                  className="w-full bg-blue-500 px-2 py-2 text-white md:py-3"
+                  onClick={() => {
+                    formik.handleSubmit();
+                  }}
+                  disabled={formik.isSubmitting}
+                >
                   Save
                 </button>
               </div>
