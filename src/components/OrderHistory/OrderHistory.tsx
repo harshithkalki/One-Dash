@@ -32,7 +32,7 @@ const OrderHistory = () => {
   let discussions: (Discussions & { user: { name: string } })[] = [];
   const router = useRouter();
   const id = router.query.id as string;
-  const scrollRef = useRef<HTMLDivElement>(null);
+  const orderRef = useRef<HTMLDivElement>(null);
 
   const { data } = api.order.orderHistory.useQuery(
     { id: id },
@@ -49,11 +49,25 @@ const OrderHistory = () => {
   }, [data]);
 
   useEffect(() => {
-    scrollRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (orderhistory.length === 0) {
+      return () => {
+        console.log("scrolling");
+        if (!orderRef.current) return;
+
+        const length = orderRef.current.childNodes.length;
+        const lastChild = orderRef.current.childNodes[
+          length - 1
+        ] as HTMLElement;
+
+        if (lastChild) {
+          lastChild?.scrollIntoView({ behavior: "smooth" });
+        }
+      };
+    }
   }, [orderhistory]);
 
   return (
-    <>
+    <div ref={orderRef}>
       {orderhistory.map((item, index) => {
         if ("message" in item) {
           const user = order?.team.find((user) => user.id === item.userId);
@@ -98,8 +112,7 @@ const OrderHistory = () => {
           );
         }
       })}
-      <div style={{ float: "left", clear: "both" }} ref={scrollRef} />
-    </>
+    </div>
   );
 };
 

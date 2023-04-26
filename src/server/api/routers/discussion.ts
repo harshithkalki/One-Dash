@@ -2,7 +2,7 @@ import pusher from "~/server/common/pusher";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
-import { type Discussions } from "@prisma/client";
+import { Channels } from "~/constants";
 
 
 export const discussionRouter = createTRPCRouter({
@@ -18,12 +18,30 @@ export const discussionRouter = createTRPCRouter({
                 where: {
                     id: orderId,
                 },
-                include: {
-                    team: true,
+                select: {
+                    id: true,
+                    User: {
+                        select: {
+                            id: true,
+                        }
+                    },
+                    team: {
+                        where: {
+                            id: user.id,
+                        },
+                        select: {
+                            id: true,
+                        }
+                    }
                 }
             })
 
-            const isUserAllowed = order?.userId === user.id || order?.team.find((team) => team.id === user.id)
+            if (!order) throw new TRPCError({
+                message: "Order not found",
+                code: "NOT_FOUND",
+            })
+
+            const isUserAllowed = order?.User.id === user.id || order?.team.find((team) => team.id === user.id) || user.role === "admin";
 
             if (!isUserAllowed) {
                 throw new TRPCError({
@@ -40,7 +58,7 @@ export const discussionRouter = createTRPCRouter({
                 }
             })
 
-            await pusher.trigger(`order-${orderId}`, "new-message", {
+            await pusher.trigger(`private-${Channels[0]}-${order.id}`, "new-message", {
                 ...discusstion,
                 user: {
                     name: user.firstName,

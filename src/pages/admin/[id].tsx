@@ -13,8 +13,6 @@ import WorkDelivery from "~/components/WorkDelivery";
 import Satisfied from "~/components/Satisfied";
 import OrderHistory from "~/components/OrderHistory/OrderHistory";
 import OrderInput from "~/components/OrderHistory/OrderInput";
-import { GetServerSideProps } from "next";
-import { adminServerSideProps } from "~/utils/serverSideProps";
 
 const ProjectDetailAdmin = () => {
   const router = useRouter();
@@ -153,4 +151,37 @@ const ProjectDetailAdmin = () => {
 
 export default ProjectDetailAdmin;
 
-export const getServerSideProps: GetServerSideProps = adminServerSideProps;
+import { type GetServerSideProps } from "next";
+import { createSSG } from "~/utils/ssg";
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const { ssg, session } = await createSSG(context);
+
+  if (!session) {
+    return {
+      redirect: {
+        destination: "/login",
+        permanent: false,
+      },
+    };
+  }
+
+  if (session.user.role !== "admin") {
+    return {
+      redirect: {
+        destination: "/client",
+        permanent: false,
+      },
+    };
+  }
+
+  const orderid = context.query.id as string;
+
+  await ssg.order.order.prefetch({ id: orderid });
+
+  return {
+    props: {
+      trpcState: ssg.dehydrate(),
+    },
+  };
+};

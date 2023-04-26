@@ -1,28 +1,13 @@
 import React, { useState } from "react";
 import { useRouter } from "next/router";
-import { GrDocumentUpload } from "react-icons/gr";
 import Image from "next/image";
-import uploadicon from "../../public/img/icon/u_file-upload-alt.svg";
-import { type SubmitHandler, useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import axios from "axios";
 import { useFormik } from "formik";
-import { api } from "~/utils/api";
 import { type Order } from "@prisma/client";
 
 const axiosApi = axios.create({
   baseURL: "/api",
 });
-
-// const ZForm = z.object({
-//   name: z.string().nonempty("Project Name is required"),
-//   type: z.string().nonempty("Project Type is required"),
-//   notes: z.string().optional(),
-//   referenceLinks: z.string().optional(),
-//   attachments:
-//     typeof window === "undefined" ? z.any() : z.instanceof(File).optional(),
-// });
 
 type FormValues = {
   name: string;
@@ -36,7 +21,6 @@ const ProjectInput = ({
   userin,
   values,
   formSubmit,
-  isupdate,
   getQuote,
 }: {
   userin: boolean;
@@ -50,53 +34,75 @@ const ProjectInput = ({
   const [visibility, setVisibility] = useState(false);
   const [ProjectType, projectTypeOption] = useState(values.type);
   const [selectedOption, setSelectedOption] = useState("");
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadingProgress, setUploadingProgress] = useState(0);
   const formik = useFormik({
     initialValues: values,
     onSubmit: async (data) => {
       data.type = ProjectType;
       const order = (await formSubmit(data)) as Order;
-      console.log(order);
-      console.log(data);
 
       if (data.attachments.length > 0) {
         const form = new FormData();
         form.append("id", order.id);
         form.append("collection", "project");
-        console.log(data.attachments);
 
         for (let i = 0; i < data.attachments.length; i++) {
           form.append("files", data.attachments[i]! as File);
         }
-        console.log(form);
-        void axiosApi.post("/upload-file", form).catch((err) => {
-          console.log(err);
-        });
+        setIsUploading(true);
+        void axiosApi
+          .post("/upload-file", form, {
+            onUploadProgress: (progressEvent) => {
+              setUploadingProgress(
+                Math.round((progressEvent.loaded / progressEvent.total!) * 100)
+              );
+              if (progressEvent.loaded === progressEvent.total) {
+                setIsUploading(false);
+                void router.push(`/client/create/${order.id}`);
+              }
+            },
+          })
+          .catch((err) => {
+            console.log(err);
+          });
       }
     },
   });
+
   const QuoteFunc = async () => {
     const data = formik.values;
     data.type = ProjectType;
     const order = (await getQuote(data)) as Order;
-    console.log(order);
-    console.log(data);
+    setIsUploading(true);
 
     if (data.attachments.length > 0) {
       const form = new FormData();
       form.append("id", order.id);
       form.append("collection", "project");
-      console.log(data.attachments);
 
       for (let i = 0; i < data.attachments.length; i++) {
         form.append("files", data.attachments[i]! as File);
       }
-      console.log(form);
-      void axiosApi.post("/upload-file", form).catch((err) => {
-        console.log(err);
-      });
+
+      void (await axiosApi
+        .post("/upload-file", form, {
+          onUploadProgress: (progressEvent) => {
+            setUploadingProgress(
+              Math.round((progressEvent.loaded / progressEvent.total!) * 100)
+            );
+
+            if (progressEvent.loaded === progressEvent.total) {
+            }
+          },
+        })
+        .catch((err) => {
+          console.log(err);
+        }));
     }
-    void router.push("/client");
   };
+
+  console.log(isUploading, uploadingProgress);
 
   const options1 = [
     { option: "3D Animation", value: "3D Animation" },
@@ -105,26 +111,6 @@ const ProjectInput = ({
     { option: "AR / VR", value: "AR / VR" },
     { option: "Custom", value: "Custom" },
   ];
-
-  // const {
-  //   register,
-  //   handleSubmit,
-  //   reset,
-  //   formState: { errors },
-  //   setError,
-  //   setValue,
-  // } = useForm<FormValues>({
-  //   // resolver: zodResolver(ZForm),
-  // });
-
-  // const onSubmit: SubmitHandler<FormValues> = (data) => {
-  //   console.log(data);
-  //   const form = new FormData();
-  //   form.append("id", "testId");
-  //   form.append("collection", "project");
-  //   form.append("files", data.attachments as File);
-  //   void api.post("/upload-file", form);
-  // };
 
   return (
     <form onSubmit={formik.handleSubmit}>
@@ -255,7 +241,6 @@ const ProjectInput = ({
               </div>
             </div>
           </div>
-
           <div className="py-2">
             <p className="text-[14px] lg:text-[13px] 2xl:text-[14px]">
               Today at 1.18 PM
@@ -287,7 +272,6 @@ const ProjectInput = ({
           <div className="mt-3  lg:mt-0">
             <label className="custome--border relative flex h-full w-full flex-col items-center justify-center space-x-5  border-0  border-dashed border-gray-300 bg-[#F2F8FF]">
               <div className="mt-6 flex max-w-full  flex-col items-center justify-center text-blue-600 md:max-w-[400px] lg:mt-0">
-                {/* <GrDocumentUpload size={36} /> */}
                 <Image
                   src={"/img/icon/u_file-upload-alt.svg"}
                   width={35}
@@ -295,10 +279,18 @@ const ProjectInput = ({
                   alt="icon"
                 />
 
-                <p className="max-w-[220px] py-2 text-center text-[14px] text-[#007AFF]">
-                  Upload References Photos, Documents, Design Files or Folders (
-                  Max File Size 2GB )
-                </p>
+                {!isUploading ? (
+                  <p className="max-w-[220px] py-2 text-center text-[14px] text-[#007AFF]">
+                    Upload References Photos, Documents, Design Files or Folders
+                    ( Max File Size 2GB )
+                  </p>
+                ) : (
+                  <div>
+                    <h2 className="text-[14px] text-[#007AFF]">
+                      Uploading {uploadingProgress}%
+                    </h2>
+                  </div>
+                )}
               </div>
               <input
                 type="file"
@@ -310,6 +302,7 @@ const ProjectInput = ({
                     void formik.setFieldValue("attachments", file);
                   }
                 }}
+                disabled={isUploading}
                 multiple
               />
             </label>
@@ -335,9 +328,6 @@ const ProjectInput = ({
             onClick={() => {
               void QuoteFunc();
             }}
-
-            // void router.push("/client");
-            // return void
           >
             Get Quote
           </button>

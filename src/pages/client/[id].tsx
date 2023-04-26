@@ -216,7 +216,25 @@ import { type GetServerSideProps } from "next";
 import { createSSG } from "~/utils/ssg";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const ssg = await createSSG(context);
+  const { ssg, session } = await createSSG(context);
+
+  if (!session) {
+    return {
+      redirect: {
+        destination: "/login",
+        permanent: false,
+      },
+    };
+  }
+
+  if (session.user.role !== "client") {
+    return {
+      redirect: {
+        destination: "/admin",
+        permanent: false,
+      },
+    };
+  }
 
   const orderid = context.query.id as string;
 

@@ -29,7 +29,7 @@ const DetailInvoice = ({
               Invoice
             </h3>
             <h3 className="flex  items-end justify-end  text-[17px] text-blue-600 xl:text-[18px] 2xl:text-[24px]">
-              #{invoice.orderId}
+              #{invoice.id}
             </h3>
           </div>
         </div>
@@ -46,9 +46,9 @@ const DetailInvoice = ({
             <p className="font-play w-[120px] text-[13px] font-normal text-[#131313] xl:text-[14px] 2xl:text-[16px]">
               {`${invoice.user.firstName} ${invoice.user.address ?? ""}`}
             </p>
-            <div className="w-[130px] text-[12px] xl:text-[13px] 2xl:text-[16px]">
-              <ul className="flex items-center justify-between">
-                <li className="text-gray-400 ">Issue Date</li>
+            <div className="w-[130px] whitespace-nowrap text-[12px] xl:text-[13px] 2xl:text-[16px]">
+              <ul className="flex items-center justify-between ">
+                <li className="text-gray-400">Issue Date</li>
                 <li className="text-black">
                   {dayjs(invoice.createdAt).format("MMM DD, YYYY")}
                 </li>

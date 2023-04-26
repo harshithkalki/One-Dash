@@ -7,6 +7,7 @@ import { api } from "~/utils/api";
 import InputMessage from "../InputMessage";
 import { env } from "~/env.mjs";
 import { useRouter } from "next/router";
+import { Channels } from "~/constants";
 
 const OrderInput = () => {
   const router = useRouter();
@@ -27,9 +28,13 @@ const OrderInput = () => {
 
     const pusher = new Pusher(env.NEXT_PUBLIC_PUSHER_KEY, {
       cluster: env.NEXT_PUBLIC_PUSHER_CLUSTER,
+      channelAuthorization: {
+        endpoint: "/api/pusher/channel-auth",
+        transport: "ajax",
+      },
     });
 
-    const channel = pusher.subscribe(`order-${order.id}`);
+    const channel = pusher.subscribe(`private-${Channels[0]}-${order.id}`);
 
     channel.bind(
       "new-message",

@@ -1,0 +1,1 @@
+export const Channels = ["order", "chat", "user"] as const;

@@ -241,3 +241,7 @@ const Client = () => {
   );
 };
 export default Client;
+
+import { clientServerSideProps } from "~/utils/serverSideProps";
+
+export const getServerSideProps = clientServerSideProps;

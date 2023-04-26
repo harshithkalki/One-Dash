@@ -1,1 +1,8 @@
-export type Channels = "ORDER_DISCUSSIONS" | "CHAT" 
+import { type Channels } from '../constants';
+
+export type Channel = typeof Channels[number];
+
+
+
+
+

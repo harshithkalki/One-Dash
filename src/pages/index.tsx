@@ -1,9 +1,5 @@
-import { products } from "../components/data/dataContents";
-import { BsSearch, BsChevronDown } from "react-icons/bs";
 import { useRouter } from "next/router";
 import Link from "next/link";
-import { SiGooglechat } from "react-icons/si";
-import NavBar from "../components/NavBar";
 import React, { Fragment, useEffect } from "react";
 import { useSession } from "next-auth/react";
 
@@ -100,3 +96,44 @@ const Home = (): JSX.Element => {
   );
 };
 export default Home;
+
+import { createSSG } from "~/utils/ssg";
+import { type GetServerSideProps } from "next";
+import { type Session } from "next-auth";
+
+export const getServerSideProps: GetServerSideProps<{
+  session: Session;
+}> = async (context) => {
+  const { session } = await createSSG(context);
+
+  if (!session) {
+    return {
+      redirect: {
+        destination: "/login",
+        permanent: false,
+      },
+    };
+  }
+
+  if (session.user.role === "admin") {
+    return {
+      redirect: {
+        destination: "/admin",
+        permanent: false,
+      },
+      props: {
+        session,
+      },
+    };
+  }
+
+  return {
+    redirect: {
+      destination: "/client",
+      permanent: false,
+    },
+    props: {
+      session,
+    },
+  };
+};

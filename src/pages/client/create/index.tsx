@@ -54,7 +54,6 @@ const NewProject = () => {
             // isupdate={false}
             formSubmit={async (values) => {
               return createOrder.mutateAsync(values).then((res) => {
-                void router.push(`/client/create/${res.id}`);
                 return res;
               });
             }}

@@ -7,6 +7,7 @@ import {
 import { TRPCError } from "@trpc/server";
 import { transporter } from "~/config/nodemailer";
 import * as bcrypt from "bcrypt";
+import pusher from "~/server/common/pusher";
 
 export const userRouter = createTRPCRouter({
   members: protectedProcedure.query(async ({ ctx }) => {
@@ -228,4 +229,51 @@ export const userRouter = createTRPCRouter({
         return user;
       }
     }),
+
+  message: protectedProcedure
+    .input(
+      z.object({
+        message: z.string(),
+        to: z.string(),
+      })
+    ).mutation(async ({ ctx, input }) => {
+      const message = await ctx.prisma.message.create({
+        data: {
+          message: input.message,
+          senderId: ctx.session.user.id,
+          receiverId: input.to,
+        },
+      });
+
+      await pusher.trigger(`${ctx.session.user.id}-${input.to}`, "new-message", message);
+
+      return message;
+    }),
+
+  allUsers: protectedProcedure.query(async ({ ctx }) => {
+    const users = await ctx.prisma.user.findMany({
+      where: {
+        role: "client",
+      },
+      include: {
+        receivedMessages: {
+          where: {
+            senderId: ctx.session.user.id,
+            receiverId: ctx.session.user.id,
+            OR: {
+              senderId: ctx.session.user.id,
+              receiverId: ctx.session.user.id,
+            }
+          },
+          orderBy: {
+            createdAt: "desc"
+          },
+          take: 1
+        }
+      }
+    });
+
+    return users;
+  }
+  ),
 });

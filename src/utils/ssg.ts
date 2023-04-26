@@ -8,8 +8,16 @@ import { getServerAuthSession } from '~/server/common/get-server-auth-session';
 export const createSSG = async (ctx: {
     req: GetServerSidePropsContext["req"];
     res: GetServerSidePropsContext["res"];
-}) => createServerSideHelpers({
-    router: appRouter,
-    ctx: { prisma, session: await getServerAuthSession(ctx) },
-    transformer: superjson,
-});
+}) => {
+    const session = await getServerAuthSession(ctx);
+
+
+    const ssg = createServerSideHelpers({
+        router: appRouter,
+        ctx: { prisma, session },
+        transformer: superjson,
+    });
+
+    return { session, ssg }
+}
+

@@ -37,6 +37,11 @@ const handler: NextApiHandler = async (req, res) => {
       await prisma.invoice.update({
         where: { paymentId: invoice.id }, data: {
           paymentStatus: "paid",
+          order: {
+            update: {
+              orderStatus: "inProduction",
+            }
+          }
         }
       })
 
