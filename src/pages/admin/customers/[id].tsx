@@ -17,6 +17,9 @@ const DetailCustomer = () => {
     id: id as string,
   });
   const itemData = item.data;
+  const allUserOrders = api.order.getUserOrdersWithId.useQuery({
+    id: id as string,
+  });
 
   return (
     <React.Fragment>
@@ -92,7 +95,11 @@ const DetailCustomer = () => {
               <div className="p-2">
                 <p className="text-blue-500 ">Total Value Orders</p>
                 <p className="py-1 text-[20px] font-semibold text-black lg:text-[19px] 2xl:text-[20px]">
-                  ${"N/A"}
+                  $
+                  {allUserOrders.data?.orders.reduce(
+                    (a, b) => a + b.invoices.reduce((a, b) => a + b.amount, 0),
+                    0
+                  ) || 0}
                 </p>
               </div>
               <div className="p-2">
@@ -131,12 +138,14 @@ const DetailCustomer = () => {
                 <input
                   type="text"
                   className="mt-3 w-full border p-2 text-[16px] outline-none md:basis-1/2 lg:text-[15px] 2xl:text-[16px]"
-                  value="David"
+                  value={itemData?.addressFirstname || ""}
+                  placeholder="Address First Name"
                 />
                 <input
                   type="text"
                   className="mt-3 w-full border  p-2 text-[16px] outline-none md:basis-1/2 lg:text-[15px] 2xl:text-[16px]"
-                  value="Morgan"
+                  value={itemData?.addressLastname || ""}
+                  placeholder="Address Last Name"
                 />
               </div>
               <div className="py-2 text-xl font-semibold">
@@ -144,6 +153,7 @@ const DetailCustomer = () => {
                   type="text"
                   className="mt-3 w-full border p-2 text-[16px] outline-none lg:text-[15px] 2xl:text-[16px]"
                   value={itemData?.address || ""}
+                  placeholder="Address"
                 />
               </div>
               <div className="gap-2 py-2 text-xl font-semibold md:flex md:items-center">
@@ -151,16 +161,19 @@ const DetailCustomer = () => {
                   type="text"
                   className="mt-3 w-full border p-2 text-[16px] outline-none md:basis-1/3 lg:text-[15px] 2xl:text-[16px]"
                   value={itemData?.city || ""}
+                  placeholder="City"
                 />
                 <input
                   type="text"
                   className="mt-3 w-full border p-2 text-[16px] outline-none md:basis-1/3 lg:text-[15px] 2xl:text-[16px]"
                   value={itemData?.country || ""}
+                  placeholder="Country"
                 />
                 <input
                   type="text"
                   className="mt-3 w-full border p-2 text-[16px] outline-none md:basis-1/3 lg:text-[15px] 2xl:text-[16px]"
                   value={itemData?.zipcode || ""}
+                  placeholder="Zip Code"
                 />
               </div>
 

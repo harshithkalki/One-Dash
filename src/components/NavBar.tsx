@@ -10,9 +10,10 @@ const NavBar = () => {
       <header className="fixed left-0 right-0 top-0 z-10 flex h-20 items-center justify-end space-x-4 bg-white shadow-sm">
         <div className="centered absolute  left-[50%] top-0 flex items-center justify-center md:hidden">
           <Link href={"/admin"}>
-            <img src={"/img/logores.svg"} alt="logo" />
+            <Image src={logores} alt="logo" />
           </Link>
         </div>
+
         <div className="flex items-center justify-end space-x-4 px-4">
           <Notifications />
           <div className="h-[20px] w-[1x]  border-[1px] border-[#EBEBEB]" />

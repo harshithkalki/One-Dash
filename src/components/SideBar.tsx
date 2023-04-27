@@ -9,7 +9,7 @@ import { TbUsers } from "react-icons/tb";
 import { SlSettings } from "react-icons/sl";
 import { MdEdit } from "react-icons/md";
 import { CiShop } from "react-icons/ci";
-// import "/img/Logo.svg" from "../../public/img/Logo.svg";
+import logo from "../../public/img/Logo.svg";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -134,12 +134,13 @@ const SideBar = () => {
             }`}
           >
             <Link href={"/admin"}>
-              <img
+              <Image
                 width={158}
                 height={60}
                 alt="loog"
                 src={"/img/Logo.svg"}
                 className={`ml-4 lg:w-[140px] ${
+                  // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
                   !open && "sidebar "
                 } cursor-pointer`}
               />

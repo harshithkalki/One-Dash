@@ -10,7 +10,7 @@ const CardDelivery = () => {
       <div className="mb-4 flex justify-between space-x-2">
         <div className="flex space-x-4">
           <div className="w-[45px]">
-            <img src={imgPic} alt="pic" width={45} height={45} />
+            <Image src={imgPic} alt="pic" width={45} height={45} />
           </div>
           <div className="block">
             <h4 className="text-[20px] font-[600] text-black xl:text-[16px] 2xl:text-[20px]">
@@ -23,11 +23,11 @@ const CardDelivery = () => {
           </div>
         </div>
         {/* <SiHackthebox size={70} className="text-blue-500" /> */}
-        <img
+        <Image
           width={67}
           height={67}
           alt="loog"
-          src={Cubebox}
+          src={"/img/icon/cubeboxicon.svg"}
           className="ml-4 hidden md:block"
         />
       </div>
@@ -39,7 +39,7 @@ const CardDelivery = () => {
         ATTACHMENTS
       </h5>
       <div className="mt-2 max-w-[270px] cursor-pointer overflow-hidden rounded border-[1px] border-[#EBEBEB] text-[12px] xl:text-[14px] 2xl:text-[12px]">
-        <img
+        <Image
           className="w-full"
           width={326}
           height={220}

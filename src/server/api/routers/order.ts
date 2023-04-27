@@ -330,4 +330,26 @@ export const orderRouter = createTRPCRouter({
       orders,
     };
   }),
+  getUserOrdersWithId: protectedProcedure
+
+    .input(
+      z.object({
+        id: z.string(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const orders = await ctx.prisma.order.findMany({
+        where: {
+          userId: input.id,
+        },
+        include: {
+          User: true,
+          invoices: true,
+        },
+      });
+
+      return {
+        orders,
+      };
+    }),
 });
