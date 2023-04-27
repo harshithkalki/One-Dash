@@ -40,7 +40,7 @@ const SendOffer = ({ onClose }: { onClose: () => void }) => {
     <div className="font-play flex  w-[678px] flex-col items-center rounded-[10px] bg-white p-6 shadow-md">
       <div className="flex w-full justify-between pb-4">
         <p className="text-xl font-semibold text-black">Send Offer</p>
-        <Image
+        <img
           className="cursor-pointer"
           src={"/img/icon/Close Icon.svg"}
           onClick={onClose}
@@ -184,7 +184,7 @@ const WorkDelivery = () => {
               Deliver your work
             </p>
             {/* <AiOutlineClose size={24} onClick={closeModal} /> */}
-            <Image
+            <img
               className="cursor-pointer"
               src={"/img/icon/Close Icon.svg"}
               width={24}

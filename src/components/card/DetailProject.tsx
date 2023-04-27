@@ -29,7 +29,7 @@ const DetailProject = ({ itemData }: { itemData: itemDataType }) => {
     <>
       <div className="font-play border bg-white p-5 shadow-sm xl:px-4 xl:py-3">
         <div className="flex w-full items-center justify-between space-x-4 p-1">
-          <Image
+          <img
             src={itemData.logo}
             width={91}
             height={91}
@@ -53,7 +53,7 @@ const DetailProject = ({ itemData }: { itemData: itemDataType }) => {
               </div>
             </div>
           </div>
-          <Image
+          <img
             src={imgStatus}
             width={60}
             height={60}

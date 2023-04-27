@@ -18,7 +18,7 @@ const CardDisscussion = ({
           return (
             <div key={discuss.id} className="mb-4 flex space-x-0 border-b">
               <div className="w-[120px] md:w-[55px]">
-                <Image
+                <img
                   className="w-[90px] md:w-[45px]"
                   src={"/img/user/Avatar.png"}
                   alt="pic"

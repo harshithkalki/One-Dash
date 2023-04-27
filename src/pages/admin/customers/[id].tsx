@@ -57,7 +57,7 @@ const DetailCustomer = ({ itemData }) => {
         </div>
         <div className="mt-2 w-full bg-white py-0">
           <div className="flex items-center space-x-2 p-2">
-            <Image
+            <img
               src={itemData.img}
               alt="pic"
               width={105}

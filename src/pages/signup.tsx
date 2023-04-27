@@ -62,7 +62,7 @@ const Signup = () => {
       <div className="flex h-screen md:flex">
         <div className="flex w-full flex-col items-center justify-center bg-white py-10 lg:w-[35%]">
           <div className="font-play w-[100%] px-7 sm:w-[518px] lg:w-[77%]">
-            <Image
+            <img
               src={"/img/Logo.svg"}
               width={280}
               height={108}
@@ -191,7 +191,7 @@ const Signup = () => {
           </div>
         </div>
         <div className="relative overflow-hidden lg:flex lg:w-2/3 ">
-          <Image
+          <img
             src={"/img/bg.svg"}
             layout="fill"
             objectFit="cover"

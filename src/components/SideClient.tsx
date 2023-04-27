@@ -84,7 +84,7 @@ const SideClient = () => {
               !open && "sidebar"
             }`}
           >
-            <Image
+            <img
               width={158}
               height={60}
               alt="loog"

@@ -37,14 +37,14 @@ const HelpCenter = () => {
               className="rounded-full bg-blue-500 p-1 text-white"
             />
           </div>
-          <Image
+          <img
             src="/img/Ellipse10.png"
             alt="pic"
             width={90}
             height={90}
             className="absolute left-0 top-0"
           />
-          <Image
+          <img
             src="/img/Ellipse11.png"
             alt="pic"
             width={90}

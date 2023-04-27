@@ -43,7 +43,7 @@ const Order = () => {
                 <div className="mb-2 border bg-white p-4" key={index}>
                   <div className="mb-1 mt-1 flex items-center justify-between gap-2">
                     <div className="flex space-x-2">
-                      <Image
+                      <img
                         src="/img/user/Avatar_4.png"
                         alt="pic"
                         width={45}
@@ -138,7 +138,7 @@ const Order = () => {
                         <>
                           <tr className="text-sm md:text-base">
                             <td className="flex items-center space-x-2 px-6 py-4">
-                              <Image
+                              <img
                                 src="/img/user/Avatar_4.png"
                                 alt="pic"
                                 width={40}

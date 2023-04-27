@@ -46,7 +46,7 @@ const DetailREquiretment = () => {
       </p>
       <div className="flex items-center space-x-2 py-4">
         <div className="flex h-[50x] w-[120px] items-center space-x-2 bg-gray-100 py-1  md:w-[165px]">
-          <Image
+          <img
             width={32}
             height={32}
             alt="loog"
@@ -59,7 +59,7 @@ const DetailREquiretment = () => {
           </div>
         </div>
         <div className="flex h-[50px] w-[135px] items-center space-x-2 bg-gray-100 py-1 md:w-[165px]">
-          <Image
+          <img
             width={32}
             height={32}
             alt="loog"

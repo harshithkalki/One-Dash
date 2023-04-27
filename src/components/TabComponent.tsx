@@ -49,7 +49,7 @@ const PersonalInfo = () => {
         <div className="py-2">
           <p className="py-2 text-[14px] font-normal">Profile Picture</p>
           <div className="flex items-center space-x-4">
-            <Image
+            <img
               src="/img/user/Avatar_3.png"
               width={60}
               height={60}
@@ -234,7 +234,7 @@ const TabComponent = () => {
                 ? selectedOption
                 : `${selectedOption.slice(0, 20)}...`}
             </span>
-            <Image
+            <img
               className={`${
                 visibility
                   ? "rotate-[0deg] transition-all"

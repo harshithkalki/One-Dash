@@ -125,7 +125,7 @@ const Client = () => {
                           ? weekselectedOption
                           : `${weekselectedOption.slice(0, 20)}...`}
                       </span>
-                      <Image
+                      <img
                         className={`${
                           weekvisibility
                             ? "rotate-[0deg] transition-all"
@@ -179,7 +179,7 @@ const Client = () => {
                           ? selectedOption
                           : `${selectedOption.slice(0, 20)}...`}
                       </span>
-                      <Image
+                      <img
                         className={`${
                           visibility
                             ? "rotate-[0deg] transition-all"

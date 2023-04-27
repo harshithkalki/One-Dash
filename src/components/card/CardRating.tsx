@@ -5,7 +5,7 @@ const CardRating = () => {
   return (
     <>
       <div className="font-play flex flex-col items-center justify-center rounded-[8px] py-2">
-        <Image src={imgPic} alt="pic" width={60} height={60} />
+        <img src={imgPic} alt="pic" width={60} height={60} />
         <h5 className="text-black">Angeline Lee</h5>
         <p className="text-[12px] text-blue-500">Rates 5 stars</p>
       </div>

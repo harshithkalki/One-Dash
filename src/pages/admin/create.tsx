@@ -29,7 +29,17 @@ const NewProject = () => {
           </div>
         </div>
         <div className="flex w-full flex-col pt-1">
-          <ProjectInput userin={true} />
+          <ProjectInput
+            userin={true}
+            isupdate={false}
+            values={{
+              name: "",
+              type: "",
+              attachments: [],
+              notes: "",
+              referenceLinks: "",
+            }}
+          />
         </div>
       </div>
     </React.Fragment>

@@ -102,7 +102,7 @@ const ProjectInput = ({
     }
   };
 
-  console.log(isUploading, uploadingProgress);
+  // console.log(isUploading, uploadingProgress);
 
   const options1 = [
     { option: "3D Animation", value: "3D Animation" },
@@ -138,7 +138,7 @@ const ProjectInput = ({
                       ? selectedOption
                       : `${selectedOption.slice(0, 20)}...`}
                   </span>
-                  <Image
+                  <img
                     className={`${
                       visibility
                         ? "rotate-[0deg] transition-all"
@@ -205,7 +205,7 @@ const ProjectInput = ({
                       ? ProjectType
                       : `${ProjectType.slice(0, 20)}...`}
                   </span>
-                  <Image
+                  <img
                     className={`${
                       weekvisibility
                         ? "rotate-[0deg] transition-all"
@@ -272,7 +272,7 @@ const ProjectInput = ({
           <div className="mt-3  lg:mt-0">
             <label className="custome--border relative flex h-full w-full flex-col items-center justify-center space-x-5  border-0  border-dashed border-gray-300 bg-[#F2F8FF]">
               <div className="mt-6 flex max-w-full  flex-col items-center justify-center text-blue-600 md:max-w-[400px] lg:mt-0">
-                <Image
+                <img
                   src={"/img/icon/u_file-upload-alt.svg"}
                   width={35}
                   height={35}

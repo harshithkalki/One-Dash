@@ -374,7 +374,7 @@ const notifications = [
     img: "/img/product/product_7.png",
     icon: (
       <div className="flex h-[42px] w-[52px] items-center justify-center rounded-full bg-[#007AFF1A] p-2">
-        <Image src={Notificationicon2} alt="Notificationicon2" />
+        <img src={Notificationicon2} alt="Notificationicon2" />
       </div>
     ),
   },
@@ -391,7 +391,7 @@ const notifications = [
     img: "/img/product/product_7.png",
     icon: (
       <div className="flex h-[42px] w-[52px] items-center justify-center rounded-full bg-[#007AFF1A] p-2">
-        <Image src={Notificationicon2} alt="Notificationicon2" />
+        <img src={Notificationicon2} alt="Notificationicon2" />
       </div>
     ),
   },
@@ -427,7 +427,7 @@ const notifications = [
     img: "/img/product/product_7.png",
     icon: (
       <div className="flex h-[42px] w-[52px] items-center justify-center rounded-full border-[1px] border-[#13131333] p-2">
-        <Image src={Notificationicon3} alt="Notificationicon2" />
+        <img src={Notificationicon3} alt="Notificationicon2" />
       </div>
     ),
   },
@@ -444,7 +444,7 @@ const notifications = [
     img: "/img/product/product_7.png",
     icon: (
       <div className="flex h-[42px] w-[52px] items-center justify-center rounded-full border-[1px] border-[#13131333] p-2">
-        <Image src={Notificationicon3} alt="Notificationicon2" />
+        <img src={Notificationicon3} alt="Notificationicon2" />
       </div>
     ),
   },
@@ -461,7 +461,7 @@ const notifications = [
     img: "/img/product/product_7.png",
     icon: (
       <div className="flex h-[42px] w-[52px] items-center justify-center rounded-full bg-[#007AFF1A] p-2">
-        <Image src={Notificationicon2} alt="Notificationicon2" />
+        <img src={Notificationicon2} alt="Notificationicon2" />
       </div>
     ),
   },
@@ -478,7 +478,7 @@ const notifications = [
     img: "/img/product/product_7.png",
     icon: (
       <div className="flex h-[42px] w-[52px] items-center justify-center rounded-full bg-[#007AFF1A] p-2">
-        <Image src={Notificationicon2} alt="Notificationicon2" />
+        <img src={Notificationicon2} alt="Notificationicon2" />
       </div>
     ),
   },
@@ -495,7 +495,7 @@ const notifications = [
     img: "/img/product/product_7.png",
     icon: (
       <div className="flex h-[42px] w-[52px] items-center justify-center rounded-full bg-[#007AFF1A] p-2">
-        <Image src={Notificationicon2} alt="Notificationicon2" />
+        <img src={Notificationicon2} alt="Notificationicon2" />
       </div>
     ),
   },
@@ -512,7 +512,7 @@ const notifications = [
     img: "/img/product/product_7.png",
     icon: (
       <div className="flex h-[42px] w-[52px] items-center justify-center rounded-full bg-[#007AFF1A] p-2">
-        <Image src={Notificationicon2} alt="Notificationicon2" />
+        <img src={Notificationicon2} alt="Notificationicon2" />
       </div>
     ),
   },
@@ -529,7 +529,7 @@ const notifications = [
     img: "/img/product/product_7.png",
     icon: (
       <div className="flex h-[42px] w-[52px] items-center justify-center rounded-full bg-[#007AFF1A] p-2">
-        <Image src={Notificationicon2} alt="Notificationicon2" />
+        <img src={Notificationicon2} alt="Notificationicon2" />
       </div>
     ),
   },
@@ -546,7 +546,7 @@ const notifications = [
     img: "/img/product/product_7.png",
     icon: (
       <div className="flex h-[42px] w-[52px] items-center justify-center rounded-full bg-[#007AFF1A] p-2">
-        <Image src={Notificationicon2} alt="Notificationicon2" />
+        <img src={Notificationicon2} alt="Notificationicon2" />
       </div>
     ),
   },
@@ -563,7 +563,7 @@ const notifications = [
     img: "/img/product/product_7.png",
     icon: (
       <div className="flex h-[42px] w-[52px] items-center justify-center rounded-full bg-[#007AFF1A] p-2">
-        <Image src={Notificationicon2} alt="Notificationicon2" />
+        <img src={Notificationicon2} alt="Notificationicon2" />
       </div>
     ),
   },
@@ -580,7 +580,7 @@ const notifications = [
     img: "/img/product/product_7.png",
     icon: (
       <div className="flex h-[42px] w-[52px] items-center justify-center rounded-full bg-[#007AFF1A] p-2">
-        <Image src={Notificationicon2} alt="Notificationicon2" />
+        <img src={Notificationicon2} alt="Notificationicon2" />
       </div>
     ),
   },

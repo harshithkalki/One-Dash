@@ -25,7 +25,7 @@ const ListTeam = ({ team, setOpen }: ListTeamProps) => {
               />
             );
           })}
-          <Image
+          <img
             src={"/img/user/add_now.png"}
             alt="pic"
             width={40}

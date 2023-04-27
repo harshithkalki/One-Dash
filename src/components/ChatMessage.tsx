@@ -347,7 +347,7 @@ const ChatMessage = () => {
           <div className="flex h-16 w-full items-center justify-between border-b px-4">
             <div className="flex space-x-2">
               <div className="relative">
-                <Image
+                <img
                   src="/img/user/Avatar_2.png"
                   alt="pic"
                   width={40}

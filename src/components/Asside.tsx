@@ -89,7 +89,7 @@ const Asside = () => {
                 hidden: toggleCollapse,
               })}
             >
-              <Image width={158} height={60} alt="loog" src={"/img/Logo.svg"} />
+              <img width={158} height={60} alt="loog" src={"/img/Logo.svg"} />
             </span>
           </div>
           {/*

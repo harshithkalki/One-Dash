@@ -9,7 +9,7 @@ import { TbUsers } from "react-icons/tb";
 import { SlSettings } from "react-icons/sl";
 import { MdEdit } from "react-icons/md";
 import { CiShop } from "react-icons/ci";
-import LogoIcon from "../../public/img/Logo.svg";
+// import "/img/Logo.svg" from "../../public/img/Logo.svg";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -105,7 +105,7 @@ const SideBar = () => {
   ]);
 
   const onMenuClick = (index) => {
-    menu[index].visible = !menu[index].visible;
+    menu[index].visible = !menu[index]?.visible;
     setMenu([...menu]);
   };
 
@@ -129,15 +129,16 @@ const SideBar = () => {
         <div className="mt-3   justify-center  px-2">
           <div
             className={`flex justify-between pr-3  text-center text-2xl font-medium  text-white  ${
+              // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
               !open && "sidebar visible "
             }`}
           >
             <Link href={"/admin"}>
-              <Image
+              <img
                 width={158}
                 height={60}
                 alt="loog"
-                src={LogoIcon}
+                src={"/img/Logo.svg"}
                 className={`ml-4 lg:w-[140px] ${
                   !open && "sidebar "
                 } cursor-pointer`}

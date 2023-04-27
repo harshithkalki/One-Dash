@@ -40,7 +40,7 @@ const CardProject = ({ product }: { product: ProductType }) => {
             {dayjs(product.createdAt).format("DD MMM YYYY")}
           </p>
         </div>
-        <Image src={product.logo} width={66} height={66} alt="product" />
+        <img src={product.logo} width={66} height={66} alt="product" />
       </div>
 
       <div className="flex items-center justify-between space-x-4 py-2">

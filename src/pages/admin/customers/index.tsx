@@ -48,7 +48,7 @@ const Customer = () => {
                 <div className="mb-2 border bg-white p-4" key={index}>
                   <div className="mb-1 mt-1 flex items-center justify-between gap-2">
                     <div className="flex space-x-2">
-                      <Image
+                      <img
                         src="/img/user/Avatar_4.png"
                         alt="pic"
                         width={45}
@@ -156,7 +156,7 @@ const Customer = () => {
                         <>
                           <tr className="text-sm   md:text-base">
                             <td className="flex items-start justify-start gap-3 px-0 py-1 text-sm font-light">
-                              <Image
+                              <img
                                 className="pt-3"
                                 src={member.img}
                                 alt="pic"

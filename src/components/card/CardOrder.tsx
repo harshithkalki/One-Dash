@@ -34,7 +34,7 @@ const CardOrder = ({ product }: { product: ProductType }) => {
     <div className="font-play w-[350px] rounded-[6px] bg-white px-3 py-3 md:w-[530px] xl:w-[296px] 2xl:w-[300px]">
       <div className="flex justify-between  py-2">
         <div className="flex items-center space-x-2">
-          <Image src={product.users.img} alt="pic" width={35} height={35} />
+          <img src={product.users.img} alt="pic" width={35} height={35} />
           <div className="">
             <p className="text-[12px] font-[600] 2xl:text-[16px]">
               {product.users.name}
@@ -58,7 +58,7 @@ const CardOrder = ({ product }: { product: ProductType }) => {
             {dayjs(product.dateTime).format("DD MMM YYYY")}
           </p>
         </div>
-        <Image src={product.img} width={66} height={66} alt="product" />
+        <img src={product.img} width={66} height={66} alt="product" />
       </div>
 
       <div className="flex items-center justify-between space-x-3 py-1">

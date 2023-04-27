@@ -49,7 +49,7 @@ const CardExtendDeliver = () => {
             <p className="text-xl font-semibold text-black">
               Request: Extend Delivery Date
             </p>
-            <Image
+            <img
               className="cursor-pointer"
               src={"/img/icon/Close Icon.svg"}
               onClick={closeModal}
@@ -80,7 +80,7 @@ const CardExtendDeliver = () => {
                       ? selectedOption
                       : `${selectedOption.slice(0, 20)}...`}
                   </span>
-                  <Image
+                  <img
                     className={`${
                       visibility
                         ? "rotate-[0deg] transition-all"
