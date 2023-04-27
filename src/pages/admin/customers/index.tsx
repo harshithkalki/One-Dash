@@ -60,7 +60,7 @@ const Customer = () => {
                     <div className="mb-1 mt-1 flex items-center justify-between gap-2">
                       <div className="flex space-x-2">
                         <img
-                          src="/img/user/Avatar_4.png"
+                          src={member.profile || "/img/user/Avatar_4.png"}
                           alt="pic"
                           width={45}
                           height={40}

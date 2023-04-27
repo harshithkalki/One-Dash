@@ -8,7 +8,10 @@ import { BsSearch } from "react-icons/bs";
 import { MdEdit } from "react-icons/md";
 import { GetServerSideProps } from "next";
 import { adminServerSideProps } from "~/utils/serverSideProps";
+import { api } from "~/utils/api";
+import dayjs from "dayjs";
 const Order = () => {
+  const orders = api.order.getAllOrders.useQuery();
   return (
     <React.Fragment>
       <div className="mt-20 p-4 pt-4">
@@ -38,7 +41,11 @@ const Order = () => {
           </div>
 
           <div className="block w-full lg:hidden">
-            {ordersdata.map((order, index) => {
+            {orders?.data?.orders.map((order, index) => {
+              const orderDays = order.invoices.reduce(
+                (acc, invoice) => acc + invoice.deliveryTime,
+                0
+              );
               return (
                 <div className="mb-2 border bg-white p-4" key={index}>
                   <div className="mb-1 mt-1 flex items-center justify-between gap-2">
@@ -51,35 +58,34 @@ const Order = () => {
                       />
                       <div>
                         Angeline Lee
-                        <p className="text-sm text-gray-400">
-                          {" "}
-                          {order.order_id}
-                        </p>
+                        <p className="text-sm text-gray-400"> {order.id}</p>
                       </div>
                     </div>
 
                     <div
                       className={`flex h-6 items-center justify-center rounded-lg px-2 text-[12px] ${
-                        order.status === "Completed"
+                        order.orderStatus === "completed"
                           ? "bg-green-50 text-green-500"
-                          : order.status === "Pending Payment"
+                          : order.orderStatus === "pendingpayment"
                           ? "bg-orange-100 text-orange-400"
-                          : order.status === "In Repair"
+                          : order.orderStatus === "inRepair"
                           ? "bg-red-100 text-red-400"
                           : "bg-gray-200 text-gray-400"
                       }`}
                     >
                       <Link href={`/admin/${order.id}`} key={order.id}>
                         {" "}
-                        {order.status}
+                        {order.orderStatus}
                       </Link>
                     </div>
                   </div>
                   <div>
-                    <p className="pt-2 text-lg font-[600]"> {order.title}</p>
+                    <p className="pt-2 text-lg font-[600]"> {order.name}</p>
                     <p className="pt-2 text-base text-gray-400">
                       {" "}
-                      {order.delivery_date}
+                      {dayjs(order.createdAt)
+                        .add(orderDays, "days")
+                        .format("DD MMM YYYY")}
                     </p>
                   </div>
                 </div>
@@ -132,8 +138,12 @@ const Order = () => {
                     </tr>
                   </thead>
                   <tbody className="overflow-x-auto">
-                    {ordersdata.map((order, index) => {
+                    {orders.data?.orders.map((order, index) => {
                       //console.log(order, index)
+                      const orderDays = order.invoices.reduce(
+                        (acc, invoice) => acc + invoice.deliveryTime,
+                        0
+                      );
                       return (
                         <>
                           <tr className="text-sm md:text-base">
@@ -145,20 +155,26 @@ const Order = () => {
                                 height={40}
                               />
                               <span className="font-semibold font-semibold text-black">
-                                Angeline Lee
+                                {order.User.firstName}
                               </span>
                             </td>
                             <td className="px-6 py-2 text-sm font-light font-medium text-gray-500">
-                              {order.order_id}
+                              {order.id}
                             </td>
                             <td className="px-6 py-2 text-sm font-light font-medium text-gray-500 ">
-                              {order.title}
+                              {order.name}
                             </td>
                             <td className="px-6  py-2 text-sm font-light font-medium text-gray-500">
-                              {order.delivery_date}
+                              {dayjs(order.createdAt)
+                                .add(orderDays, "days")
+                                .format("DD MMM YYYY")}
                             </td>
                             <td className="px-6 py-2 text-sm font-light font-medium text-gray-500">
-                              $ {order.amount}
+                              ${" "}
+                              {order.invoices.reduce(
+                                (acc, invoice) => acc + invoice.amount,
+                                0
+                              )}
                             </td>
                             {/* <td className="text-gray-500 text-sm font-medium font-light py-2 flex justify-center items-center">
                               <div
@@ -185,11 +201,11 @@ const Order = () => {
                             <td className="px-6 py-2 text-sm font-light font-medium text-gray-500">
                               <div
                                 className={`rounded-2xl py-1 text-center text-[12px] font-normal ${
-                                  order.status === "Completed"
+                                  order.orderStatus === "completed"
                                     ? "bg-green-50 text-green-500"
-                                    : order.status === "Pending Payment"
+                                    : order.orderStatus === "pendingpayment"
                                     ? "bg-orange-100 text-orange-400"
-                                    : order.status === "In Repair"
+                                    : order.orderStatus === "inRepair"
                                     ? "bg-red-100 text-red-400"
                                     : "bg-gray-200 text-gray-400"
                                 }`}
@@ -199,7 +215,7 @@ const Order = () => {
                                   key={order.id}
                                 >
                                   {" "}
-                                  {order.status}
+                                  {order.orderStatus}
                                 </Link>
                               </div>
                             </td>

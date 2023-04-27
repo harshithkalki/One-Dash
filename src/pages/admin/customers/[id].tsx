@@ -7,29 +7,17 @@ import Link from "next/link";
 import { US, IN, DE, ID, PH, AU, GB } from "country-flag-icons/react/3x2";
 import { GetServerSideProps } from "next";
 import { adminServerSideProps } from "~/utils/serverSideProps";
-export const getStaticPaths = async () => {
-  const paths = customers.map((itemData) => ({
-    params: { id: itemData.id.toString() },
-  }));
-  return {
-    paths,
-    fallback: false,
-  };
-};
+import { useRouter } from "next/router";
+import { api } from "~/utils/api";
 
-export const getStaticProps = async (context) => {
-  const id = context?.params?.id as string;
-  // const allData = JSON.stringify(customers)
-  const data = customers.filter((p) => p.id.toString() === id);
-  return {
-    props: {
-      itemData: JSON.parse(JSON.stringify(data[0])),
-    },
-  };
-};
+const DetailCustomer = () => {
+  const router = useRouter();
+  const id = router.query.id;
+  const item = api.user.getUser.useQuery({
+    id: id as string,
+  });
+  const itemData = item.data;
 
-const DetailCustomer = ({ itemData }) => {
-  console.log(itemData);
   return (
     <React.Fragment>
       <div className="font-play mt-20 p-4 pt-0">
@@ -58,7 +46,7 @@ const DetailCustomer = ({ itemData }) => {
         <div className="mt-2 w-full bg-white py-0">
           <div className="flex items-center space-x-2 p-2">
             <img
-              src={itemData.img}
+              src={itemData?.profile || "/img/user/Avatar_4.png"}
               alt="pic"
               width={105}
               height={105}
@@ -66,7 +54,7 @@ const DetailCustomer = ({ itemData }) => {
             />
             <div className="block">
               <p className="text-[20px] font-semibold text-black lg:text-[17px] 2xl:text-[20px]">
-                {itemData.name}
+                {itemData?.firstName}
               </p>
               <p className="text-[11px] text-gray-400">
                 Last seen 32 minutes ago
@@ -88,7 +76,7 @@ const DetailCustomer = ({ itemData }) => {
                   Email Address
                 </p>
                 <p className="py-1 text-[20px] font-semibold text-black lg:text-[19px] 2xl:text-[20px]">
-                  {itemData.email}
+                  {itemData?.email}
                 </p>
               </div>
               <div className="p-2">
@@ -96,7 +84,7 @@ const DetailCustomer = ({ itemData }) => {
                   Phone Number
                 </p>
                 <p className="py-1 text-[20px] font-semibold text-black lg:text-[19px] 2xl:text-[20px]">
-                  +63-819-001-9187
+                  {itemData?.phone || "N/A"}
                 </p>
               </div>
             </div>
@@ -104,24 +92,22 @@ const DetailCustomer = ({ itemData }) => {
               <div className="p-2">
                 <p className="text-blue-500 ">Total Value Orders</p>
                 <p className="py-1 text-[20px] font-semibold text-black lg:text-[19px] 2xl:text-[20px]">
-                  ${itemData.total_orders}
+                  ${"N/A"}
                 </p>
               </div>
               <div className="p-2">
                 <p className="text-blue-500">Country</p>
                 <div className="flex items-center space-x-2">
                   <p className="py-1 text-[20px] font-semibold text-black lg:text-[19px] 2xl:text-[20px]">
-                    {itemData.country.name}
+                    {itemData?.country}
                   </p>
-                  {itemData.country.flag == "IN" ? (
+                  {itemData?.country == "india" ? (
                     <IN className="h-auto w-8" />
-                  ) : itemData.country.flag == "US" ? (
+                  ) : itemData?.country == "US" ? (
                     <US className="h-auto w-8" />
-                  ) : itemData.country.flag == "UK" ? (
-                    <UK className="h-auto w-8" />
-                  ) : itemData.country.flag == "DE" ? (
+                  ) : itemData?.country == "DE" ? (
                     <DE className="h-auto w-8" />
-                  ) : itemData.country.flag == "PH" ? (
+                  ) : itemData?.country == "PH" ? (
                     <PH className="h-auto w-8" />
                   ) : (
                     <AU className="h-auto w-8" />
@@ -157,24 +143,24 @@ const DetailCustomer = ({ itemData }) => {
                 <input
                   type="text"
                   className="mt-3 w-full border p-2 text-[16px] outline-none lg:text-[15px] 2xl:text-[16px]"
-                  value={itemData.street}
+                  value={itemData?.address || ""}
                 />
               </div>
               <div className="gap-2 py-2 text-xl font-semibold md:flex md:items-center">
                 <input
                   type="text"
                   className="mt-3 w-full border p-2 text-[16px] outline-none md:basis-1/3 lg:text-[15px] 2xl:text-[16px]"
-                  value={itemData.city}
+                  value={itemData?.city || ""}
                 />
                 <input
                   type="text"
                   className="mt-3 w-full border p-2 text-[16px] outline-none md:basis-1/3 lg:text-[15px] 2xl:text-[16px]"
-                  value={itemData.country.name}
+                  value={itemData?.country || ""}
                 />
                 <input
                   type="text"
                   className="mt-3 w-full border p-2 text-[16px] outline-none md:basis-1/3 lg:text-[15px] 2xl:text-[16px]"
-                  value={itemData.zipcode}
+                  value={itemData?.zipcode || ""}
                 />
               </div>
 

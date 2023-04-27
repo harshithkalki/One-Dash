@@ -188,25 +188,20 @@ export const orderRouter = createTRPCRouter({
           team: {
             select: {
               id: true,
-            }
-          }
-        }
+            },
+          },
+        },
       });
-
-
 
       const team = order.team.map((val) => val.id);
       team.push(ctx.session.user.id);
 
-
-      await createNotification(
-        {
-          userId: team,
-          event: "deliveryCreated",
-          message: `Delivery created for order ${order.name}`,
-          sendNotification: true,
-        }
-      );
+      await createNotification({
+        userId: team,
+        event: "deliveryCreated",
+        message: `Delivery created for order ${order.name}`,
+        sendNotification: true,
+      });
 
       return delivery;
     }),
@@ -280,4 +275,24 @@ export const orderRouter = createTRPCRouter({
         cursor: orders[orders.length - 1]?.id,
       };
     }),
+  getAllOrders: protectedProcedure.query(async ({ ctx }) => {
+    const orders = await ctx.prisma.order.findMany({
+      orderBy: {
+        createdAt: "desc",
+      },
+      where: {
+        orderStatus: {
+          notIn: ["DRAFT", "pendingQuote"],
+        },
+      },
+      include: {
+        User: true,
+        invoices: true,
+      },
+    });
+
+    return {
+      orders,
+    };
+  }),
 });
