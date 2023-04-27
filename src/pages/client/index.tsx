@@ -239,7 +239,7 @@ const Client = () => {
                         createdAt: product.createdAt.toISOString(),
                         id: product.id,
                         name: product.name,
-                        status: product.orderStatus as string,
+                        status: product.orderStatus,
                         logo: product.logo ?? "/img/product/product_1.png",
                       }}
                     />

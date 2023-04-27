@@ -31,6 +31,9 @@ export const orderRouter = createTRPCRouter({
       where: {
         userId: ctx.session.user.id,
       },
+      include: {
+        invoices: true,
+      },
     });
     return orders;
   }),
@@ -154,6 +157,7 @@ export const orderRouter = createTRPCRouter({
     const orders = await ctx.prisma.order.findMany({
       include: {
         User: true,
+        invoices: true,
       },
     });
     return orders;
@@ -204,7 +208,8 @@ export const orderRouter = createTRPCRouter({
     )
     .query(async ({ ctx, input }) => {
       const orderHistory = ctx.prisma.order.findUnique({
-        where: { id: input.id }, include: {
+        where: { id: input.id },
+        include: {
           discussions: {
             orderBy: {
               createdAt: "asc",
@@ -218,23 +223,22 @@ export const orderRouter = createTRPCRouter({
           deliveries: {
             orderBy: {
               createdAt: "asc",
-            }
+            },
           },
-        }
-      })
+        },
+      });
 
       return orderHistory;
-    }
-    ),
+    }),
 
   orderPaginate: protectedProcedure
     .input(
       z.object({
         limit: z.number().default(10),
-        cursor: z.string().nullish()
+        cursor: z.string().nullish(),
       })
-    ).query(async ({ ctx, input }) => {
-
+    )
+    .query(async ({ ctx, input }) => {
       const orders = await ctx.prisma.order.findMany({
         skip: input.cursor ? 1 : 0,
         take: input.limit,
@@ -247,11 +251,9 @@ export const orderRouter = createTRPCRouter({
         },
       });
 
-
       return {
         orders,
-        cursor: orders[orders.length - 1]?.id
-      }
-    })
-
+        cursor: orders[orders.length - 1]?.id,
+      };
+    }),
 });

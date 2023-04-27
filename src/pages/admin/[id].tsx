@@ -129,7 +129,11 @@ const ProjectDetailAdmin = () => {
             <div className="py-2">
               <div className="font-play border bg-white p-4 font-medium shadow-sm">
                 <p className="py-2">Your order is on progress.</p>
-                <ProgressBar progressPercentage={0} />
+                <ProgressBar
+                  progressPercentage={orderProgress(
+                    itemData.data?.orderStatus as orderStatus
+                  )}
+                />
               </div>
             </div>
             <div className="py-2">
@@ -153,6 +157,8 @@ export default ProjectDetailAdmin;
 
 import { type GetServerSideProps } from "next";
 import { createSSG } from "~/utils/ssg";
+import { orderProgress } from "~/utils/Progress";
+import { orderStatus } from "@prisma/client";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const { ssg, session } = await createSSG(context);

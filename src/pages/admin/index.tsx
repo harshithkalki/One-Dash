@@ -13,6 +13,8 @@ import { api } from "~/utils/api";
 import { type GetServerSideProps } from "next";
 import { getSession } from "next-auth/react";
 import { adminServerSideProps } from "~/utils/serverSideProps";
+import { orderProgress } from "~/utils/Progress";
+import { orderStatus } from "@prisma/client";
 const AdminDashboard = () => {
   const router = useRouter();
   const [visibility, setVisibility] = useState(false);
@@ -200,10 +202,10 @@ const AdminDashboard = () => {
                           product={{
                             id: product.id,
                             // name: product.name,
-                            status: product.orderStatus as string,
+                            status: product.orderStatus as orderStatus,
                             dateTime: product.createdAt.toISOString(),
                             img: product.logo ?? "/img/product/product_1.png",
-                            progress: 0,
+                            // progress: orderProgress(product.orderStatus),
                             title: product.name,
                             users: {
                               id: product.User.id,
@@ -212,7 +214,10 @@ const AdminDashboard = () => {
                                 product.User.profile ??
                                 "/img/user/Avatar_team1.svg",
                             },
-                            amount: "---",
+                            amount:
+                              product.invoices
+                                .reduce((a, b) => a + b.amount, 0)
+                                .toFixed(2) || "--",
                           }}
                         />
                       </div>
@@ -233,10 +238,10 @@ const AdminDashboard = () => {
                           product={{
                             id: product.id,
                             // name: product.name,
-                            status: product.orderStatus as string,
+                            status: product.orderStatus as orderStatus,
                             dateTime: product.createdAt.toISOString(),
                             img: product.logo ?? "/img/product/product_1.png",
-                            progress: 0,
+                            // progress: 0,
                             title: product.name,
                             users: {
                               id: product.User.id,

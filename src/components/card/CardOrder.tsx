@@ -5,6 +5,11 @@ import userImg from "../../public/img/user/Avatar_4.png";
 import { BiTime } from "react-icons/bi";
 import ProgressBar from "../ProgressBar";
 import Link from "next/link";
+import dayjs from "dayjs";
+// import { orderStatus } from "@prisma/client";
+import { useState } from "react";
+import { orderProgress } from "~/utils/Progress";
+import { orderStatus } from "@prisma/client";
 
 type ProductType = {
   id: string;
@@ -16,12 +21,14 @@ type ProductType = {
     name: string;
     img: string;
   };
-  status: string;
+  status: orderStatus;
   dateTime: string;
-  progress: number;
+  // progress: number;
 };
 
 const CardOrder = ({ product }: { product: ProductType }) => {
+  // const [progress, setProgress] = useState<number>(0);
+  // setProgress(orderProgress(product.status));
   // const { product } = props
   return (
     <div className="font-play w-[350px] rounded-[6px] bg-white px-3 py-3 md:w-[530px] xl:w-[296px] 2xl:w-[300px]">
@@ -39,7 +46,7 @@ const CardOrder = ({ product }: { product: ProductType }) => {
         </div>
         <div className="flex items-center space-x-3">
           <GrNotification size={15} />
-          <div className="text-[14px] font-semibold text-black">
+          <div className="text-[12px] font-semibold text-black">
             $ {product.amount}
           </div>
         </div>
@@ -48,7 +55,7 @@ const CardOrder = ({ product }: { product: ProductType }) => {
         <div>
           <h4 className="text-[14px] font-[600] text-black">{product.title}</h4>
           <p className="py-2 text-[14px] text-[#13131380]">
-            {product.dateTime}
+            {dayjs(product.dateTime).format("DD MMM YYYY")}
           </p>
         </div>
         <Image src={product.img} width={66} height={66} alt="product" />
@@ -56,7 +63,7 @@ const CardOrder = ({ product }: { product: ProductType }) => {
 
       <div className="flex items-center justify-between space-x-3 py-1">
         <div className="mt-1  w-2/3">
-          <ProgressBar progressPercentage={product.progress} />
+          <ProgressBar progressPercentage={orderProgress(product.status)} />
         </div>
 
         {/*<Link href={'/'+ product.id} key={product.id}>*/}

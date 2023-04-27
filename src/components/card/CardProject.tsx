@@ -5,13 +5,15 @@ import ProgressBar from "../ProgressBar";
 import Link from "next/link";
 import dayjs from "dayjs";
 import { useRouter } from "next/router";
+import { orderProgress } from "~/utils/Progress";
+import { orderStatus } from "@prisma/client";
 
 type ProductType = {
   id: string;
   logo: string;
   name: string;
 
-  status: string;
+  status: orderStatus;
   createdAt: string;
   // progress: number;
 };
@@ -43,7 +45,7 @@ const CardProject = ({ product }: { product: ProductType }) => {
 
       <div className="flex items-center justify-between space-x-4 py-2">
         <div className="w-2/3">
-          <ProgressBar progressPercentage={0} />
+          <ProgressBar progressPercentage={orderProgress(product.status)} />
         </div>
 
         {/*<Link href={'/'+ product.id} key={product.id}>*/}
