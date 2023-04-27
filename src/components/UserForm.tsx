@@ -178,7 +178,10 @@ const UserForm = ({ open, closeModal }: props) => {
         "https://upload.wikimedia.org/wikipedia/en/c/c3/Flag_of_France.svg",
     },
   ];
-  const User = api.user.me.useQuery();
+  const User = api.user.me.useQuery(undefined, {
+    refetchOnWindowFocus: false,
+  });
+
   const Userinfo = User.data;
   const updateMe = api.user.updateMe.useMutation();
 

@@ -7,6 +7,8 @@ import { api } from "~/utils/api";
 import { Waypoint } from "react-waypoint";
 import ListNotifications from "./card/ListNotifications";
 import getPusher from "~/utils/getPusher";
+import { type Notification } from "@prisma/client";
+import useUserStore from "~/store/usersStore";
 
 const Notifications = () => {
   const [visible, setVisibility] = useState<boolean>(false);
@@ -35,6 +37,7 @@ const Notifications = () => {
       getNextPageParam: (lastPage) => lastPage.cursor,
     }
   );
+  const newNotifications = useUserStore((state) => state.notifications);
 
   useEffect(() => {
     document.addEventListener("mousedown", handleDocumentClick);
@@ -53,14 +56,6 @@ const Notifications = () => {
   function handleDropdownClick() {
     setVisibility(!visible);
   }
-
-  useEffect(() => {
-    const pusher = getPusher();
-
-    pusher.user.bind("notification", (data: any) => {
-      console.log(data);
-    });
-  }, []);
 
   return (
     <div ref={referenceRef} className="font-play  relative">
@@ -121,6 +116,12 @@ const Notifications = () => {
                 </div>
               ))}
             </React.Fragment>
+          ))}
+          {newNotifications.map((notification, index) => (
+            <div key={index}>
+              <ListNotifications notification={notification} />
+              <hr className="mx-auto flex h-[1px] w-[93%] items-center justify-center bg-[#EBEBEB]" />
+            </div>
           ))}
         </DropdownContainer>
       </div>

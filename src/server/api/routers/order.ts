@@ -13,7 +13,7 @@ export const orderRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      console.log("createOrderCalled");
+
       const order = await ctx.prisma.order.create({
         data: {
           name: input.name,
@@ -24,6 +24,16 @@ export const orderRouter = createTRPCRouter({
           userId: ctx.session.user.id,
         },
       });
+
+      await createNotification(
+        {
+          userId: ctx.session.user.id,
+          event: "orderCreated",
+          message: `Order ${order.name} created`,
+          sendNotification: true,
+        }
+      );
+
       return order;
     }),
 
@@ -101,8 +111,30 @@ export const orderRouter = createTRPCRouter({
           userId: ctx.session.user.id,
           PaymentStatus: "PENDING",
         },
+        include: {
+          team: {
+            select: {
+              id: true,
+            }
+          },
+
+        }
       });
-      console.log(order);
+
+      const team = order.team.map((val) => val.id);
+      team.push(ctx.session.user.id);
+      team.push(order.userId);
+
+
+      await createNotification(
+        {
+          userId: team,
+          event: "orderCreated",
+          message: `Order ${order.name} created`,
+          sendNotification: true,
+        }
+      );
+
       return order;
     }),
 
@@ -184,20 +216,23 @@ export const orderRouter = createTRPCRouter({
         data: {
           orderStatus: "deliverd",
         },
-        include: {
+        select: {
           team: {
             select: {
               id: true,
-            },
+            }
           },
-        },
+          userId: true,
+          name: true,
+        }
       });
 
       const team = order.team.map((val) => val.id);
       team.push(ctx.session.user.id);
+      team.push(order.userId);
 
       await createNotification({
-        userId: team,
+        userId: [...new Set(team)],
         event: "deliveryCreated",
         message: `Delivery created for order ${order.name}`,
         sendNotification: true,

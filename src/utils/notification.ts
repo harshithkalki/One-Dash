@@ -35,7 +35,13 @@ export const createNotification = async ({ event, message, userId, sendNotificat
     })
 
     if (sendNotification) {
-        await Promise.all(userId.map((id) => pusher.sendToUser(id, "notification", notifications)))
+        await Promise.all(userId.map((id, index) => pusher.sendToUser(id, "notification", {
+            id: index,
+            event,
+            message,
+            userId: id,
+            createdAt: new Date().toISOString(),
+        })))
     }
 
     return notifications

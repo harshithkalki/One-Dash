@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { type Notification } from "@prisma/client";
 
 type User = {
     id: string;
@@ -8,9 +9,11 @@ type User = {
 
 export type UserState = {
     users: Map<string, User>;
+    notifications: Notification[];
     setUsers: (users: User[]) => void;
     addUser: (user: User) => void;
     offlineUser: (id: string) => void;
+    addNotification: (notification: Notification) => void;
 }
 
 
@@ -22,8 +25,8 @@ const useUserStore = create<UserState>((set, get) => ({
             usersMap.set(user.id, user);
         });
         set({ users: usersMap });
-    }
-    ,
+    },
+    notifications: [],
     addUser: (user) => {
         set({
             users: new Map(get().users).set(user.id, user)
@@ -38,6 +41,11 @@ const useUserStore = create<UserState>((set, get) => ({
             set({ users });
         }
     },
+    addNotification: (notification) => {
+        set({
+            notifications: [...get().notifications, notification]
+        });
+    }
 
 }));
 

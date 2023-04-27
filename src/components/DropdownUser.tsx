@@ -229,47 +229,6 @@ const DropdownUser = () => {
         "https://upload.wikimedia.org/wikipedia/en/c/c3/Flag_of_France.svg",
     },
   ];
-  console.log(session);
-
-  const Userinfo = api.user.me.useQuery();
-  const updateMe = api.user.updateMe.useMutation();
-
-  // const formik = useFormik({
-  //   initialValues: {
-  //     firstName: Userinfo.data?.firstName as unknown as string,
-  //     lastName: Userinfo.data?.lastName,
-  //     email: Userinfo.data?.email,
-  //     phone: Userinfo.data?.phone,
-  //     country: Userinfo.data?.country,
-  //     city: Userinfo.data?.city,
-  //     profile: Userinfo.data?.profile,
-  //     companyName: Userinfo.data?.companyName,
-  //     addressFirstname: Userinfo.data?.addressFirstname,
-  //     addressLastname: Userinfo.data?.addressLastname,
-  //     address: Userinfo.data?.address,
-  //     state: Userinfo.data?.state,
-  //     zipcode: Userinfo.data?.zipcode,
-  //   },
-  //   onSubmit: async (values) => {
-  //     console.log(values);
-  //     await updateMe
-  //       .mutateAsync(values)
-  //       .then(() => {
-  //         setOpen(false);
-  //       })
-  //       .catch((err) => {
-  //         console.log(err);
-  //       });
-  //   },
-  // });
-
-  // const [stateselectedOption, setStateSelectedOption] = useState(
-  //   formik.values.state ?? ""
-  // );
-
-  // const [selectedOption, setSelectedOption] = useState(
-  //   formik.values.country ?? ""
-  // );
 
   return (
     <React.Fragment>

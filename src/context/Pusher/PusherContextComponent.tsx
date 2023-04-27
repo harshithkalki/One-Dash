@@ -2,17 +2,21 @@ import React, { type PropsWithChildren, useEffect } from "react";
 import getPusher from "~/utils/getPusher";
 import { type role } from "@prisma/client";
 import useUserStore from "~/store/usersStore";
+import { type Notification } from "@prisma/client";
 
 export type IPusherContextComponentProps = PropsWithChildren;
 
 const PusherContextComponent: React.FunctionComponent<
   IPusherContextComponentProps
 > = (props) => {
-  const { setUsers, addUser, offlineUser } = useUserStore((state) => ({
-    setUsers: state.setUsers,
-    addUser: state.addUser,
-    offlineUser: state.offlineUser,
-  }));
+  const { setUsers, addUser, offlineUser, addNotification } = useUserStore(
+    (state) => ({
+      setUsers: state.setUsers,
+      addUser: state.addUser,
+      offlineUser: state.offlineUser,
+      addNotification: state.addNotification,
+    })
+  );
 
   useEffect(() => {
     const pusher = getPusher();
@@ -80,11 +84,17 @@ const PusherContextComponent: React.FunctionComponent<
       }
     );
 
+    pusher.user.bind("notification", (data: Notification) => {
+      console.log("notification", data);
+      addNotification(data);
+    });
+
     return () => {
       pusher?.unsubscribe(`presence-global`);
       pusher.unbind_all();
+      pusher.unbind("notification");
+      pusher?.disconnect();
     };
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

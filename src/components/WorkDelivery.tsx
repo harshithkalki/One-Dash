@@ -146,15 +146,10 @@ const WorkDelivery = () => {
       notes: "",
     },
     onSubmit: async (values) => {
-      const res = await deliver
-        .mutateAsync({
-          id: values.orderId,
-          notes: values.notes,
-        })
-        .then((res) => {
-          console.log(res);
-          router.reload();
-        });
+      await deliver.mutateAsync({
+        id: values.orderId,
+        notes: values.notes,
+      });
     },
   });
 
