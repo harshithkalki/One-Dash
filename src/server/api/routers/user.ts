@@ -404,4 +404,29 @@ export const userRouter = createTRPCRouter({
     return true;
   }
   ),
+
+  notifications: protectedProcedure.input(z.object({
+    limit: z.number().default(10),
+    cursor: z.string().nullish(),
+  })).query(async ({ ctx, input }) => {
+    const notifications = await ctx.prisma.notification.findMany({
+      take: input.limit,
+      skip: input.cursor ? 1 : 0,
+      cursor: input.cursor ? {
+        id: input.cursor
+      } : undefined,
+      where: {
+        userId: ctx.session.user.id
+      },
+      orderBy: {
+        createdAt: "desc"
+      }
+    });
+
+    return {
+      notifications: notifications,
+      cursor: input.limit === notifications.length ? notifications[notifications.length - 1]?.id : null
+    }
+  }
+  ),
 });

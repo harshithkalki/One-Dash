@@ -1,3 +1,4 @@
+import { createNotification } from "~/utils/notification";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 import { z } from "zod";
 
@@ -183,7 +184,30 @@ export const orderRouter = createTRPCRouter({
         data: {
           orderStatus: "deliverd",
         },
+        include: {
+          team: {
+            select: {
+              id: true,
+            }
+          }
+        }
       });
+
+
+
+      const team = order.team.map((val) => val.id);
+      team.push(ctx.session.user.id);
+
+
+      await createNotification(
+        {
+          userId: team,
+          event: "deliveryCreated",
+          message: `Delivery created for order ${order.name}`,
+          sendNotification: true,
+        }
+      );
+
       return delivery;
     }),
   allUserOrders: protectedProcedure.query(async ({ ctx }) => {

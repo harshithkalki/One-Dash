@@ -12,10 +12,10 @@ generator client {
 }
 
 model User {
-  id               String        @id @unique @default(cuid())
+  id               String         @id @unique @default(cuid())
   firstName        String
   lastName         String?
-  email            String        @unique
+  email            String         @unique
   phone            String?
   country          String?
   emailVerified    Boolean
@@ -27,19 +27,20 @@ model User {
   city             String?
   state            String?
   zipcode          String?
-  heads            User[]        @relation("UserTeam")
-  teamMembers      User[]        @relation("UserTeam")
+  heads            User[]         @relation("UserTeam")
+  teamMembers      User[]         @relation("UserTeam")
   credentials      Credentials?
   orders           Order[]
-  teamOrders       Order[]       @relation("TeamOrder")
-  createdAt        DateTime      @default(now())
-  sentMessages     Message[]     @relation("SenderMessage")
-  receivedMessages Message[]     @relation("ReceiverMessage")
+  teamOrders       Order[]        @relation("TeamOrder")
+  createdAt        DateTime       @default(now())
+  sentMessages     Message[]      @relation("SenderMessage")
+  receivedMessages Message[]      @relation("ReceiverMessage")
   invoices         Invoice[]
   Discussions      Discussions[]
-  role             role          @default(client)
-  privateChats     PrivateChat[] @relation("User1PrivateChat")
-  secondaryChats   PrivateChat[] @relation("User2PrivateChat")
+  role             role           @default(client)
+  privateChats     PrivateChat[]  @relation("User1PrivateChat")
+  secondaryChats   PrivateChat[]  @relation("User2PrivateChat")
+  notifications    Notification[]
 }
 
 model Credentials {
@@ -163,4 +164,30 @@ model PrivateChat {
 
   @@unique([user1Id, user2Id])
   @@index([user2Id])
+}
+
+model Notification {
+  id        String            @id @unique @default(cuid())
+  message   String
+  event     NotificationEvent
+  createdAt DateTime          @default(now())
+  userId    String
+  user      User              @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+}
+
+enum NotificationEvent {
+  orderCreated
+  orderUpdated
+  orderDeleted
+  invoiceCreated
+  invoiceUpdated
+  invoiceDeleted
+  discussionCreated
+  discussionUpdated
+  discussionDeleted
+  deliveryCreated
+  deliveryUpdated
+  deliveryDeleted
 }

@@ -1,16 +1,15 @@
 import React, { useState, useEffect, useRef } from "react";
 import { usePopper } from "react-popper";
 import styled from "styled-components";
-import Image from "next/image";
-import ListNotifications from "./card/ListNotifications";
 import { GrNotification } from "react-icons/gr";
-import { AiOutlineClose } from "react-icons/ai";
-import { notifications } from "./data/dataContents";
-import CloseIcon from "../../public/img/icon/Close Icon.svg";
 import { useMobile } from "../Hooks/Mobile";
+import { api } from "~/utils/api";
+import { Waypoint } from "react-waypoint";
+import ListNotifications from "./card/ListNotifications";
+import getPusher from "~/utils/getPusher";
+
 const Notifications = () => {
   const [visible, setVisibility] = useState<boolean>(false);
-
   const referenceRef = useRef<HTMLDivElement>(null);
   const popperRef = useRef<HTMLDivElement>(null);
   const { styles, attributes } = usePopper(
@@ -29,6 +28,14 @@ const Notifications = () => {
       ],
     }
   );
+
+  const notifications = api.user.notifications.useInfiniteQuery(
+    {},
+    {
+      getNextPageParam: (lastPage) => lastPage.cursor,
+    }
+  );
+
   useEffect(() => {
     document.addEventListener("mousedown", handleDocumentClick);
     return () => {
@@ -43,9 +50,18 @@ const Notifications = () => {
     setVisibility(false);
   }
 
-  function handleDropdownClick(event: React.MouseEvent<HTMLDivElement>) {
+  function handleDropdownClick() {
     setVisibility(!visible);
   }
+
+  useEffect(() => {
+    const pusher = getPusher();
+
+    pusher.user.bind("notification", (data: any) => {
+      console.log(data);
+    });
+  }, []);
+
   return (
     <div ref={referenceRef} className="font-play  relative">
       <div
@@ -70,7 +86,6 @@ const Notifications = () => {
         >
           <div className="sticky top-0 flex w-[100%]  items-center  justify-between space-x-2 bg-[white] px-5 py-4  ">
             <div className="flex   space-x-4">
-              {/* <GrNotification size={28} /> */}
               <img
                 className="w-5"
                 src={"/img/icon/Notification.svg"}
@@ -80,7 +95,7 @@ const Notifications = () => {
                 Notification
               </span>
             </div>
-            {/* <AiOutlineClose size={28} className="text-gray-400" /> */}
+
             <img
               onClick={handleDropdownClick}
               className="cursor-pointer"
@@ -90,11 +105,22 @@ const Notifications = () => {
           </div>
           <hr className="mx-auto flex h-[1px] w-[93%] items-center justify-center bg-[#EBEBEB]" />
 
-          {notifications.map((notifications, index) => (
-            <div key={index}>
-              {/* <ListNotifications notifications={notifications} /> */}
-              <hr className="mx-auto flex h-[1px] w-[93%] items-center justify-center bg-[#EBEBEB]" />
-            </div>
+          {notifications.data?.pages.map((page, index) => (
+            <React.Fragment key={index}>
+              {page.notifications.map((notification, index) => (
+                <div key={notification.id}>
+                  <ListNotifications notification={notification} />
+                  {index === page.notifications.length - 2 && (
+                    <Waypoint
+                      onEnter={() => {
+                        console.log("enter");
+                      }}
+                    />
+                  )}
+                  <hr className="mx-auto flex h-[1px] w-[93%] items-center justify-center bg-[#EBEBEB]" />
+                </div>
+              ))}
+            </React.Fragment>
           ))}
         </DropdownContainer>
       </div>
