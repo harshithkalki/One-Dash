@@ -47,10 +47,13 @@ const handler: NextApiHandler = async (req, res) => {
             res.send(auth);
             return;
         } else if (channel === "chat") {
-            const id1 = channeldata[2];
-            const id2 = channeldata[3];
+            const room = await prisma.privateChat.findUnique({
+                where: {
+                    id: channeldata[2],
+                }
+            });
 
-            if (id1 !== id && id2 !== id) {
+            if (!room) {
                 res.status(403).send({
                     success: false,
                     error: "Unauthorized",
@@ -58,6 +61,15 @@ const handler: NextApiHandler = async (req, res) => {
                 return;
             }
 
+            const isUser = room.user1Id === id || room.user2Id === id || userData.role === "admin";
+
+            if (!isUser) {
+                res.status(403).send({
+                    success: false,
+                    error: "Unauthorized",
+                });
+                return;
+            }
 
             const auth = pusher.authorizeChannel(socket_id, channel_name, {
                 user_id: id,
@@ -66,7 +78,6 @@ const handler: NextApiHandler = async (req, res) => {
             res.send(auth);
             return;
         } else if (channel === "order") {
-
 
             const order = await prisma.order.findUnique({
                 where: {
@@ -116,7 +127,15 @@ const handler: NextApiHandler = async (req, res) => {
 
             res.send(auth);
 
-        } else {
+        } else if (channel === "global") {
+            const auth = pusher.authorizeChannel(socket_id, channel_name, {
+                user_id: id,
+                user_info: userData,
+            });
+            res.send(auth);
+            return;
+        }
+        else {
             res.status(403).send({
                 success: false,
                 error: "Unauthorized",

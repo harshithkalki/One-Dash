@@ -1,1 +1,1 @@
-export const Channels = ["order", "chat", "user"] as const;
+export const Channels = ["order", "chat", "user", "global"] as const;

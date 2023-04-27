@@ -8,6 +8,7 @@ import { TRPCError } from "@trpc/server";
 import { transporter } from "~/config/nodemailer";
 import * as bcrypt from "bcrypt";
 import pusher from "~/server/common/pusher";
+import { Channels } from "~/constants";
 
 export const userRouter = createTRPCRouter({
   members: protectedProcedure.query(async ({ ctx }) => {
@@ -237,15 +238,44 @@ export const userRouter = createTRPCRouter({
         to: z.string(),
       })
     ).mutation(async ({ ctx, input }) => {
+      const room = (await ctx.prisma.privateChat.findMany({
+        where: {
+          OR: [{
+            user1Id: input.to,
+            user2Id: ctx.session.user.id,
+          }, {
+            user1Id: ctx.session.user.id,
+            user2Id: input.to,
+          }
+          ]
+        }
+      })).pop();
+
+      let roomId: string;
+
+      if (!room) {
+        const newRoom = await ctx.prisma.privateChat.create({
+          data: {
+            user1Id: ctx.session.user.id,
+            user2Id: input.to
+          }
+        })
+
+        roomId = newRoom.id;
+      } else {
+        roomId = room.id;
+      }
+
       const message = await ctx.prisma.message.create({
         data: {
           message: input.message,
           senderId: ctx.session.user.id,
           receiverId: input.to,
+          privateChatId: roomId
         },
       });
 
-      await pusher.trigger(`${ctx.session.user.id}-${input.to}`, "new-message", message);
+      await pusher.trigger(`private-${Channels[1]}-${roomId}`, "new-message", message);
 
       return message;
     }),
@@ -253,17 +283,16 @@ export const userRouter = createTRPCRouter({
   allUsers: protectedProcedure.query(async ({ ctx }) => {
     const users = await ctx.prisma.user.findMany({
       where: {
-        role: "client",
+        // role: "client",
       },
       include: {
         receivedMessages: {
           where: {
-            senderId: ctx.session.user.id,
-            receiverId: ctx.session.user.id,
-            OR: {
-              senderId: ctx.session.user.id,
+            OR: [{
               receiverId: ctx.session.user.id,
-            }
+            }, {
+              senderId: ctx.session.user.id,
+            }]
           },
           orderBy: {
             createdAt: "desc"
@@ -274,6 +303,105 @@ export const userRouter = createTRPCRouter({
     });
 
     return users;
+  }
+  ),
+
+  messages: protectedProcedure.input(z.object({
+    limit: z.number().default(10),
+    cursor: z.string().nullish(),
+    receiverId: z.string()
+  })).query(async ({ ctx, input }) => {
+
+    const messages = await ctx.prisma.message.findMany({
+      where: {
+        OR: [
+          {
+            senderId: ctx.session.user.id,
+            receiverId: input.receiverId
+          },
+          {
+            senderId: input.receiverId,
+            receiverId: ctx.session.user.id
+          }
+        ]
+      },
+      orderBy: {
+        createdAt: "desc"
+      },
+      take: input.limit,
+      cursor: input.cursor ? {
+        id: input.cursor
+      } : undefined,
+      skip: input.cursor ? 1 : undefined
+    });
+
+    return {
+      messages: messages,
+      cursor: input.limit === messages.length ? messages[messages.length - 1]?.id : null
+    }
+  }),
+
+  getRoom: protectedProcedure.input(z.object({
+    userId: z.string()
+  })).query(async ({ ctx, input }) => {
+    const room = (await ctx.prisma.privateChat.findMany({
+      where: {
+        OR: [{
+          user1Id: input.userId,
+          user2Id: ctx.session.user.id,
+        }, {
+          user1Id: ctx.session.user.id,
+          user2Id: input.userId,
+        }
+        ]
+      }
+    })).pop();
+
+    return room ?? null;
+  }
+  ),
+
+  updateToSeen: protectedProcedure.input(z.object({
+    user2Id: z.string()
+  })).mutation(async ({ ctx, input }) => {
+
+    const room = (await ctx.prisma.privateChat.findMany({
+      where: {
+        OR: [{
+          user1Id: input.user2Id,
+          user2Id: ctx.session.user.id,
+        }, {
+          user1Id: ctx.session.user.id,
+          user2Id: input.user2Id,
+        }
+        ]
+      }
+    })).pop();
+
+
+    if (!room) {
+      return false;
+    }
+
+
+    await ctx.prisma.message.updateMany({
+      where: {
+        receiverId: ctx.session.user.id,
+        privateChatId: room?.id,
+        isRead: false
+      },
+      data: {
+        isRead: true
+      }
+    });
+
+
+    await pusher.trigger(`private-${Channels[1]}-${room?.id}`, "seen", {
+      senderId: ctx.session.user.id,
+    });
+
+
+    return true;
   }
   ),
 });

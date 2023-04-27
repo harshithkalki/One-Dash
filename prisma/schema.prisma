@@ -38,6 +38,8 @@ model User {
   invoices         Invoice[]
   Discussions      Discussions[]
   role             role          @default(client)
+  privateChats     PrivateChat[] @relation("User1PrivateChat")
+  secondaryChats   PrivateChat[] @relation("User2PrivateChat")
 }
 
 model Credentials {
@@ -134,16 +136,31 @@ enum role {
 }
 
 model Message {
-  id         String   @id @unique @default(cuid())
-  message    String
-  attachment String?
-  senderId   String
-  sender     User     @relation("SenderMessage", fields: [senderId], references: [id])
-  receiverId String
-  receiver   User     @relation("ReceiverMessage", fields: [receiverId], references: [id])
-  isRead     Boolean  @default(false)
-  createdAt  DateTime @default(now())
+  id            String      @id @unique @default(cuid())
+  message       String
+  attachment    String?
+  senderId      String
+  sender        User        @relation("SenderMessage", fields: [senderId], references: [id])
+  receiverId    String
+  receiver      User        @relation("ReceiverMessage", fields: [receiverId], references: [id])
+  isRead        Boolean     @default(false)
+  createdAt     DateTime    @default(now())
+  PrivateChat   PrivateChat @relation(fields: [privateChatId], references: [id])
+  privateChatId String
 
   @@index([receiverId])
   @@index([senderId])
+  @@index([privateChatId])
+}
+
+model PrivateChat {
+  id       String    @id @unique @default(cuid())
+  user1Id  String
+  user2Id  String
+  user1    User      @relation("User1PrivateChat", fields: [user1Id], references: [id])
+  user2    User      @relation("User2PrivateChat", fields: [user2Id], references: [id])
+  messages Message[]
+
+  @@unique([user1Id, user2Id])
+  @@index([user2Id])
 }

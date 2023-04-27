@@ -7,9 +7,12 @@ import { RiEmotionHappyLine } from "react-icons/ri";
 import { cn } from "~/utils/cn";
 import { Message } from "@prisma/client";
 import { useSession } from "next-auth/react";
-import Pusher from "pusher-js";
-import { env } from "~/env.mjs";
 import { api } from "~/utils/api";
+import { Waypoint } from "react-waypoint";
+import dayjs from "dayjs";
+import getPusher from "~/utils/getPusher";
+import useUserStore from "~/store/usersStore";
+import moment from "moment";
 
 const MessageInput = ({
   onSubmit,
@@ -61,9 +64,19 @@ const MessageInput = ({
   );
 };
 
-const Message = ({ message, isMe }: { isMe?: boolean; message: string }) => {
+const Message = ({
+  message,
+  isMe,
+  date,
+  isRead,
+}: {
+  isMe?: boolean;
+  message: string;
+  date: string | Date;
+  isRead?: boolean;
+}) => {
   return (
-    <div>
+    <>
       <div
         className={cn("flex justify-start px-8 py-2", isMe && "justify-end")}
       >
@@ -82,13 +95,15 @@ const Message = ({ message, isMe }: { isMe?: boolean; message: string }) => {
           isMe && "justify-end"
         )}
       >
-        10.12 AM {isMe && <BsCheckAll className="text-blue-500" />}
+        {dayjs(date).format("h:mm A")}{" "}
+        {isMe && <BsCheckAll className={cn(isRead && "text-blue-500")} />}
       </div>
-    </div>
+    </>
   );
 };
 
 const Users = ({
+  selectedUser,
   onUserSelect,
 }: {
   onUserSelect: (user: {
@@ -96,36 +111,131 @@ const Users = ({
     firstName: string;
     isOnline: boolean;
   }) => void;
+  selectedUser:
+    | {
+        id: string;
+        firstName: string;
+        isOnline: boolean;
+      }
+    | undefined;
 }) => {
   const { data: users } = api.user.allUsers.useQuery();
+  const updateToSeen = api.user.updateToSeen.useMutation();
+  const onlineUsers = useUserStore((state) => state.users);
+  const { user } = useSession().data ?? {};
 
   return (
     <>
-      {users?.map((val) => (
-        <div
-          key={val.id}
-          className="relative mt-2 flex w-full space-x-2 border-b bg-gray-50 p-1 pt-4 sm:border-none"
-          onClick={() =>
-            onUserSelect({
-              id: val.id,
-              firstName: val.firstName,
-              isOnline: false,
-            })
-          }
-        >
-          <img src="/img/user/Avatar_2.png" alt="pic" width={40} height={40} />
-          <div className="absolute bottom-1 left-6 h-2 w-2 rounded-full bg-green-500"></div>
-          <div className="w-full">
-            <div className="flex items-center justify-between">
-              <p className="text-sm lg:text-base">{val.firstName}</p>
-              <span className="truncate text-[10px] text-gray-400">
-                10 min ago
-              </span>
+      {users?.map((val) =>
+        val.id !== user?.id ? (
+          <div
+            key={val.id}
+            className={cn(
+              "relative mt-2 flex w-full cursor-pointer space-x-2 border-b p-1 pt-4 sm:border-none",
+              val.id === selectedUser?.id && "bg-gray-50"
+            )}
+            onClick={() => {
+              onUserSelect({
+                id: val.id,
+                firstName: val.firstName,
+                isOnline: false,
+              });
+
+              updateToSeen.mutate({ user2Id: val.id });
+            }}
+          >
+            <img
+              src="/img/user/Avatar_2.png"
+              alt="pic"
+              width={40}
+              height={40}
+            />
+            {onlineUsers.get(val.id)?.online && (
+              <div className="absolute bottom-1 left-6 h-2 w-2 rounded-full bg-green-500"></div>
+            )}
+            <div className="w-full">
+              <div className="flex items-center justify-between">
+                <p className="text-sm lg:text-base">{val.firstName}</p>
+                <span className="truncate text-[10px] text-gray-400">
+                  {moment(onlineUsers.get(val.id)?.lastSeen).fromNow(true) ??
+                    ""}{" "}
+                  ago
+                </span>
+              </div>
+              <p className="w-36 truncate text-[12px] text-gray-400">
+                {val.receivedMessages[0]?.message ?? ""}
+              </p>
             </div>
-            <p className="w-36 truncate text-[12px] text-gray-400">
-              {val.receivedMessages[0]?.message ?? ""}
-            </p>
           </div>
+        ) : null
+      )}
+    </>
+  );
+};
+
+const ScrollableChat = ({
+  scrollToBottom,
+  user2,
+}: {
+  scrollToBottom: React.RefObject<HTMLDivElement>;
+  user2:
+    | {
+        id: string;
+        firstName: string;
+        isOnline: boolean;
+      }
+    | undefined;
+}) => {
+  const { user } = useSession().data ?? {};
+  const { data, fetchNextPage } = api.user.messages.useInfiniteQuery(
+    {
+      receiverId: user2?.id ?? "",
+    },
+    {
+      getNextPageParam: (lastPage) => lastPage.cursor,
+      enabled: !!user2?.id,
+      refetchOnWindowFocus: false,
+    }
+  );
+
+  useEffect(() => {
+    if (data?.pages.length === 0 || !data?.pages) {
+      return () => {
+        scrollToBottom.current?.scrollIntoView({ behavior: "auto" });
+      };
+    }
+  }, [data]);
+
+  const messages = React.useMemo(() => {
+    if (!data?.pages) return [];
+
+    const flatArray = data.pages.map((page) => page.messages).flat();
+
+    return flatArray.sort((a, b) => {
+      return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+    });
+  }, [data?.pages]);
+
+  return (
+    <>
+      {messages.map((message, index) => (
+        <div key={message.id}>
+          <Message
+            message={message.message}
+            isMe={message.senderId === user?.id ? true : false}
+            date={message.createdAt}
+            isRead={message.isRead}
+          />
+          {index === 0 && (
+            <Waypoint
+              onEnter={(e) => {
+                if (!data?.pages[data.pages.length - 1]?.cursor) {
+                  return;
+                }
+                void fetchNextPage();
+              }}
+            />
+          )}
         </div>
       ))}
     </>
@@ -134,53 +244,65 @@ const Users = ({
 
 const ChatMessage = () => {
   const scrollToBottom = useRef<HTMLDivElement>(null);
-  const [messages, setMessages] = React.useState<Message[]>([]);
+  const [newMessages, setMessages] = React.useState<Message[]>([]);
   const { user } = useSession().data ?? {};
-  const [user2, setUser2] = React.useState<{
-    id: string;
-    firstName: string;
-    isOnline: boolean;
-  }>({
-    id: "clg88crr60000vulgnhhtbsck",
-    firstName: "kalki",
-    isOnline: true,
-  });
+  const [user2, setUser2] = React.useState<
+    | {
+        id: string;
+        firstName: string;
+        isOnline: boolean;
+      }
+    | undefined
+  >();
   const { mutateAsync: sendMsg, isLoading: messageLoading } =
     api.user.message.useMutation();
+  const { data: room } = api.user.getRoom.useQuery(
+    { userId: user2?.id ?? "" },
+    {
+      enabled: !!user2?.id,
+    }
+  );
+  const onlineUsers = useUserStore((state) => state.users);
+  const updateToSeen = api.user.updateToSeen.useMutation();
 
   useEffect(() => {
-    if (!user) return;
+    if (!room) return;
 
-    Pusher.logToConsole = true;
+    const pusher = getPusher();
 
-    const pusher = new Pusher(env.NEXT_PUBLIC_PUSHER_KEY, {
-      cluster: env.NEXT_PUBLIC_PUSHER_CLUSTER,
-      channelAuthorization: {
-        endpoint: "/api/pusher/channel-auth",
-        transport: "ajax",
-        params: {
-          user_id: user?.id,
-        },
-      },
-    });
+    const channel = pusher?.subscribe(`private-chat-${room.id}`);
 
-    const channel = pusher.subscribe(`private-chat-${user?.id}-${user2?.id}`);
-
-    channel.bind("new-message", function (msg: Message) {
-      if (msg.senderId !== user.id) {
+    channel?.bind("new-message", function (msg: Message) {
+      if (msg.senderId !== user?.id) {
         setMessages((prev) => [...prev, msg]);
       }
     });
 
-    channel.bind("subscription_count", function (count: number) {
-      console.log("subscription_count", count);
+    channel?.bind("seen", function ({ senderId }: { senderId: string }) {
+      if (senderId !== user?.id) return;
+
+      setMessages((prev) => prev.map((msg) => ({ ...msg, isRead: true })));
     });
 
     return () => {
-      channel.unbind_all();
-      channel.unsubscribe();
+      channel?.unbind_all();
+      channel?.unsubscribe();
     };
-  }, []);
+  }, [room]);
+
+  useEffect(() => {
+    if (!scrollToBottom.current) return;
+    scrollToBottom.current.scrollIntoView({ behavior: "auto" });
+
+    if (newMessages.length === 0) return;
+    if (!user2?.id) return;
+
+    updateToSeen.mutate({ user2Id: user2.id });
+  }, [newMessages]);
+
+  useEffect(() => {
+    scrollToBottom.current?.scrollIntoView({ behavior: "auto" });
+  }, [user2]);
 
   return (
     <React.Fragment>
@@ -212,28 +334,12 @@ const ChatMessage = () => {
               <Users
                 onUserSelect={(user) => {
                   setUser2(user);
+                  scrollToBottom.current?.scrollIntoView({
+                    behavior: "auto",
+                  });
                 }}
+                selectedUser={user2}
               />
-              <div className="relative mt-2 flex w-full space-x-2 border-b bg-gray-50 p-1 pt-4 sm:border-none">
-                <img
-                  src="/img/user/Avatar_2.png"
-                  alt="pic"
-                  width={40}
-                  height={40}
-                />
-                <div className="absolute bottom-1 left-6 h-2 w-2 rounded-full bg-green-500"></div>
-                <div className="w-full">
-                  <div className="flex items-center justify-between">
-                    <p className="text-sm lg:text-base">name</p>
-                    <span className="truncate text-[10px] text-gray-400">
-                      10 min ago
-                    </span>
-                  </div>
-                  <p className="w-36 truncate text-[12px] text-gray-400">
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                  </p>
-                </div>
-              </div>
             </div>
           </div>
         </div>
@@ -247,14 +353,16 @@ const ChatMessage = () => {
                   width={40}
                   height={40}
                 />
-                {user2.isOnline && (
+                {onlineUsers.get(user2?.id ?? "")?.online && (
                   <div className="absolute bottom-1 right-0 h-2 w-2 rounded-full bg-green-500"></div>
                 )}
               </div>
               <div className="block">
-                <p className="text-base font-normal">{user2.firstName}</p>
+                <p className="text-base font-normal">{user2?.firstName}</p>
                 <p className={cn("text-[12px] font-normal text-gray-400")}>
-                  {user2.isOnline ? "Online" : "Offline"}
+                  {onlineUsers.get(user2?.id ?? "")?.online
+                    ? "Online"
+                    : "Offline"}
                 </p>
               </div>
             </div>
@@ -262,30 +370,34 @@ const ChatMessage = () => {
               <AiOutlineMore />
             </div>
           </div>
-          <div className="flex-1 overflow-scroll">
-            <div className="w-full">
-              {messages.map((message) => (
+          <div className="flex flex-1 flex-col overflow-scroll ">
+            <div className="flex-1"></div>
+            <ScrollableChat scrollToBottom={scrollToBottom} user2={user2} />
+            {newMessages.map((message) => (
+              <div key={message.id} className="w-full">
                 <Message
-                  key={message.id}
                   message={message.message}
                   isMe={message.senderId === user?.id ? true : false}
+                  date={message.createdAt}
+                  isRead={message.isRead}
                 />
-              ))}
-            </div>
+              </div>
+            ))}
+            <div
+              style={{ float: "left", clear: "both" }}
+              ref={scrollToBottom}
+            />
           </div>
-          <div style={{ float: "left", clear: "both" }} ref={scrollToBottom} />
           <div className="w-full">
             <MessageInput
               onSubmit={(msg) => {
                 if (!user) return;
+                if (!user2) return;
                 void sendMsg({
                   message: msg,
-                  to: user2.id,
+                  to: user2?.id,
                 }).then((msg) => {
                   setMessages((prev) => [...prev, msg]);
-                  scrollToBottom.current?.scrollIntoView({
-                    behavior: "smooth",
-                  });
                 });
               }}
               disabled={messageLoading}

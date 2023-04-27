@@ -6,6 +6,7 @@ import Layout from "~/components/Layout";
 import { SessionProvider, useSession } from "next-auth/react";
 import { type Session } from "next-auth";
 import { useEffect } from "react";
+import PusherContextComponent from "~/context/Pusher/PusherContextComponent";
 
 function MyApp({
   Component,
@@ -28,7 +29,9 @@ function MyApp({
     <SessionProvider session={pageProps.session}>
       <Wrap>
         <Layout>
-          <Component {...pageProps} />
+          <PusherContextComponent>
+            <Component {...pageProps} />
+          </PusherContextComponent>
         </Layout>
       </Wrap>
     </SessionProvider>
@@ -39,7 +42,7 @@ export default api.withTRPC(MyApp);
 
 function Wrap({ children }: { children: React.ReactNode }) {
   const router = useRouter();
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   useEffect(() => {
     if (status === "unauthenticated") {
       void router.push("/login");

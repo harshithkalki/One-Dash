@@ -2,6 +2,7 @@ import React from "react";
 import ChatMessage from "../../../components/ChatMessage";
 import { type GetServerSideProps } from "next";
 import { adminServerSideProps } from "~/utils/serverSideProps";
+
 const Messages = () => {
   return (
     <React.Fragment>
@@ -11,4 +12,4 @@ const Messages = () => {
 };
 export default Messages;
 
-export const getServerSideProps: GetServerSideProps = adminServerSideProps;
+// export const getServerSideProps: GetServerSideProps = adminServerSideProps;
