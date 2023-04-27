@@ -39,6 +39,12 @@ const NewProject = () => {
               notes: "",
               referenceLinks: "",
             }}
+            formSubmit={async (values) => {
+              console.log(values);
+            }}
+            getQuote={async () => {
+              console.log("get quote");
+            }}
           />
         </div>
       </div>
