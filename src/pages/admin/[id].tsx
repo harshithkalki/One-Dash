@@ -98,17 +98,28 @@ const ProjectDetailAdmin = () => {
               <Requiretment />
             </div>
             <OrderHistory />
+            {order.data?.orderStatus === "completed" && (
+              <div className="py-2">
+                <OrderRating
+                  rating={order.data?.rating as number}
+                  userName={order.data?.User.firstName}
+                  userProfile={
+                    order.data?.User.profile || "/img/user/Avatar_5.png"
+                  }
+                />
+              </div>
+            )}
             <OrderInput />
             <div className="py-2">
               <WorkDelivery />
             </div>
-            <div className="py-2">
+            {/* <div className="py-2">
               <Satisfied />
-            </div>
+            </div> */}
 
-            <div className="py-2">
-              <OrderRating />
-            </div>
+            {/* <div className="py-2">
+              <OrderRating  />
+            </div> */}
           </div>
 
           <div className="hidden w-full flex-col pl-0  lg:flex lg:w-1/3 2xl:pl-16">
