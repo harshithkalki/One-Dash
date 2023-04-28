@@ -1,4 +1,4 @@
-import { optionsData, optionsData2 } from "../../components/data/dataContents";
+import { optionsData2 } from "../../components/data/dataContents";
 import CardProject from "../../components/card/CardProject";
 import { BsSearch, BsChevronDown } from "react-icons/bs";
 import { useRouter } from "next/router";
@@ -7,13 +7,49 @@ import Image from "next/image";
 import { useSession } from "next-auth/react";
 import { api } from "~/utils/api";
 
+const OrderStatus: { value: orderStatus | "all"; label: string }[] = [
+  { value: "all", label: "All" },
+  { value: "DRAFT", label: "Draft" },
+  { value: "completed", label: "Completed" },
+  { value: "deliverd", label: "Deliverd" },
+  { value: "inProduction", label: "In Production" },
+  { value: "inRepair", label: "In Repair" },
+  { value: "pendingQuote", label: "Pending Quote" },
+  { value: "pendingReview", label: "Pending Review" },
+  { value: "pendingpayment", label: "Pending Payment" },
+];
+
+const SortByTime = [
+  {
+    value: "thisWeek",
+    label: "This Week",
+  },
+  {
+    value: "thisMonth",
+    label: "Month",
+  },
+  {
+    value: "thisYear",
+    label: "Year",
+  },
+  {
+    value: "day",
+    label: "Day",
+  },
+] as const;
+
 const Client = () => {
   const router = useRouter();
   const [visibility, setVisibility] = useState(false);
-  const [selectedOption, setSelectedOption] = useState("");
+  const [sortByOrderStatus, setSortByOrderStatus] = useState<
+    (typeof OrderStatus)[number]
+  >({ value: "all", label: "All" });
   const [weekvisibility, setWeekVisibility] = useState(false);
-  const [weekselectedOption, weeksetSelectedOption] = useState("");
+  const [weekselectedOption, weeksetSelectedOption] = useState<
+    (typeof SortByTime)[number]
+  >({ label: "This Week", value: "thisWeek" });
   const { status } = useSession();
+  const [search, setSearch] = useState("");
 
   const wrapperRef = useRef<HTMLDivElement>(null);
   useOutsideAlerter(wrapperRef);
@@ -61,7 +97,7 @@ const Client = () => {
 
   return (
     <React.Fragment>
-      <div className="mt-20 overflow-y-auto p-4 pt-4">
+      <div className="mt-20 h-full overflow-y-auto p-4 pt-4">
         {/* <div className="p-4 fixed  bottom-2 right-2 bg-blue-600 rounded-full">
           <SiGooglechat className="text-white" size={32} />
         </div> */}
@@ -100,6 +136,8 @@ const Client = () => {
                     type="text"
                     placeholder="Search"
                     className="w-full py-2.5 pl-10 outline-none"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
                   />
                 </div>
                 <div className="relative mt-2 w-[48%] border md:w-[29%]">
@@ -113,17 +151,11 @@ const Client = () => {
                     <div className="selected-option relative flex h-full items-center justify-between  ">
                       <span
                         className="flex items-center gap-4 !text-[13px]"
-                        title={
-                          weekselectedOption === ""
-                            ? "This Week"
-                            : weekselectedOption
-                        }
+                        title={weekselectedOption.label}
                       >
-                        {weekselectedOption === ""
-                          ? "This Week"
-                          : weekselectedOption.length <= 20
-                          ? weekselectedOption
-                          : `${weekselectedOption.slice(0, 20)}...`}
+                        {weekselectedOption.label.length <= 20
+                          ? weekselectedOption.label
+                          : `${weekselectedOption.label.slice(0, 20)}...`}
                       </span>
                       <img
                         className={`${
@@ -138,21 +170,21 @@ const Client = () => {
                       />
                     </div>
                     {weekvisibility && (
-                      <div className="options absolute  left-0 top-[50px] max-h-[209px] w-full overflow-y-scroll border-[1px] border-[#f3dcdc] bg-white px-3  ">
+                      <div className="options absolute left-0 top-[50px] z-50 max-h-[209px] w-full overflow-y-scroll border-[1px] border-[#f3dcdc] bg-white px-3  ">
                         <ul>
-                          {optionsData2.map(({ option }, index) => (
+                          {SortByTime.map((value, index) => (
                             <li
                               key={index}
                               className={
-                                selectedOption === option
+                                weekselectedOption.value === value.value
                                   ? "font-play mt-[10px] flex h-[37px] w-[100%] items-start justify-start border-b-[1px] border-[#EBEBEB] py-2 text-[12px] font-[400] leading-[17px] text-[#131313]"
                                   : "font-play mt-[10px] flex h-[37px] w-[100%] items-start justify-start border-b-[1px] border-[#EBEBEB] py-2 text-[12px] font-[400] leading-[17px] text-[#131313]"
                               }
                               onClick={() => {
-                                weeksetSelectedOption(option);
+                                weeksetSelectedOption(value);
                               }}
                             >
-                              {option}
+                              {value.label}
                             </li>
                           ))}
                         </ul>
@@ -171,13 +203,11 @@ const Client = () => {
                     <div className="selected-option  relative flex h-full items-center justify-between ">
                       <span
                         className="flex items-center gap-4 !text-[13px]"
-                        title={selectedOption === "" ? "All" : selectedOption}
+                        title={sortByOrderStatus.label}
                       >
-                        {selectedOption === ""
-                          ? "All"
-                          : selectedOption.length <= 20
-                          ? selectedOption
-                          : `${selectedOption.slice(0, 20)}...`}
+                        {sortByOrderStatus.label.length <= 20
+                          ? sortByOrderStatus.label
+                          : `${sortByOrderStatus.label.slice(0, 20)}...`}
                       </span>
                       <img
                         className={`${
@@ -192,28 +222,27 @@ const Client = () => {
                       />
                     </div>
                     {visibility && (
-                      <div className="options absolute  left-0 top-[50px] max-h-[209px] w-full overflow-y-scroll border-[1px] border-[#f3dcdc] bg-white px-3  ">
+                      <div className="options absolute left-0  top-[50px] z-50 max-h-[209px] w-full overflow-y-scroll border-[1px] border-[#f3dcdc] bg-white px-3  ">
                         <ul>
-                          {optionsData.map(({ option }, index) => (
+                          {OrderStatus.map(({ label, value }, index) => (
                             <li
                               key={index}
                               className={
-                                selectedOption === option
+                                sortByOrderStatus?.value === value
                                   ? "active-option font-play mt-[10px] flex h-[37px] w-[100%] items-start justify-start border-b-[1px] border-[#EBEBEB] py-2 text-[12px] font-[400] leading-[17px] text-[#131313]"
                                   : "font-play mt-[10px] flex h-[37px] w-[100%] items-start justify-start border-b-[1px] border-[#EBEBEB] py-2 text-[12px] font-[400] leading-[17px] text-[#131313]"
                               }
                               onClick={() => {
-                                setSelectedOption(option);
+                                setSortByOrderStatus({ label, value });
                               }}
                             >
-                              {option}
+                              {label}
                             </li>
                           ))}
                         </ul>
                       </div>
                     )}
                   </div>
-
                   <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
                     <BsChevronDown className="font-medium text-white" />
                   </div>
@@ -229,22 +258,59 @@ const Client = () => {
               </div>
             </div>
           </div>
-          <div className="h-full">
+          <div className="flex-1">
             <div className="mt-6 flex w-full flex-wrap items-center justify-center gap-2 lg:justify-start">
-              {data?.pages?.map(({ cursor, orders }) =>
-                orders.map((product, index) => (
-                  <div key={product.id}>
-                    <CardProject
-                      product={{
-                        createdAt: product.createdAt.toISOString(),
-                        id: product.id,
-                        name: product.name,
-                        status: product.orderStatus,
-                        logo: product.logo ?? "/img/product/product_1.png",
-                      }}
-                    />
-                  </div>
-                ))
+              {data?.pages?.map(({ orders }) =>
+                orders
+                  .filter(
+                    (order) =>
+                      order.orderStatus === sortByOrderStatus?.value ||
+                      sortByOrderStatus?.value === "all"
+                  )
+                  .filter((order) => {
+                    console.log(weekselectedOption.value);
+                    if (weekselectedOption.value === "thisWeek") {
+                      return (
+                        order.createdAt >=
+                        new Date(new Date().setDate(new Date().getDate() - 7))
+                      );
+                    } else if (weekselectedOption.value === "day") {
+                      return (
+                        order.createdAt >=
+                        new Date(new Date().setDate(new Date().getDate() - 1))
+                      );
+                    } else if (weekselectedOption.value === "thisMonth") {
+                      return (
+                        order.createdAt >=
+                        new Date(new Date().setDate(new Date().getDate() - 30))
+                      );
+                    } else if (weekselectedOption.value === "thisYear") {
+                      return (
+                        order.createdAt >=
+                        new Date(new Date().setDate(new Date().getDate() - 365))
+                      );
+                    } else return true;
+                  })
+                  .filter((order) => {
+                    if (search) {
+                      return order.name
+                        .toLowerCase()
+                        .includes(search.toLowerCase());
+                    } else return true;
+                  })
+                  .map((product) => (
+                    <div key={product.id}>
+                      <CardProject
+                        product={{
+                          createdAt: product.createdAt.toISOString(),
+                          id: product.id,
+                          name: product.name,
+                          status: product.orderStatus,
+                          logo: product.logo ?? "/img/product/product_1.png",
+                        }}
+                      />
+                    </div>
+                  ))
               )}
             </div>
           </div>
@@ -257,6 +323,7 @@ export default Client;
 
 import { type GetServerSideProps } from "next";
 import { createSSG } from "~/utils/ssg";
+import { orderStatus } from "@prisma/client";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const { ssg, session } = await createSSG(context);

@@ -14,15 +14,52 @@ import { type GetServerSideProps } from "next";
 import { getSession } from "next-auth/react";
 import { adminServerSideProps } from "~/utils/serverSideProps";
 import { orderProgress } from "~/utils/Progress";
-import { orderStatus } from "@prisma/client";
+import { type orderStatus } from "@prisma/client";
+
+const OrderStatus: { value: orderStatus | "all"; label: string }[] = [
+  { value: "all", label: "All" },
+  { value: "DRAFT", label: "Draft" },
+  { value: "completed", label: "Completed" },
+  { value: "deliverd", label: "Deliverd" },
+  { value: "inProduction", label: "In Production" },
+  { value: "inRepair", label: "In Repair" },
+  { value: "pendingQuote", label: "Pending Quote" },
+  { value: "pendingReview", label: "Pending Review" },
+  { value: "pendingpayment", label: "Pending Payment" },
+];
+
+const SortByTime = [
+  {
+    value: "thisWeek",
+    label: "This Week",
+  },
+  {
+    value: "thisMonth",
+    label: "Month",
+  },
+  {
+    value: "thisYear",
+    label: "Year",
+  },
+  {
+    value: "day",
+    label: "Day",
+  },
+] as const;
+
 const AdminDashboard = () => {
   const router = useRouter();
   const [visibility, setVisibility] = useState(false);
-  const [selectedOption, setSelectedOption] = useState("");
+  const [sortByOrderStatus, setSortByOrderStatus] = useState<
+    (typeof OrderStatus)[number]
+  >({ value: "all", label: "All" });
   const [weekvisibility, setWeekVisibility] = useState(false);
-  const [weekselectedOption, weeksetSelectedOption] = useState("");
+  const [weekselectedOption, weeksetSelectedOption] = useState<
+    (typeof SortByTime)[number]
+  >({ label: "This Week", value: "thisWeek" });
+  const [search, setSearch] = useState("");
 
-  const Orders = api.order.ordersSelect.useQuery();
+  const { data } = api.order.ordersSelect.useQuery();
 
   const wrapperRef = useRef(null);
   useOutsideAlerter(wrapperRef);
@@ -62,6 +99,8 @@ const AdminDashboard = () => {
                     type="text"
                     placeholder="Search"
                     className="w-full py-2.5 pl-10 outline-none"
+                    onChange={(e) => setSearch(e.target.value)}
+                    value={search}
                   />
                 </div>
                 <div className="relative mt-2 w-[33%] border md:w-[23%]">
@@ -75,17 +114,11 @@ const AdminDashboard = () => {
                     <div className="selected-option relative flex h-full items-center justify-between  ">
                       <span
                         className="flex items-center gap-4 !text-[13px]"
-                        title={
-                          weekselectedOption === ""
-                            ? "This Week"
-                            : weekselectedOption
-                        }
+                        title={weekselectedOption.label}
                       >
-                        {weekselectedOption === ""
-                          ? "This Week"
-                          : weekselectedOption.length <= 20
-                          ? weekselectedOption
-                          : `${weekselectedOption.slice(0, 20)}...`}
+                        {weekselectedOption.label.length <= 20
+                          ? weekselectedOption.label
+                          : `${weekselectedOption.label.slice(0, 20)}...`}
                       </span>
                       <img
                         className={`${
@@ -100,21 +133,21 @@ const AdminDashboard = () => {
                       />
                     </div>
                     {weekvisibility && (
-                      <div className="options absolute  left-0 top-[50px] max-h-[209px] w-full overflow-y-scroll border-[1px] border-[#f3dcdc] bg-white px-3  ">
+                      <div className="options absolute left-0 top-[50px] z-50 max-h-[209px] w-full overflow-y-scroll border-[1px] border-[#f3dcdc] bg-white px-3  ">
                         <ul>
-                          {optionsData2.map(({ option }, index) => (
+                          {SortByTime.map((value, index) => (
                             <li
                               key={index}
                               className={
-                                selectedOption === option
+                                weekselectedOption.value === value.value
                                   ? "font-play mt-[10px] flex h-[37px] w-[100%] items-start justify-start border-b-[1px] border-[#EBEBEB] py-2 text-[12px] font-[400] leading-[17px] text-[#131313]"
                                   : "font-play mt-[10px] flex h-[37px] w-[100%] items-start justify-start border-b-[1px] border-[#EBEBEB] py-2 text-[12px] font-[400] leading-[17px] text-[#131313]"
                               }
                               onClick={() => {
-                                weeksetSelectedOption(option);
+                                weeksetSelectedOption(value);
                               }}
                             >
-                              {option}
+                              {value.label}
                             </li>
                           ))}
                         </ul>
@@ -133,13 +166,11 @@ const AdminDashboard = () => {
                     <div className="selected-option  relative flex h-full items-center justify-between ">
                       <span
                         className="flex items-center gap-4 !text-[13px]"
-                        title={selectedOption === "" ? "All" : selectedOption}
+                        title={sortByOrderStatus.label}
                       >
-                        {selectedOption === ""
-                          ? "All"
-                          : selectedOption.length <= 20
-                          ? selectedOption
-                          : `${selectedOption.slice(0, 20)}...`}
+                        {sortByOrderStatus.label.length <= 20
+                          ? sortByOrderStatus.label
+                          : `${sortByOrderStatus.label.slice(0, 20)}...`}
                       </span>
                       <img
                         className={`${
@@ -154,21 +185,21 @@ const AdminDashboard = () => {
                       />
                     </div>
                     {visibility && (
-                      <div className="options absolute  left-0 top-[50px] max-h-[209px] w-full overflow-y-scroll border-[1px] border-[#f3dcdc] bg-white px-3  ">
+                      <div className="options absolute left-0  top-[50px] z-50 max-h-[209px] w-full overflow-y-scroll border-[1px] border-[#f3dcdc] bg-white px-3  ">
                         <ul>
-                          {optionsData.map(({ option }, index) => (
+                          {OrderStatus.map(({ label, value }, index) => (
                             <li
                               key={index}
                               className={
-                                selectedOption === option
+                                sortByOrderStatus?.value === value
                                   ? "active-option font-play mt-[10px] flex h-[37px] w-[100%] items-start justify-start border-b-[1px] border-[#EBEBEB] py-2 text-[12px] font-[400] leading-[17px] text-[#131313]"
                                   : "font-play mt-[10px] flex h-[37px] w-[100%] items-start justify-start border-b-[1px] border-[#EBEBEB] py-2 text-[12px] font-[400] leading-[17px] text-[#131313]"
                               }
                               onClick={() => {
-                                setSelectedOption(option);
+                                setSortByOrderStatus({ label, value });
                               }}
                             >
-                              {option}
+                              {label}
                             </li>
                           ))}
                         </ul>
@@ -193,36 +224,56 @@ const AdminDashboard = () => {
                 Active Order
               </h4>
               <div className="mt-0 flex w-full flex-wrap items-start justify-start gap-2 gap-y-4 lg:justify-start">
-                {Orders?.data?.map(
-                  (product, index) =>
-                    product.orderStatus !== "DRAFT" &&
-                    product.orderStatus !== "pendingQuote" && (
-                      <div key={index}>
-                        <CardOrder
-                          product={{
-                            id: product.id,
-                            // name: product.name,
-                            status: product.orderStatus as orderStatus,
-                            dateTime: product.createdAt.toISOString(),
-                            img: product.logo ?? "/img/product/product_1.png",
-                            // progress: orderProgress(product.orderStatus),
-                            title: product.name,
-                            users: {
-                              id: product.User.id,
-                              name: product.User.firstName,
-                              img:
-                                product.User.profile ??
-                                "/img/user/Avatar_team1.svg",
-                            },
-                            amount:
-                              product.invoices
-                                .reduce((a, b) => a + b.amount, 0)
-                                .toFixed(2) || "--",
-                          }}
-                        />
-                      </div>
-                    )
-                )}
+                {data
+                  ?.filter(
+                    (order) =>
+                      order.orderStatus === sortByOrderStatus?.value ||
+                      sortByOrderStatus?.value === "all"
+                  )
+                  .filter((order) => {
+                    console.log(weekselectedOption.value);
+                    if (weekselectedOption.value === "thisWeek") {
+                      return (
+                        order.createdAt >=
+                        new Date(new Date().setDate(new Date().getDate() - 7))
+                      );
+                    } else if (weekselectedOption.value === "day") {
+                      return (
+                        order.createdAt >=
+                        new Date(new Date().setDate(new Date().getDate() - 1))
+                      );
+                    } else if (weekselectedOption.value === "thisMonth") {
+                      return (
+                        order.createdAt >=
+                        new Date(new Date().setDate(new Date().getDate() - 30))
+                      );
+                    } else if (weekselectedOption.value === "thisYear") {
+                      return (
+                        order.createdAt >=
+                        new Date(new Date().setDate(new Date().getDate() - 365))
+                      );
+                    } else return true;
+                  })
+                  .filter((order) => {
+                    if (search) {
+                      return order.name
+                        .toLowerCase()
+                        .includes(search.toLowerCase());
+                    } else return true;
+                  })
+                  .map((product) => (
+                    <div key={product.id}>
+                      <CardProject
+                        product={{
+                          createdAt: product.createdAt.toISOString(),
+                          id: product.id,
+                          name: product.name,
+                          status: product.orderStatus,
+                          logo: product.logo ?? "/img/product/product_1.png",
+                        }}
+                      />
+                    </div>
+                  ))}
               </div>
             </div>
             <div className="w-full">
@@ -230,32 +281,56 @@ const AdminDashboard = () => {
                 Awaiting
               </h4>
               <div className="mt-0 flex flex-wrap items-start justify-start gap-2 gap-y-4 lg:justify-start">
-                {Orders?.data?.map(
-                  (product, index) =>
-                    product.orderStatus === "pendingQuote" && (
-                      <div key={index}>
-                        <CardOrder
-                          product={{
-                            id: product.id,
-                            // name: product.name,
-                            status: product.orderStatus as orderStatus,
-                            dateTime: product.createdAt.toISOString(),
-                            img: product.logo ?? "/img/product/product_1.png",
-                            // progress: 0,
-                            title: product.name,
-                            users: {
-                              id: product.User.id,
-                              name: product.User.firstName,
-                              img:
-                                product.User.profile ??
-                                "/img/user/Avatar_team1.svg",
-                            },
-                            amount: "---",
-                          }}
-                        />
-                      </div>
-                    )
-                )}
+                {data
+                  ?.filter(
+                    (order) =>
+                      order.orderStatus === sortByOrderStatus?.value ||
+                      sortByOrderStatus?.value === "all"
+                  )
+                  .filter((order) => {
+                    console.log(weekselectedOption.value);
+                    if (weekselectedOption.value === "thisWeek") {
+                      return (
+                        order.createdAt >=
+                        new Date(new Date().setDate(new Date().getDate() - 7))
+                      );
+                    } else if (weekselectedOption.value === "day") {
+                      return (
+                        order.createdAt >=
+                        new Date(new Date().setDate(new Date().getDate() - 1))
+                      );
+                    } else if (weekselectedOption.value === "thisMonth") {
+                      return (
+                        order.createdAt >=
+                        new Date(new Date().setDate(new Date().getDate() - 30))
+                      );
+                    } else if (weekselectedOption.value === "thisYear") {
+                      return (
+                        order.createdAt >=
+                        new Date(new Date().setDate(new Date().getDate() - 365))
+                      );
+                    } else return true;
+                  })
+                  .filter((order) => {
+                    if (search) {
+                      return order.name
+                        .toLowerCase()
+                        .includes(search.toLowerCase());
+                    } else return true;
+                  })
+                  .map((product) => (
+                    <div key={product.id}>
+                      <CardProject
+                        product={{
+                          createdAt: product.createdAt.toISOString(),
+                          id: product.id,
+                          name: product.name,
+                          status: product.orderStatus,
+                          logo: product.logo ?? "/img/product/product_1.png",
+                        }}
+                      />
+                    </div>
+                  ))}
               </div>
             </div>
           </div>
