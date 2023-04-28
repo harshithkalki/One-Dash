@@ -297,7 +297,12 @@ const ChatMessage = () => {
     if (newMessages.length === 0) return;
     if (!user2?.id) return;
 
-    updateToSeen.mutate({ user2Id: user2.id });
+    if (
+      !newMessages[newMessages.length - 1]?.isRead &&
+      !updateToSeen.isLoading
+    ) {
+      updateToSeen.mutate({ user2Id: user2.id });
+    }
   }, [newMessages]);
 
   useEffect(() => {

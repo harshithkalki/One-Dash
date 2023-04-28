@@ -1,4 +1,20 @@
-import { type Notification } from "@prisma/client";
+import { type NotificationEvent, type Notification } from "@prisma/client";
+import moment from "moment";
+
+const event: Record<NotificationEvent, string> = {
+  deliveryCreated: "Delivery Created",
+  deliveryUpdated: "Delivery Updated",
+  deliveryDeleted: "Delivery Deleted",
+  discussionCreated: "Discussion Created",
+  discussionUpdated: "Discussion Updated",
+  discussionDeleted: "Discussion Deleted",
+  invoiceDeleted: "Invoice Deleted",
+  invoiceUpdated: "Invoice Updated",
+  invoiceCreated: "Invoice Created",
+  orderCreated: "Order Created",
+  orderUpdated: "Order Updated",
+  orderDeleted: "Order Deleted",
+};
 
 const ListNotifications = ({
   notification,
@@ -13,11 +29,11 @@ const ListNotifications = ({
         </div>
         <div className="w-[97%] py-1">
           <span className="w-full text-[14px] font-[400] leading-[150%] text-[#131313CC]">
-            {notification.event}
+            {notification.message}{" "}
           </span>
-          <span className="text-[12px] font-[400] leading-[150%] text-[#13131399]">
-            {notification.message}
-          </span>
+          <div className="text-[12px] font-[400] leading-[150%] text-[#13131399]">
+            {moment(notification.createdAt).fromNow()}
+          </div>
         </div>
         <img width={44} height={44} alt="pic" className="rounded-full" />
       </div>
