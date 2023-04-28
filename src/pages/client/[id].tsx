@@ -193,7 +193,7 @@ const ProjectDetail = () => {
                     alt="pic"
                     className="rounded-full"
                   />
-                  <span className="text-sm font-medium">{value.firstName}</span>
+                  <span className="text-sm font-medium">{value.email}</span>
                 </div>
                 <button
                   className="w-20 rounded-[2px] border border-blue-500 px-2 py-1 text-sm text-blue-500"

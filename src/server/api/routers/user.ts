@@ -493,4 +493,20 @@ export const userRouter = createTRPCRouter({
 
       return user;
     }),
+  inviteUser: protectedProcedure
+    .input(
+      z.object({
+        email: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const res = await transporter.sendMail({
+        from: "test-mail-dev@3dcontentstudio.com",
+        to: input.email,
+        subject: "You are invited to sigup for 3dContentStudio",
+        html: "<h1>Click <a href='http://localhost:3000/signup'>here</a> to signup</h1>",
+      });
+      console.log(res);
+      return true;
+    }),
 });

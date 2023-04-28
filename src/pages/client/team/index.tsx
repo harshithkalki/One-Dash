@@ -39,6 +39,7 @@ const Team = () => {
   });
 
   const RemoveTeamMem = api.user.removeTeamMember.useMutation();
+  const inviteTeamMem = api.user.inviteUser.useMutation();
   const [addMemLoading, setAddMemLoading] = useState<number>(-1);
 
   const [removeopen1, setremoveOpen1] = useState(false);
@@ -48,6 +49,8 @@ const Team = () => {
   };
   const router = useRouter();
   const { status } = useSession();
+  const [Search, setSearch] = useState("");
+  const [sortedData, setSortedData] = useState(NotTeam.data);
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -192,7 +195,7 @@ const Team = () => {
                     <div className="w-full py-1.5">
                       <div className="relative flex items-center justify-between">
                         <p className="font-play   text-base font-[700] leading-[150%] text-[#131313]">
-                          {member.firstName}
+                          {member.email}
                         </p>
                         <AiOutlineMore
                           onClick={() => setremoveOpen(index)}
@@ -239,19 +242,65 @@ const Team = () => {
               type="email"
               placeholder="Email"
               className="w-full border py-2 pl-3 outline-none"
+              value={Search}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                const query = e.target.value.toLowerCase();
+                const data = NotTeam.data?.filter((item) =>
+                  item.email.toLowerCase().includes(query)
+                );
+                setSortedData(data);
+              }}
             />
             <button className="w-36 rounded-[2px] bg-blue-500 px-6 py-2 text-white">
               Search
             </button>
           </div>
-          {NotTeam?.data?.length === 0 ? (
+          {sortedData?.length === 0 ? (
             <div className="flex w-full items-center justify-center py-4">
-              <span className="font-play text-[14px] font-[500] text-black">
-                No member found
-              </span>
+              <div className="flex w-full items-center justify-between py-2">
+                <div className="flex items-center space-x-2">
+                  <img
+                    src={"/img/user/Avatar_team1.svg"}
+                    width={48}
+                    height={48}
+                    alt="pic"
+                    className="rounded-full"
+                  />
+
+                  <span className="text-sm font-medium">{Search}</span>
+                </div>
+                <button
+                  className="w-20 rounded-[2px] border border-blue-500 px-2 py-1 text-sm text-blue-500"
+                  onClick={() => {
+                    inviteTeamMem
+                      .mutateAsync({ email: Search })
+                      .then(() => {
+                        setSearch("");
+                        setSortedData(NotTeam.data);
+                      })
+                      .catch((e) => {
+                        console.log(e);
+                        setSearch("");
+                        setSortedData(NotTeam.data);
+                      });
+                  }}
+                >
+                  {inviteTeamMem.isLoading ? (
+                    <div className="flex items-center justify-center">
+                      <AiOutlineLoading3Quarters
+                        className="animate-spin"
+                        size={24}
+                      />
+                    </div>
+                  ) : (
+                    "Invite"
+                  )}
+                </button>
+              </div>
             </div>
           ) : (
-            NotTeam?.data?.map((value, index) => (
+            sortedData?.map((value, index) => (
               <div
                 className="flex w-full items-center justify-between py-2"
                 key={index}
@@ -264,7 +313,7 @@ const Team = () => {
                     alt="pic"
                     className="rounded-full"
                   />
-                  <span className="text-sm font-medium">{value.firstName}</span>
+                  <span className="text-sm font-medium">{value.email}</span>
                 </div>
                 <button
                   className="w-20 rounded-[2px] border border-blue-500 px-2 py-1 text-sm text-blue-500"

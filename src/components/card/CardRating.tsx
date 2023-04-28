@@ -11,7 +11,13 @@ const CardRating = ({ userProfile, userName, rating }: props) => {
   return (
     <>
       <div className="font-play flex flex-col items-center justify-center rounded-[8px] py-2">
-        <Image src={userProfile} alt="pic" width={60} height={60} />
+        <img
+          src={userProfile}
+          alt="pic"
+          width={60}
+          height={60}
+          className="rounded-full"
+        />
         <h5 className="text-black">{userName}</h5>
         <p className="text-[12px] text-blue-500">{`Rates ${rating} stars`}</p>
       </div>
