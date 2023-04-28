@@ -261,19 +261,36 @@ const AdminDashboard = () => {
                         .includes(search.toLowerCase());
                     } else return true;
                   })
-                  .map((product) => (
-                    <div key={product.id}>
-                      <CardProject
-                        product={{
-                          createdAt: product.createdAt.toISOString(),
-                          id: product.id,
-                          name: product.name,
-                          status: product.orderStatus,
-                          logo: product.logo ?? "/img/product/product_1.png",
-                        }}
-                      />
-                    </div>
-                  ))}
+                  .map(
+                    (product) =>
+                      product.orderStatus !== "DRAFT" &&
+                      product.orderStatus !== "pendingQuote" && (
+                        <div key={product.id}>
+                          <CardOrder
+                            product={{
+                              id: product.id,
+                              // name: product.name,
+                              status: product.orderStatus as orderStatus,
+                              dateTime: product.createdAt.toISOString(),
+                              img: product.logo ?? "/img/product/product_1.png",
+                              // progress: orderProgress(product.orderStatus),
+                              title: product.name,
+                              users: {
+                                id: product.User.id,
+                                name: product.User.firstName,
+                                img:
+                                  product.User.profile ??
+                                  "/img/user/Avatar_team1.svg",
+                              },
+                              amount:
+                                product.invoices
+                                  .reduce((a, b) => a + b.amount, 0)
+                                  .toFixed(2) || "--",
+                            }}
+                          />
+                        </div>
+                      )
+                  )}
               </div>
             </div>
             <div className="w-full">
@@ -318,19 +335,32 @@ const AdminDashboard = () => {
                         .includes(search.toLowerCase());
                     } else return true;
                   })
-                  .map((product) => (
-                    <div key={product.id}>
-                      <CardProject
-                        product={{
-                          createdAt: product.createdAt.toISOString(),
-                          id: product.id,
-                          name: product.name,
-                          status: product.orderStatus,
-                          logo: product.logo ?? "/img/product/product_1.png",
-                        }}
-                      />
-                    </div>
-                  ))}
+                  .map(
+                    (product) =>
+                      product.orderStatus === "pendingQuote" && (
+                        <div key={product.id}>
+                          <CardOrder
+                            product={{
+                              id: product.id,
+                              // name: product.name,
+                              status: product.orderStatus as orderStatus,
+                              dateTime: product.createdAt.toISOString(),
+                              img: product.logo ?? "/img/product/product_1.png",
+                              // progress: 0,
+                              title: product.name,
+                              users: {
+                                id: product.User.id,
+                                name: product.User.firstName,
+                                img:
+                                  product.User.profile ??
+                                  "/img/user/Avatar_team1.svg",
+                              },
+                              amount: "---",
+                            }}
+                          />
+                        </div>
+                      )
+                  )}
               </div>
             </div>
           </div>

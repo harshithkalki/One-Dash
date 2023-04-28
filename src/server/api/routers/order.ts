@@ -13,7 +13,6 @@ export const orderRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-
       const order = await ctx.prisma.order.create({
         data: {
           name: input.name,
@@ -25,14 +24,12 @@ export const orderRouter = createTRPCRouter({
         },
       });
 
-      await createNotification(
-        {
-          userId: ctx.session.user.id,
-          event: "orderCreated",
-          message: `Order ${order.name} created`,
-          sendNotification: true,
-        }
-      );
+      await createNotification({
+        userId: ctx.session.user.id,
+        event: "orderCreated",
+        message: `Order ${order.name} created`,
+        sendNotification: true,
+      });
 
       return order;
     }),
@@ -115,25 +112,21 @@ export const orderRouter = createTRPCRouter({
           team: {
             select: {
               id: true,
-            }
+            },
           },
-
-        }
+        },
       });
 
       const team = order.team.map((val) => val.id);
       team.push(ctx.session.user.id);
       team.push(order.userId);
 
-
-      await createNotification(
-        {
-          userId: team,
-          event: "orderCreated",
-          message: `Order ${order.name} created`,
-          sendNotification: true,
-        }
-      );
+      await createNotification({
+        userId: team,
+        event: "orderCreated",
+        message: `Order ${order.name} created`,
+        sendNotification: true,
+      });
 
       return order;
     }),
@@ -220,11 +213,11 @@ export const orderRouter = createTRPCRouter({
           team: {
             select: {
               id: true,
-            }
+            },
           },
           userId: true,
           name: true,
-        }
+        },
       });
 
       const team = order.team.map((val) => val.id);
@@ -389,6 +382,31 @@ export const orderRouter = createTRPCRouter({
         },
         data: {
           orderStatus: "inRepair",
+        },
+      });
+      console.log(order);
+      return order;
+    }),
+  AdminCreateOrder: protectedProcedure
+    .input(
+      z.object({
+        name: z.string(),
+        type: z.string(),
+        notes: z.string(),
+        referenceLinks: z.string(),
+        userId: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const order = await ctx.prisma.order.create({
+        data: {
+          name: input.name,
+          type: input.type,
+          notes: input.notes,
+          referenceLinks: input.referenceLinks,
+          userId: input.userId,
+          PaymentStatus: "pending",
+          orderStatus: "pendingQuote",
         },
       });
       console.log(order);

@@ -4,6 +4,7 @@ import Image from "next/image";
 import axios from "axios";
 import { useFormik } from "formik";
 import { type Order } from "@prisma/client";
+import { api } from "~/utils/api";
 
 const axiosApi = axios.create({
   baseURL: "/api",
@@ -69,6 +70,31 @@ const ProjectInput = ({
       }
     },
   });
+
+  const customers = api.user.customers.useQuery();
+
+  const customerOptions = customers.data?.map((customer) => ({
+    option: customer.email,
+    value: customer.id,
+  }));
+  const adminGetQuote = api.order.AdminCreateOrder.useMutation();
+
+  async function AdminSubmit() {
+    await adminGetQuote
+      .mutateAsync({
+        name: formik.values.name,
+        notes: formik.values.notes,
+        referenceLinks: formik.values.referenceLinks,
+        type: ProjectType,
+        userId: selectedOption,
+      })
+      .then((res) => {
+        void router.push(`/admin`);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
 
   const QuoteFunc = async () => {
     const data = formik.values;
@@ -153,7 +179,7 @@ const ProjectInput = ({
                 {visibility && (
                   <div className="options absolute left-0  top-[50px] z-50 max-h-[209px] w-full overflow-y-scroll border-[1px] border-[#f3dcdc] bg-white px-3  ">
                     <ul>
-                      {options1.map(({ option }, index) => (
+                      {customerOptions?.map(({ option, value }, index) => (
                         <li
                           key={index}
                           className={
@@ -162,7 +188,7 @@ const ProjectInput = ({
                               : "font-play mt-[10px] flex h-[37px] w-[100%] items-start justify-start border-b-[1px] border-[#EBEBEB] py-2 text-[12px] font-[400] leading-[17px] text-[#131313]"
                           }
                           onClick={() => {
-                            setSelectedOption(option);
+                            setSelectedOption(value);
                             // void formik.setFieldValue("type", option);
                           }}
                         >
@@ -322,15 +348,25 @@ const ProjectInput = ({
           >
             Save and Close
           </button>
-          <button
-            className="w-full border bg-blue-500 px-3 py-2 text-white md:w-44"
-            type="button"
-            onClick={() => {
-              void QuoteFunc();
-            }}
-          >
-            Get Quote
-          </button>
+          {userin ? (
+            <button
+              className="w-full border bg-blue-500 px-3 py-2 text-white md:w-44"
+              type="button"
+              onClick={() => void AdminSubmit()}
+            >
+              Get Quote
+            </button>
+          ) : (
+            <button
+              className="w-full border bg-blue-500 px-3 py-2 text-white md:w-44"
+              type="button"
+              onClick={() => {
+                void QuoteFunc();
+              }}
+            >
+              Get Quote
+            </button>
+          )}
         </div>
       </div>
     </form>
