@@ -231,7 +231,6 @@ const AdminDashboard = () => {
                       sortByOrderStatus?.value === "all"
                   )
                   .filter((order) => {
-                    console.log(weekselectedOption.value);
                     if (weekselectedOption.value === "thisWeek") {
                       return (
                         order.createdAt >=
@@ -305,7 +304,6 @@ const AdminDashboard = () => {
                       sortByOrderStatus?.value === "all"
                   )
                   .filter((order) => {
-                    console.log(weekselectedOption.value);
                     if (weekselectedOption.value === "thisWeek") {
                       return (
                         order.createdAt >=

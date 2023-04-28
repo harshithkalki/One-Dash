@@ -32,7 +32,7 @@ export const invoiceRouter = createTRPCRouter({
 
     if (customer.data.length === 0) {
       const customer = await stripe.customers.create({
-        name: ctx.session.user.firstName,
+        name: order.User.firstName,
         address: {
           city: order?.User.city ?? "",
           country: order?.User.country ?? "",
