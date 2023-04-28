@@ -94,6 +94,23 @@ const ProjectDetail = () => {
               <Requiretment />
             </div>
             <OrderHistory />
+            {order.data?.orderStatus === "deliverd" && (
+              <div className="py-2">
+                <Satisfied />
+              </div>
+            )}
+
+            {order.data?.orderStatus === "completed" && (
+              <div className="py-2">
+                <OrderRating
+                  rating={order.data?.rating as number}
+                  userName={order.data?.User.firstName}
+                  userProfile={
+                    order.data?.User.profile || "/img/user/Avatar_5.png"
+                  }
+                />
+              </div>
+            )}
             <OrderInput />
           </div>
           <div className="hidden w-full flex-col pl-0 lg:flex lg:w-[30%] xl:pl-5 2xl:pl-10">
@@ -220,6 +237,8 @@ import { type GetServerSideProps } from "next";
 import { createSSG } from "~/utils/ssg";
 import { orderProgress } from "~/utils/Progress";
 import { orderStatus } from "@prisma/client";
+import OrderRating from "~/components/OrderRating";
+import Satisfied from "~/components/Satisfied";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const { ssg, session } = await createSSG(context);

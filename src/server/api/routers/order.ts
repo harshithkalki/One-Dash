@@ -352,4 +352,46 @@ export const orderRouter = createTRPCRouter({
         orders,
       };
     }),
+
+  giveRating: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        rating: z.number(),
+        ratingComment: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const order = await ctx.prisma.order.update({
+        where: {
+          id: input.id,
+        },
+        data: {
+          rating: input.rating,
+          ratingComment: input.ratingComment,
+          orderStatus: "completed",
+        },
+      });
+      console.log(order);
+      return order;
+    }),
+
+  Repair: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const order = await ctx.prisma.order.update({
+        where: {
+          id: input.id,
+        },
+        data: {
+          orderStatus: "inRepair",
+        },
+      });
+      console.log(order);
+      return order;
+    }),
 });

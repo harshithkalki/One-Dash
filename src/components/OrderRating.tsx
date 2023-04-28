@@ -2,7 +2,13 @@ import React, { useState } from "react";
 import { BsChevronDown, BsChevronUp } from "react-icons/bs";
 import { useSpring, animated } from "react-spring";
 import CardRating from "./card/CardRating";
-const OrderRating = () => {
+
+type props = {
+  userProfile: string;
+  userName: string;
+  rating: number;
+};
+const OrderRating = (props: props) => {
   const [clicked, setClicked] = useState(true);
   const fade = useSpring({
     opacity: clicked ? 1 : 0,
@@ -25,7 +31,13 @@ const OrderRating = () => {
           </div>
         </div>
         <animated.div style={fade}>
-          {clicked ? <CardRating /> : null}
+          {clicked ? (
+            <CardRating
+              rating={props.rating}
+              userName={props.userName}
+              userProfile={props.userProfile}
+            />
+          ) : null}
         </animated.div>
       </div>
     </React.Fragment>

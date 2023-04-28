@@ -57,6 +57,7 @@ model Order {
   notes          String?       @db.LongText
   attachments    String?
   PaymentStatus  String
+  amount         Int?
   logo           String?
   orderStatus    orderStatus   @default(DRAFT)
   referenceLinks String?
@@ -67,9 +68,25 @@ model Order {
   User           User          @relation(fields: [userId], references: [id])
   discussions    Discussions[]
   deliveries     Delivery[]
+  rating         Int?
+  ratingComment  String?
+  ratingDate     DateTime?
 
   @@index([userId])
 }
+
+// model Rating{
+//   id        String   @id @unique @default(cuid())
+//   orderId   String
+//   userId    String
+//   rating    Int
+//   createdAt DateTime @default(now())
+//   order     Order    @relation(fields: [orderId], references: [id])
+//   user      User     @relation(fields: [userId], references: [id])
+
+//   @@index([userId])
+
+// }
 
 model Invoice {
   id            String        @id @unique @default(cuid())
